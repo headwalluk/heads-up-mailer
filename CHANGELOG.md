@@ -18,6 +18,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `hosting-customers` and `web-designers` groups.
 - Seed call wired into `hum_activate()` and
   `Plugin::check_first_run()` (MU plugin safety).
+- Top-level "Heads Up Mailer" admin menu with Dashboard
+  (placeholder) and Groups submenus. Capability-gated on
+  `manage_options`.
+- `admin-templates/dashboard.php`, `groups-list.php`,
+  `group-edit.php` — code-first PHP via `printf` / `echo`.
+- `assets/admin/heads-up-mailer-admin.js` — delegated
+  `data-hum-confirm` handler for destructive links.
+- `admin-post.php` form handlers `hum_save_group` and
+  `hum_delete_group` with nonce + capability checks.
+
+### Changed
+
+- `phpcs.xml` refined to match Headwall convention: excluded
+  `PrefixAllGlobals`, `InterpolatedNotPrepared`, and
+  `UnusedFunctionParameter` from the base `WordPress` rule, then
+  re-added `PrefixAllGlobals` with explicit prefix list.
 
 ## [0.1.0] — 2026-05-19
 

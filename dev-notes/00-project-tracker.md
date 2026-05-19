@@ -130,13 +130,23 @@ MailerLite subscription can be cancelled.
 
 - [x] `Groups_Controller` class — CRUD methods returning `WP_Error`
       on failure
-- [ ] Admin page `admin-templates/groups-list.php` (code-first PHP,
+- [x] Admin page `admin-templates/groups-list.php` (code-first PHP,
       `printf` / `echo`)
-- [ ] Add / edit form `admin-templates/group-edit.php`
+- [x] Add / edit form `admin-templates/group-edit.php`
 - [x] Seed `hosting-customers` and `web-designers` on activation
       (idempotent — only inserts if missing)
 - [x] `TABLE_*` constants in `constants.php` to centralise the
       table-name suffixes used by the controllers
+- [x] Top-level admin menu + Dashboard submenu (placeholder) +
+      Groups submenu wired in `Plugin::admin_menu()`
+- [x] Form submission via `admin-post.php` with nonces:
+      `hum_save_group`, `hum_delete_group`
+- [x] `assets/admin/heads-up-mailer-admin.js`: delegated
+      `data-hum-confirm` handler for destructive links
+- [x] `phpcs.xml` refined — excluded `PrefixAllGlobals`,
+      `InterpolatedNotPrepared`, and `UnusedFunctionParameter`
+      from the base `WordPress` rule, then re-added
+      `PrefixAllGlobals` with our explicit prefix list
 
 #### Subscribers admin
 

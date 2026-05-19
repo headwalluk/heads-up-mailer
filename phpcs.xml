@@ -22,9 +22,18 @@
 	<!-- Rules -->
 	<rule ref="WordPress">
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+
+		<!-- We use namespaces, so we don't need prefixes on template variables. -->
+		<exclude name="WordPress.NamingConventions.PrefixAllGlobals"/>
+
+		<!-- Table-name interpolation against $wpdb->prefix is the standard pattern. -->
+		<exclude name="WordPress.DB.PreparedSQL.InterpolatedNotPrepared"/>
+
+		<!-- WordPress hook signatures often require parameters we don't use. -->
+		<exclude name="Generic.CodeAnalysis.UnusedFunctionParameter"/>
 	</rule>
 
-	<!-- Prefixes -->
+	<!-- Re-enable PrefixAllGlobals with explicit prefixes for functions/classes. -->
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
