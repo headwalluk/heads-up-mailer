@@ -49,6 +49,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   values, POSTs them via `fetch`, and renders the result inline
   in `#hum-mb-test-result`. Aria-live region on the status span
   so screen readers announce the result.
+- `OPTION_MAILBOX_VALIDATE_CERT` (default on) — when off, the
+  IMAP mailbox string gets `/novalidate-cert` so PHP's c-client
+  skips chain validation. Surfaces a clear description in the
+  mailbox tab explaining when to untick (common Let's Encrypt /
+  c-client CA-bundle mismatch). TLS encryption stays on; only
+  the certificate chain check is skipped.
+- Hidden `value="0"` siblings before the TLS and validate-cert
+  checkboxes so unticking still POSTs a value. Otherwise the
+  Settings API's sanitize callback never fires for an absent
+  field and the unticked state never persists.
 
 ## [0.2.0] — 2026-05-19
 

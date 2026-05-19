@@ -129,6 +129,16 @@ class Settings {
 
 		register_setting(
 			self::GROUP,
+			OPTION_MAILBOX_VALIDATE_CERT,
+			array(
+				'type'              => 'boolean',
+				'sanitize_callback' => array( $this, 'sanitize_boolean' ),
+				'default'           => DEF_MAILBOX_VALIDATE_CERT,
+			)
+		);
+
+		register_setting(
+			self::GROUP,
 			OPTION_MAILBOX_INTERVAL,
 			array(
 				'type'              => 'integer',

@@ -22,6 +22,7 @@ $user          = (string) get_option( OPTION_MAILBOX_USER, DEF_MAILBOX_USER );
 $pwd_stored    = (string) get_option( OPTION_MAILBOX_PASSWORD, '' );
 $folder        = (string) get_option( OPTION_MAILBOX_FOLDER, DEF_MAILBOX_FOLDER );
 $tls           = (bool) filter_var( get_option( OPTION_MAILBOX_TLS, DEF_MAILBOX_TLS ), FILTER_VALIDATE_BOOLEAN );
+$validate_cert = (bool) filter_var( get_option( OPTION_MAILBOX_VALIDATE_CERT, DEF_MAILBOX_VALIDATE_CERT ), FILTER_VALIDATE_BOOLEAN );
 $interval      = (int) get_option( OPTION_MAILBOX_INTERVAL, DEF_MAILBOX_INTERVAL );
 $has_stored_pw = ( '' !== $pwd_stored );
 
@@ -90,12 +91,26 @@ printf(
 	esc_attr( $folder )
 );
 
+// Hidden value="0" sibling before each checkbox so an unchecked box still
+// posts a value the Settings API can persist (otherwise the field would
+// be absent from $_POST and the sanitize callback never fires).
 printf(
-	'<tr><th scope="row"><label for="hum-mb-tls">%s</label></th><td><label><input name="%s" id="hum-mb-tls" type="checkbox" value="1"%s /> %s</label></td></tr>',
+	'<tr><th scope="row"><label for="hum-mb-tls">%s</label></th><td><input type="hidden" name="%s" value="0" /><label><input name="%s" id="hum-mb-tls" type="checkbox" value="1"%s /> %s</label></td></tr>',
 	esc_html__( 'TLS', 'heads-up-mailer' ),
+	esc_attr( OPTION_MAILBOX_TLS ),
 	esc_attr( OPTION_MAILBOX_TLS ),
 	checked( $tls, true, false ),
 	esc_html__( 'Connect over SSL / TLS (recommended).', 'heads-up-mailer' )
+);
+
+printf(
+	'<tr><th scope="row"><label for="hum-mb-validate-cert">%s</label></th><td><input type="hidden" name="%s" value="0" /><label><input name="%s" id="hum-mb-validate-cert" type="checkbox" value="1"%s /> %s</label><p class="description">%s</p></td></tr>',
+	esc_html__( 'Validate certificate', 'heads-up-mailer' ),
+	esc_attr( OPTION_MAILBOX_VALIDATE_CERT ),
+	esc_attr( OPTION_MAILBOX_VALIDATE_CERT ),
+	checked( $validate_cert, true, false ),
+	esc_html__( 'Verify the IMAP server\'s TLS certificate against the system CA bundle.', 'heads-up-mailer' ),
+	esc_html__( 'Untick when PHP rejects a known-good certificate (common with Let\'s Encrypt and older c-client CA bundles — the error reads "unable to get local issuer certificate"). The connection still uses TLS encryption; only chain validation is skipped.', 'heads-up-mailer' )
 );
 
 printf(

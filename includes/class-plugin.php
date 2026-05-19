@@ -534,11 +534,12 @@ class Plugin {
 			wp_send_json_error( array( 'message' => __( 'The PHP imap extension is not loaded on this host.', 'heads-up-mailer' ) ) );
 		}
 
-		$host   = isset( $_POST['host'] ) ? sanitize_text_field( wp_unslash( $_POST['host'] ) ) : '';
-		$port   = isset( $_POST['port'] ) ? absint( $_POST['port'] ) : 0;
-		$user   = isset( $_POST['user'] ) ? sanitize_text_field( wp_unslash( $_POST['user'] ) ) : '';
-		$folder = isset( $_POST['folder'] ) ? sanitize_text_field( wp_unslash( $_POST['folder'] ) ) : 'INBOX';
-		$tls    = isset( $_POST['tls'] ) && '1' === $_POST['tls'];
+		$host          = isset( $_POST['host'] ) ? sanitize_text_field( wp_unslash( $_POST['host'] ) ) : '';
+		$port          = isset( $_POST['port'] ) ? absint( $_POST['port'] ) : 0;
+		$user          = isset( $_POST['user'] ) ? sanitize_text_field( wp_unslash( $_POST['user'] ) ) : '';
+		$folder        = isset( $_POST['folder'] ) ? sanitize_text_field( wp_unslash( $_POST['folder'] ) ) : 'INBOX';
+		$tls           = isset( $_POST['tls'] ) && '1' === $_POST['tls'];
+		$validate_cert = isset( $_POST['validate_cert'] ) && '1' === $_POST['validate_cert'];
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Passwords must pass through verbatim; sanitize_text_field would strip valid characters.
 		$pass_input = isset( $_POST['password'] ) ? (string) wp_unslash( $_POST['password'] ) : '';
 
@@ -555,7 +556,12 @@ class Plugin {
 		}
 
 		$protocol = $tls ? '/imap/ssl' : '/imap';
-		$mailbox  = '{' . $host . ':' . $port . $protocol . '}' . $folder;
+
+		if ( $tls && ! $validate_cert ) {
+			$protocol .= '/novalidate-cert';
+		}
+
+		$mailbox = '{' . $host . ':' . $port . $protocol . '}' . $folder;
 
 		// Clear any stale error stack from earlier requests.
 		imap_errors();

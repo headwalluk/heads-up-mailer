@@ -44,13 +44,14 @@ const OPTION_TICK_MINUTES = 'hum_tick_minutes';
  *
  * @since 0.1.0
  */
-const OPTION_MAILBOX_HOST     = 'hum_mailbox_host';
-const OPTION_MAILBOX_PORT     = 'hum_mailbox_port';
-const OPTION_MAILBOX_USER     = 'hum_mailbox_user';
-const OPTION_MAILBOX_PASSWORD = 'hum_mailbox_password';
-const OPTION_MAILBOX_FOLDER   = 'hum_mailbox_folder';
-const OPTION_MAILBOX_TLS      = 'hum_mailbox_tls';
-const OPTION_MAILBOX_INTERVAL = 'hum_mailbox_interval';
+const OPTION_MAILBOX_HOST          = 'hum_mailbox_host';
+const OPTION_MAILBOX_PORT          = 'hum_mailbox_port';
+const OPTION_MAILBOX_USER          = 'hum_mailbox_user';
+const OPTION_MAILBOX_PASSWORD      = 'hum_mailbox_password';
+const OPTION_MAILBOX_FOLDER        = 'hum_mailbox_folder';
+const OPTION_MAILBOX_TLS           = 'hum_mailbox_tls';
+const OPTION_MAILBOX_VALIDATE_CERT = 'hum_mailbox_validate_cert';
+const OPTION_MAILBOX_INTERVAL      = 'hum_mailbox_interval';
 
 /**
  * Subscriber statuses.
@@ -103,10 +104,11 @@ const CRON_INTERVAL_TICK = 'hum_tick';
  *
  * @since 0.1.0
  */
-const DEF_BATCH_SIZE       = 10;
-const DEF_TICK_MINUTES     = 5;
-const DEF_MAILBOX_PORT     = 993;
-const DEF_MAILBOX_USER     = 'unsub@headwall-hosting.com';
-const DEF_MAILBOX_FOLDER   = 'INBOX';
-const DEF_MAILBOX_TLS      = true;
-const DEF_MAILBOX_INTERVAL = 5;
+const DEF_BATCH_SIZE            = 10;
+const DEF_TICK_MINUTES          = 5;
+const DEF_MAILBOX_PORT          = 993;
+const DEF_MAILBOX_USER          = 'unsub@headwall-hosting.com';
+const DEF_MAILBOX_FOLDER        = 'INBOX';
+const DEF_MAILBOX_TLS           = true;
+const DEF_MAILBOX_VALIDATE_CERT = true;
+const DEF_MAILBOX_INTERVAL      = 5;

@@ -89,6 +89,7 @@ async function humTestMailbox(button) {
 	body.append('password', fieldValue('hum-mb-password'));
 	body.append('folder', fieldValue('hum-mb-folder'));
 	body.append('tls', document.getElementById('hum-mb-tls')?.checked ? '1' : '0');
+	body.append('validate_cert', document.getElementById('hum-mb-validate-cert')?.checked ? '1' : '0');
 
 	button.disabled = true;
 	if (result) {
