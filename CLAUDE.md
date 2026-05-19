@@ -43,7 +43,8 @@ heads-up-mailer/
 │   ├── admin/                # admin CSS/JS
 │   └── public/               # public CSS/JS
 ├── languages/                # .pot, .mo, .po
-└── dev-notes/                # design + tracker
+├── docs/                     # end-user docs (admins, editors, hosts)
+└── dev-notes/                # design + tracker (build-time only)
 ```
 
 ## Prefixes and naming

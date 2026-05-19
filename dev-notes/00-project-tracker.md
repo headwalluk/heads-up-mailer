@@ -80,8 +80,10 @@ the IMAP extension is detected.
 - [ ] `phpcs.xml` with `WordPress` ruleset, prefixes
       `Heads_Up_Mailer`, `HUM`, `hum`, excludes for `dev-notes/`,
       `assets/`, `.git/`
-- [ ] `README.md` (development readme) + `readme.txt`
+- [x] `README.md` (development readme) + `readme.txt`
       (WordPress.org format) + `CHANGELOG.md`
+- [x] `docs/` directory with `.gitkeep` placeholder for
+      end-user docs
 
 #### Smoke test
 
