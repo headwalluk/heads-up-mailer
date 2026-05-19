@@ -41,7 +41,7 @@ In-depth guides live in [`docs/`](docs/):
 
 ## Status
 
-Pre-release (`0.1.0`). See [`CHANGELOG.md`](CHANGELOG.md) for what
+Pre-release (`0.2.0`). See [`CHANGELOG.md`](CHANGELOG.md) for what
 has landed so far, and
 [`dev-notes/00-project-tracker.md`](dev-notes/00-project-tracker.md)
 for the milestone roadmap.

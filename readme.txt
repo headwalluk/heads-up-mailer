@@ -4,7 +4,7 @@ Tags: newsletter, email, subscribers, mailer, unsubscribe
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,6 +45,12 @@ Yes. Heads Up Mailer sends via `wp_mail()`, so whatever you configure as the Wor
 See the `docs/` directory in the plugin folder.
 
 == Changelog ==
+
+= 0.2.0 =
+* Groups: full CRUD admin (list / add / edit / delete) with `hosting-customers` and `web-designers` seeded on activation.
+* Subscribers: full CRUD admin with status chips, group chips, and per-row token salt generation.
+* CSV import: MailerLite export shape supported (`Subscriber, ..., Subscribed, Name, Last name, ..., Groups`); update-or-create by lowercased email; existing consent timestamps preserved; unknown group names warned per-row without stopping the import.
+* Top-level "Heads Up Mailer" admin menu with Dashboard, Subscribers, and Groups submenus.
 
 = 0.1.0 =
 * Initial pre-release scaffold. See `CHANGELOG.md` in the repository for details.

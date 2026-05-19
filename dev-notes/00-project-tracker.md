@@ -1,10 +1,10 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** M1 complete; M2 ready to start
-**Current Version:** 0.1.0
-**Current Phase:** M2 — Subscribers and Groups
+**Status:** M2 complete (search/filter deferred); M3 ready to start
+**Current Version:** 0.2.0
+**Current Phase:** M3 — Settings page
 **Last Updated:** 19 May 2026
-**Progress:** 1 of 9 milestones complete (3 deferred for v1.0.0+)
+**Progress:** 2 of 9 milestones complete (3 deferred for v1.0.0+)
 
 ---
 
@@ -121,7 +121,7 @@ place and prefix conventions enforced. ✅ Achieved.
 import the MailerLite export via CSV. Sequenced early so the
 MailerLite subscription can be cancelled.
 
-**Status:** 🔄 In progress (groups foundation done; admin UI next)
+**Status:** ✅ Complete (search/filter on subscribers list deferred — see Deferred section below)
 **Dependencies:** M1
 
 ### Tasks
@@ -152,8 +152,10 @@ MailerLite subscription can be cancelled.
 
 - [x] `Subscribers_Controller` class — CRUD + group attachment
 - [x] List table with status chips and group chips
-      (search by email, filter by group, filter by status — see
-      chunk 4 below)
+- [ ] Search by email, filter by group, filter by status —
+      deferred. Small follow-up; not blocking the v1 deliverable
+      since admins can scroll the list and the CSV flow does the
+      heavy lifting.
 - [x] Add / edit form (email, name, groups, status, consent fields)
 - [x] Generate 32-byte `token_salt` on insert (via
       `random_bytes(32)`, store hex-encoded)
@@ -183,7 +185,14 @@ MailerLite subscription can be cancelled.
       and stored with a `UTC` suffix to match our format
 
 **Deliverable:** Subscriber list populated from the MailerLite
-export. MailerLite subscription can be cancelled.
+export. MailerLite subscription can be cancelled. ✅ Achieved.
+
+**Notes:** Released as 0.2.0 on 2026-05-19. Smoke-tested against
+`Documents/headsup_mailerlite_redacted.csv` — 2 rows inserted,
+both groups attached correctly, consent_at preserved, re-import
+yielded 0 inserts + 2 updates (idempotent). Search and filtering
+on the subscribers list are tracked as a follow-up against the
+post-v1 polish.
 
 ---
 
@@ -437,6 +446,15 @@ mailboxes before declaring v1.
 ---
 
 ## Deferred (post-v1)
+
+### Subscriber list search and filters
+
+Search by email and filter by group / status on the
+`heads-up-mailer-subscribers` admin page. Not blocking the
+"replace MailerLite" goal because the CSV import is the bulk
+operation and the list view stays usable as long as the
+subscriber count is in the hundreds. Pick this up before the
+plugin grows past a few thousand subscribers.
 
 ### GitHub auto-updater
 
