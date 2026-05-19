@@ -35,6 +35,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   registration hook lands before `admin_init`.
 - `Plugin::render_settings()` and a "Settings" submenu under the
   Heads Up Mailer top-level menu.
+- `wp_ajax_hum_test_mailbox` AJAX endpoint backing the
+  "Test connection" button. Opens the IMAP connection with a
+  single retry to bound the AJAX timeout, surfaces the last
+  `imap_errors()` entry on failure, and never persists the
+  submitted credentials. A blank password falls back to the
+  stored encrypted value, decrypted in place.
+- `wp_localize_script` on plugin admin pages now publishes a
+  `humAdminData` global containing the AJAX URL and the
+  `hum_test_mailbox` nonce.
+- `assets/admin/heads-up-mailer-admin.js`: delegated click
+  handler for `#hum-mb-test` that gathers the current form
+  values, POSTs them via `fetch`, and renders the result inline
+  in `#hum-mb-test-result`. Aria-live region on the status span
+  so screen readers announce the result.
 
 ## [0.2.0] — 2026-05-19
 

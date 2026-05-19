@@ -39,6 +39,7 @@ class Plugin {
 		add_action( 'admin_post_hum_save_subscriber', array( $this, 'handle_save_subscriber' ) );
 		add_action( 'admin_post_hum_delete_subscriber', array( $this, 'handle_delete_subscriber' ) );
 		add_action( 'admin_post_hum_csv_import', array( $this, 'handle_csv_import' ) );
+		add_action( 'wp_ajax_hum_test_mailbox', array( $this, 'ajax_test_mailbox' ) );
 	}
 
 	/**
@@ -201,6 +202,15 @@ class Plugin {
 			array(),
 			HUM_VERSION,
 			true
+		);
+
+		wp_localize_script(
+			'heads-up-mailer-admin',
+			'humAdminData',
+			array(
+				'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
+				'testMailboxNonce' => wp_create_nonce( 'hum_test_mailbox' ),
+			)
 		);
 	}
 
@@ -502,6 +512,77 @@ class Plugin {
 
 		wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );
 		exit;
+	}
+
+	/**
+	 * AJAX: test the IMAP mailbox credentials currently in the form.
+	 *
+	 * Submitted values are used directly; a blank password falls back
+	 * to the stored encrypted value, decrypted in place. Nothing is
+	 * persisted — this only exercises the connection.
+	 *
+	 * @since 0.2.0
+	 */
+	public function ajax_test_mailbox(): void {
+		check_ajax_referer( 'hum_test_mailbox', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions.', 'heads-up-mailer' ) ) );
+		}
+
+		if ( ! extension_loaded( 'imap' ) ) {
+			wp_send_json_error( array( 'message' => __( 'The PHP imap extension is not loaded on this host.', 'heads-up-mailer' ) ) );
+		}
+
+		$host   = isset( $_POST['host'] ) ? sanitize_text_field( wp_unslash( $_POST['host'] ) ) : '';
+		$port   = isset( $_POST['port'] ) ? absint( $_POST['port'] ) : 0;
+		$user   = isset( $_POST['user'] ) ? sanitize_text_field( wp_unslash( $_POST['user'] ) ) : '';
+		$folder = isset( $_POST['folder'] ) ? sanitize_text_field( wp_unslash( $_POST['folder'] ) ) : 'INBOX';
+		$tls    = isset( $_POST['tls'] ) && '1' === $_POST['tls'];
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Passwords must pass through verbatim; sanitize_text_field would strip valid characters.
+		$pass_input = isset( $_POST['password'] ) ? (string) wp_unslash( $_POST['password'] ) : '';
+
+		$pass = ( '' === $pass_input )
+			? Crypto::decrypt( (string) get_option( OPTION_MAILBOX_PASSWORD, '' ) )
+			: $pass_input;
+
+		if ( '' === $host || $port < 1 || '' === $user || '' === $pass ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Host, port, username, and password are all required.', 'heads-up-mailer' ),
+				)
+			);
+		}
+
+		$protocol = $tls ? '/imap/ssl' : '/imap';
+		$mailbox  = '{' . $host . ':' . $port . $protocol . '}' . $folder;
+
+		// Clear any stale error stack from earlier requests.
+		imap_errors();
+
+		// Single retry to keep the AJAX timeout bounded. The `@` suppresses
+		// the warning so we can surface a clean message from imap_errors().
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- imap_open emits warnings that we surface via imap_errors().
+		$conn = @imap_open( $mailbox, $user, $pass, 0, 1 );
+
+		if ( false === $conn ) {
+			$errors  = imap_errors();
+			$last    = is_array( $errors ) && ! empty( $errors ) ? (string) end( $errors ) : '';
+			$message = '' !== $last
+				? $last
+				: __( 'Failed to open IMAP connection.', 'heads-up-mailer' );
+
+			wp_send_json_error( array( 'message' => $message ) );
+		}
+
+		imap_close( $conn );
+
+		wp_send_json_success(
+			array(
+				/* translators: %s: folder name on the IMAP server. */
+				'message' => sprintf( __( 'Connection successful — folder "%s" is reachable.', 'heads-up-mailer' ), $folder ),
+			)
+		);
 	}
 
 	/**

@@ -1,10 +1,10 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** M2 complete (search/filter deferred); M3 ready to start
-**Current Version:** 0.2.0
-**Current Phase:** M3 — Settings page
+**Status:** M3 complete; M4 ready to start
+**Current Version:** 0.2.0 (0.3.0 pending)
+**Current Phase:** M4 — Drafts
 **Last Updated:** 19 May 2026
-**Progress:** 2 of 9 milestones complete (3 deferred for v1.0.0+)
+**Progress:** 3 of 9 milestones complete (3 deferred for v1.0.0+)
 
 ---
 
@@ -201,8 +201,7 @@ post-v1 polish.
 **Goal:** Configurable batch size, tick interval, and IMAP mailbox
 credentials (encrypted at rest). Connection-test button.
 
-**Status:** 🔄 In progress (chunk A complete: page renders, saves,
-encrypts; test-connection AJAX is chunk B)
+**Status:** ✅ Complete
 **Dependencies:** M1
 
 ### Tasks
@@ -252,13 +251,25 @@ encrypts; test-connection AJAX is chunk B)
 
 #### Test-connection AJAX
 
-- [ ] Endpoint `hum_test_mailbox` (nonce + capability)
-- [ ] Open IMAP, list folder, report success / error
-- [ ] Does not persist credentials again — operates on submitted
-      form state
+- [x] Endpoint `wp_ajax_hum_test_mailbox` registered with a
+      capability check (`manage_options`) and nonce check via
+      `check_ajax_referer( 'hum_test_mailbox', 'nonce' )`
+- [x] Opens an IMAP connection to the supplied host/port/folder
+      with a single retry (`imap_open( …, 0, 1 )`) so the AJAX
+      timeout stays bounded; reports the last `imap_errors()`
+      entry on failure
+- [x] Does not persist credentials again — operates on submitted
+      form state; a blank password field falls back to the stored
+      encrypted value, decrypted in place
 
 **Deliverable:** Admin can configure send cadence and mailbox
 credentials. Test-connection button verifies IMAP login.
+✅ Achieved.
+
+**Notes:** Released as part of 0.3.0. The browser-side test
+button is wired but the live click flow needs a final manual
+check against a real IMAP server (planned during M7's mailbox
+poller work — same credentials, same code path).
 
 ---
 

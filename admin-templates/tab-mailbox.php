@@ -108,9 +108,9 @@ printf(
 
 printf( '</tbody></table>' );
 
-// Test-connection button — wiring lands in the next chunk.
+// Test-connection button — POSTs the current form values to the
+// hum_test_mailbox AJAX endpoint. Nothing is persisted by the test.
 printf(
-	'<p><button type="button" class="button" id="hum-mb-test" disabled>%s</button> <span class="description">%s</span></p>',
-	esc_html__( 'Test connection', 'heads-up-mailer' ),
-	esc_html__( 'AJAX wiring in the next commit.', 'heads-up-mailer' )
+	'<p><button type="button" class="button" id="hum-mb-test">%s</button> <span id="hum-mb-test-result" class="description" role="status" aria-live="polite"></span></p>',
+	esc_html__( 'Test connection', 'heads-up-mailer' )
 );
