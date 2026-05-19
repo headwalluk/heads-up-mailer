@@ -165,15 +165,22 @@ MailerLite subscription can be cancelled.
 
 #### CSV import
 
-- [ ] Upload form on subscribers page
-- [ ] Parser accepting columns
-      `email,name,groups,consent_at,consent_source`
-- [ ] Update-or-create by email (case-insensitive)
-- [ ] Preserve incoming `consent_at` and `consent_source` — do
-      **not** stamp "imported on X"
-- [ ] Group references resolved by slug; unknown slugs reported as
-      warnings, not errors
-- [ ] Per-row error report after import
+- [x] Upload form on subscribers page
+- [x] Parser accepting both the MailerLite export shape
+      (`Subscriber, ..., Subscribed, Name, Last name, Groups`) and
+      the spec format (`email,name,groups,consent_at,consent_source`)
+- [x] Update-or-create by email (case-insensitive)
+- [x] Preserve incoming `consent_at` and `consent_source` — do
+      **not** stamp "imported on X". (Imports stamp
+      `consent_source = mailerlite-import` only when the CSV
+      doesn't already supply one.)
+- [x] Group references resolved by `sanitize_title()` so either
+      slug or display name works; unknown names reported per-row
+      as warnings, not errors
+- [x] Per-row report after import with inserted / updated /
+      errors counts plus message column
+- [x] Timestamps without a timezone marker are treated as UTC
+      and stored with a `UTC` suffix to match our format
 
 **Deliverable:** Subscriber list populated from the MailerLite
 export. MailerLite subscription can be cancelled.

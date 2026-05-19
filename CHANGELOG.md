@@ -40,6 +40,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   multi-checkbox picker, and consent metadata fields.
 - `Plugin` admin-post handlers `hum_save_subscriber` and
   `hum_delete_subscriber` with nonce + capability checks.
+- `includes/class-csv-importer.php` — CSV import for the
+  MailerLite export shape. Detects columns by name (`Subscriber`
+  or `email`, optional `Name` + `Last name` or unified `name`,
+  optional `Subscribed`/`consent_at` and `Groups`/`groups`).
+  Group cells are split on `;` and `,`; each part is resolved
+  via `sanitize_title()` so either display name or slug works.
+  Update-or-create by lowercased email. Existing `consent_at`
+  preserved; missing timezone markers default to `UTC`.
+- `admin-templates/subscriber-import.php` — combined upload form
+  and per-row result view, with counts header (inserted /
+  updated / skipped / errors) and a result table including a
+  message column for warnings (e.g. unknown groups).
+- `Plugin::handle_csv_import()` — admin-post handler that
+  validates the upload (`is_uploaded_file()`), runs the
+  importer, stashes the per-row report in a per-user transient,
+  and redirects to `?action=imported`.
 
 ### Changed
 

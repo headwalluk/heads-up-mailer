@@ -24,12 +24,22 @@ $add_url = add_query_arg(
 	admin_url( 'admin.php' )
 );
 
+$import_url = add_query_arg(
+	array(
+		'page'   => 'heads-up-mailer-subscribers',
+		'action' => 'import',
+	),
+	admin_url( 'admin.php' )
+);
+
 printf( '<div class="wrap">' );
 printf(
-	'<h1 class="wp-heading-inline">%s</h1> <a href="%s" class="page-title-action">%s</a><hr class="wp-header-end">',
+	'<h1 class="wp-heading-inline">%s</h1> <a href="%s" class="page-title-action">%s</a> <a href="%s" class="page-title-action">%s</a><hr class="wp-header-end">',
 	esc_html__( 'Subscribers', 'heads-up-mailer' ),
 	esc_url( $add_url ),
-	esc_html__( 'Add new', 'heads-up-mailer' )
+	esc_html__( 'Add new', 'heads-up-mailer' ),
+	esc_url( $import_url ),
+	esc_html__( 'Import CSV', 'heads-up-mailer' )
 );
 
 // Flash notices.

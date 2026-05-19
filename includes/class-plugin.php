@@ -35,6 +35,7 @@ class Plugin {
 		add_action( 'admin_post_hum_delete_group', array( $this, 'handle_delete_group' ) );
 		add_action( 'admin_post_hum_save_subscriber', array( $this, 'handle_save_subscriber' ) );
 		add_action( 'admin_post_hum_delete_subscriber', array( $this, 'handle_delete_subscriber' ) );
+		add_action( 'admin_post_hum_csv_import', array( $this, 'handle_csv_import' ) );
 	}
 
 	/**
@@ -296,6 +297,21 @@ class Plugin {
 			$attached_groups = ( null !== $subscriber ) ? $subs_controller->get_groups( (int) $subscriber->id ) : array();
 
 			require HUM_PATH . 'admin-templates/subscriber-edit.php';
+		} elseif ( 'import' === $action || 'imported' === $action ) {
+			$report = null;
+
+			if ( 'imported' === $action ) {
+				$transient_key = 'hum_csv_report_' . get_current_user_id();
+				$stored        = get_transient( $transient_key );
+
+				if ( is_array( $stored ) ) {
+					$report = $stored;
+				}
+
+				delete_transient( $transient_key );
+			}
+
+			require HUM_PATH . 'admin-templates/subscriber-import.php';
 		} else {
 			$subscribers  = $subs_controller->get_all();
 			$groups_by_id = array();
@@ -386,6 +402,73 @@ class Plugin {
 		} else {
 			$redirect_args['deleted'] = '1';
 		}
+
+		wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );
+		exit;
+	}
+
+	/**
+	 * Handle the "Import CSV" form submission (admin-post.php).
+	 *
+	 * Stores the per-row report in a per-user transient and
+	 * redirects to `?action=imported` for the result view.
+	 *
+	 * @since 0.1.0
+	 */
+	public function handle_csv_import(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission.', 'heads-up-mailer' ) );
+		}
+
+		check_admin_referer( 'hum_csv_import' );
+
+		$redirect_args = array(
+			'page'   => 'heads-up-mailer-subscribers',
+			'action' => 'imported',
+		);
+
+		$tmp   = '';
+		$error = '';
+
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- $_FILES has a fixed structure; values are validated via is_uploaded_file() below.
+		$upload = isset( $_FILES['csv_file'] ) && is_array( $_FILES['csv_file'] ) ? $_FILES['csv_file'] : null;
+
+		if ( null === $upload ) {
+			$error = __( 'No file was uploaded.', 'heads-up-mailer' );
+		} else {
+			$upl_error = isset( $upload['error'] ) ? (int) $upload['error'] : UPLOAD_ERR_NO_FILE;
+
+			if ( UPLOAD_ERR_OK !== $upl_error ) {
+				$error = __( 'File upload failed.', 'heads-up-mailer' );
+			} elseif ( ! isset( $upload['tmp_name'] ) || ! is_uploaded_file( $upload['tmp_name'] ) ) {
+				$error = __( 'Uploaded file is not a valid upload.', 'heads-up-mailer' );
+			} else {
+				$tmp = (string) $upload['tmp_name'];
+			}
+		}
+
+		if ( '' !== $error ) {
+			$report = array(
+				'inserted' => 0,
+				'updated'  => 0,
+				'skipped'  => 0,
+				'errors'   => 1,
+				'rows'     => array(
+					array(
+						'line'    => 0,
+						'email'   => '',
+						'status'  => 'errors',
+						'message' => $error,
+					),
+				),
+			);
+		} else {
+			$importer = new CSV_Importer();
+			$report   = $importer->import_from_file( $tmp );
+		}
+
+		$transient_key = 'hum_csv_report_' . get_current_user_id();
+		set_transient( $transient_key, $report, 5 * MINUTE_IN_SECONDS );
 
 		wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );
 		exit;
