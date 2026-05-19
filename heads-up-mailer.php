@@ -29,6 +29,7 @@ require_once HUM_PATH . 'functions-private.php';
 
 require_once HUM_PATH . 'includes/class-database.php';
 require_once HUM_PATH . 'includes/class-groups-controller.php';
+require_once HUM_PATH . 'includes/class-subscribers-controller.php';
 require_once HUM_PATH . 'includes/class-plugin.php';
 
 /**

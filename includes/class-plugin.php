@@ -33,6 +33,8 @@ class Plugin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
 		add_action( 'admin_post_hum_save_group', array( $this, 'handle_save_group' ) );
 		add_action( 'admin_post_hum_delete_group', array( $this, 'handle_delete_group' ) );
+		add_action( 'admin_post_hum_save_subscriber', array( $this, 'handle_save_subscriber' ) );
+		add_action( 'admin_post_hum_delete_subscriber', array( $this, 'handle_delete_subscriber' ) );
 	}
 
 	/**
@@ -143,6 +145,15 @@ class Plugin {
 
 		add_submenu_page(
 			'heads-up-mailer',
+			__( 'Subscribers', 'heads-up-mailer' ),
+			__( 'Subscribers', 'heads-up-mailer' ),
+			'manage_options',
+			'heads-up-mailer-subscribers',
+			array( $this, 'render_subscribers' )
+		);
+
+		add_submenu_page(
+			'heads-up-mailer',
 			__( 'Groups', 'heads-up-mailer' ),
 			__( 'Groups', 'heads-up-mailer' ),
 			'manage_options',
@@ -160,7 +171,7 @@ class Plugin {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read to scope asset loading.
 		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
 
-		$hum_pages = array( 'heads-up-mailer', 'heads-up-mailer-groups' );
+		$hum_pages = array( 'heads-up-mailer', 'heads-up-mailer-groups', 'heads-up-mailer-subscribers' );
 
 		if ( ! in_array( $page, $hum_pages, true ) ) {
 			return;
@@ -253,6 +264,127 @@ class Plugin {
 			}
 		} else {
 			$redirect_args['updated'] = '1';
+		}
+
+		wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );
+		exit;
+	}
+
+	/**
+	 * Render the Subscribers submenu page. Dispatches between
+	 * list, add, and edit views based on `$_GET['action']`.
+	 *
+	 * @since 0.1.0
+	 */
+	public function render_subscribers(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to access this page.', 'heads-up-mailer' ) );
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read for view dispatch; state changes via admin-post handlers.
+		$action            = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
+		$subs_controller   = new Subscribers_Controller();
+		$groups_controller = new Groups_Controller();
+
+		// Always available to forms and lists.
+		$all_groups = $groups_controller->get_all();
+
+		if ( 'add' === $action || 'edit' === $action ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read for view dispatch.
+			$subscriber_id   = isset( $_GET['subscriber_id'] ) ? absint( $_GET['subscriber_id'] ) : 0;
+			$subscriber      = ( 'edit' === $action && $subscriber_id > 0 ) ? $subs_controller->get( $subscriber_id ) : null;
+			$attached_groups = ( null !== $subscriber ) ? $subs_controller->get_groups( (int) $subscriber->id ) : array();
+
+			require HUM_PATH . 'admin-templates/subscriber-edit.php';
+		} else {
+			$subscribers  = $subs_controller->get_all();
+			$groups_by_id = array();
+
+			foreach ( $all_groups as $g ) {
+				$groups_by_id[ (int) $g->id ] = $g;
+			}
+
+			$memberships = array();
+			foreach ( $subscribers as $sub ) {
+				$memberships[ (int) $sub->id ] = $subs_controller->get_groups( (int) $sub->id );
+			}
+
+			require HUM_PATH . 'admin-templates/subscribers-list.php';
+		}
+	}
+
+	/**
+	 * Handle the "Save subscriber" form submission.
+	 *
+	 * @since 0.1.0
+	 */
+	public function handle_save_subscriber(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission.', 'heads-up-mailer' ) );
+		}
+
+		check_admin_referer( 'hum_save_subscriber' );
+
+		$subscriber_id = isset( $_POST['subscriber_id'] ) ? absint( $_POST['subscriber_id'] ) : 0;
+
+		$group_ids = ( isset( $_POST['groups'] ) && is_array( $_POST['groups'] ) )
+			? array_map( 'absint', wp_unslash( $_POST['groups'] ) )
+			: array();
+
+		$data = array(
+			'email'          => isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '',
+			'name'           => isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '',
+			'status'         => isset( $_POST['status'] ) ? sanitize_key( wp_unslash( $_POST['status'] ) ) : STATUS_SUBSCRIBED,
+			'consent_source' => isset( $_POST['consent_source'] ) ? sanitize_text_field( wp_unslash( $_POST['consent_source'] ) ) : '',
+			'consent_at'     => isset( $_POST['consent_at'] ) ? sanitize_text_field( wp_unslash( $_POST['consent_at'] ) ) : '',
+			'groups'         => $group_ids,
+		);
+
+		$controller = new Subscribers_Controller();
+
+		$result = ( $subscriber_id > 0 )
+			? $controller->update( $subscriber_id, $data )
+			: $controller->create( $data );
+
+		$redirect_args = array( 'page' => 'heads-up-mailer-subscribers' );
+
+		if ( is_wp_error( $result ) ) {
+			$redirect_args['error']  = $result->get_error_code();
+			$redirect_args['action'] = ( $subscriber_id > 0 ) ? 'edit' : 'add';
+
+			if ( $subscriber_id > 0 ) {
+				$redirect_args['subscriber_id'] = $subscriber_id;
+			}
+		} else {
+			$redirect_args['updated'] = '1';
+		}
+
+		wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );
+		exit;
+	}
+
+	/**
+	 * Handle the "Delete subscriber" action.
+	 *
+	 * @since 0.1.0
+	 */
+	public function handle_delete_subscriber(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission.', 'heads-up-mailer' ) );
+		}
+
+		$subscriber_id = isset( $_GET['subscriber_id'] ) ? absint( $_GET['subscriber_id'] ) : 0;
+		check_admin_referer( 'hum_delete_subscriber_' . $subscriber_id );
+
+		$controller = new Subscribers_Controller();
+		$result     = $controller->delete( $subscriber_id );
+
+		$redirect_args = array( 'page' => 'heads-up-mailer-subscribers' );
+
+		if ( is_wp_error( $result ) ) {
+			$redirect_args['error'] = $result->get_error_code();
+		} else {
+			$redirect_args['deleted'] = '1';
 		}
 
 		wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );

@@ -27,6 +27,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `data-hum-confirm` handler for destructive links.
 - `admin-post.php` form handlers `hum_save_group` and
   `hum_delete_group` with nonce + capability checks.
+- `includes/class-subscribers-controller.php` — CRUD on the
+  `hum_subscribers` table with case-insensitive email storage,
+  32-byte hex `token_salt` generation on insert, and
+  status-transition logic that stamps / clears `unsubscribed_at`.
+  Group memberships maintained via `set_groups()` and
+  `get_groups()` against the `hum_subscriber_groups` junction
+  table.
+- `admin-templates/subscribers-list.php` and
+  `subscriber-edit.php` — Subscribers list with status + group
+  chips, and add/edit form with status select, groups
+  multi-checkbox picker, and consent metadata fields.
+- `Plugin` admin-post handlers `hum_save_subscriber` and
+  `hum_delete_subscriber` with nonce + capability checks.
 
 ### Changed
 

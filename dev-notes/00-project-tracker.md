@@ -150,12 +150,18 @@ MailerLite subscription can be cancelled.
 
 #### Subscribers admin
 
-- [ ] `Subscribers_Controller` class — CRUD + group attachment
-- [ ] List table with status badges, group chips, search by email,
-      filter by group
-- [ ] Add / edit form (email, name, groups, status, consent fields)
-- [ ] Generate 32-byte `token_salt` on insert (via
+- [x] `Subscribers_Controller` class — CRUD + group attachment
+- [x] List table with status chips and group chips
+      (search by email, filter by group, filter by status — see
+      chunk 4 below)
+- [x] Add / edit form (email, name, groups, status, consent fields)
+- [x] Generate 32-byte `token_salt` on insert (via
       `random_bytes(32)`, store hex-encoded)
+- [x] Status-transition logic: stamping / clearing
+      `unsubscribed_at` when status moves to / from
+      `unsubscribed`
+- [x] Case-insensitive email storage (lowercased on validate) and
+      lookup
 
 #### CSV import
 
