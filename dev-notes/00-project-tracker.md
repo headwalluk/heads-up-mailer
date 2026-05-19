@@ -201,47 +201,54 @@ post-v1 polish.
 **Goal:** Configurable batch size, tick interval, and IMAP mailbox
 credentials (encrypted at rest). Connection-test button.
 
-**Status:** 📋 Not started
+**Status:** 🔄 In progress (chunk A complete: page renders, saves,
+encrypts; test-connection AJAX is chunk B)
 **Dependencies:** M1
 
 ### Tasks
 
 #### Framework
 
-- [ ] `Settings` class instantiated early (before `admin_init`)
-- [ ] Hash-based tab navigation in
-      `admin-templates/settings-page.php`
-- [ ] Capability check `manage_options` on every handler
+- [x] `Settings` class instantiated by `Plugin::run()`; registers
+      via `admin_init`
+- [x] Hash-based tab navigation in
+      `admin-templates/settings-page.php` (driven by
+      `assets/admin/heads-up-mailer-admin.js`)
+- [x] Capability check `manage_options` on `render_settings`
 
 #### Queue tab
 
-- [ ] Batch size (default 10, range 1–100)
-- [ ] Tick interval in minutes (default 5, range 1–60)
-- [ ] Re-schedule the cron event when interval changes
+- [x] Batch size (default 10, clamped 1–100)
+- [x] Tick interval in minutes (default 5, clamped 1–60)
+- [ ] Re-schedule the cron event when interval changes — deferred
+      to M5 since there is no scheduled event yet
 
 #### Mailbox tab
 
-- [ ] Host
-- [ ] Port (default 993)
-- [ ] Username (default `unsub@headwall-hosting.com`)
-- [ ] Password (encrypted on save)
-- [ ] Folder name (default `INBOX`)
-- [ ] Polling interval (minutes)
-- [ ] TLS toggle
+- [x] Host
+- [x] Port (default 993, clamped 1–65535)
+- [x] Username (default `unsub@headwall-hosting.com`)
+- [x] Password (encrypted on save; never round-tripped to form)
+- [x] Folder name (default `INBOX`)
+- [x] Polling interval (minutes; 1–60)
+- [x] TLS toggle (default on)
 
 #### Encryption helper (`includes/class-crypto.php`)
 
-- [ ] `sodium_crypto_secretbox` wrapper
-- [ ] Key derived from `AUTH_KEY` + plugin-specific salt via
-      `hash_hkdf` or `sodium_crypto_generichash`
-- [ ] Encrypt on save, decrypt on read inside the poller only
+- [x] `sodium_crypto_secretbox` wrapper with `nonce || ciphertext`
+      envelope, base64 encoded for storage
+- [x] Key derived from `AUTH_KEY` via `hash_hkdf` SHA-256 with a
+      plugin-specific `info` binding (`hum:credentials:v1`)
+- [x] `decrypt()` returns `""` on any failure (bad base64,
+      truncated, tampered) — callers treat that as "no usable
+      value"
 
 #### Sanitize callbacks
 
-- [ ] Per-setting `sanitize_callback` via the Settings API
-- [ ] Password field never round-trips plain text to the form —
-      render as `••••••••` placeholder, only update if a new value
-      is submitted
+- [x] Per-setting `sanitize_callback` via the Settings API
+- [x] Password field renders empty with `••••••••` placeholder
+      when a value is stored; sanitize keeps the existing
+      encrypted value on blank submit, encrypts on non-blank
 
 #### Test-connection AJAX
 

@@ -1,9 +1,13 @@
 /**
  * Heads Up Mailer admin JS.
  *
- * Currently provides one delegated click handler: any element with a
- * `data-hum-confirm` attribute prompts the user before the default
- * action proceeds. Used for destructive links like "Delete group".
+ * Two delegated handlers:
+ *
+ * - `data-hum-confirm` on any element prompts the user before the
+ *   default action proceeds (used for destructive links).
+ * - `.nav-tab` elements wired with `data-tab="..."` toggle visibility
+ *   of the matching `#<tab>-panel` element. State persists in the URL
+ *   hash so reloads and deep links land on the right tab.
  *
  * @since 0.1.0
  */
@@ -20,4 +24,48 @@ document.addEventListener('click', (event) => {
 	if (!window.confirm(message)) {
 		event.preventDefault();
 	}
+});
+
+function humActivateTab(name) {
+	if (!name) {
+		return;
+	}
+
+	document.querySelectorAll('.nav-tab[data-tab]').forEach((t) => {
+		t.classList.toggle('nav-tab-active', t.dataset.tab === name);
+	});
+
+	document.querySelectorAll('.tab-panel').forEach((panel) => {
+		const match = panel.id === `${name}-panel`;
+		panel.classList.toggle('active', match);
+		panel.style.display = match ? 'block' : 'none';
+	});
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+	const tabs = document.querySelectorAll('.nav-tab[data-tab]');
+
+	if (tabs.length === 0) {
+		return;
+	}
+
+	const fromHash = window.location.hash.replace(/^#/, '');
+	const initial = fromHash || tabs[0].dataset.tab;
+	humActivateTab(initial);
+
+	tabs.forEach((tab) => {
+		tab.addEventListener('click', (event) => {
+			event.preventDefault();
+			const name = tab.dataset.tab;
+			if (!name) {
+				return;
+			}
+			window.location.hash = name;
+			humActivateTab(name);
+		});
+	});
+
+	window.addEventListener('hashchange', () => {
+		humActivateTab(window.location.hash.replace(/^#/, ''));
+	});
 });

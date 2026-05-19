@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `includes/class-crypto.php` — libsodium `crypto_secretbox`
+  wrapper with a 32-byte key derived from `AUTH_KEY` via
+  HKDF-SHA256 with a versioned plugin-specific `info` binding.
+  Storage envelope is `base64( nonce || ciphertext )` so the
+  nonce travels with the value. `decrypt()` returns `""` on any
+  failure (bad base64, truncated payload, MAC mismatch).
+- `includes/class-settings.php` — Settings API integration. All
+  plugin settings share the `hum_settings` group so one
+  `options.php` form can save the entire page in a single
+  submit. Per-field sanitize callbacks clamp numeric ranges,
+  normalise booleans, and route the mailbox password through
+  `Crypto::encrypt()`. Blank password input keeps the existing
+  stored value (so the form never round-trips a plaintext
+  credential).
+- `admin-templates/settings-page.php`,
+  `admin-templates/tab-queue.php`, and
+  `admin-templates/tab-mailbox.php` — settings page with
+  hash-based tabs (Queue + Mailbox), all code-first PHP.
+- `assets/admin/heads-up-mailer-admin.js`: extended with a
+  delegated tab handler that toggles `nav-tab-active` /
+  `tab-panel` visibility, persists state in the URL hash, and
+  handles browser back/forward via `hashchange`.
+- `Plugin::run()` now instantiates `Settings` early so the
+  registration hook lands before `admin_init`.
+- `Plugin::render_settings()` and a "Settings" submenu under the
+  Heads Up Mailer top-level menu.
+
 ## [0.2.0] — 2026-05-19
 
 ### Added

@@ -26,6 +26,9 @@ class Plugin {
 	 * @since 0.1.0
 	 */
 	public function run(): void {
+		$settings = new Settings();
+		$settings->run();
+
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_init', array( $this, 'check_first_run' ), 1 );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
@@ -161,6 +164,15 @@ class Plugin {
 			'heads-up-mailer-groups',
 			array( $this, 'render_groups' )
 		);
+
+		add_submenu_page(
+			'heads-up-mailer',
+			__( 'Settings', 'heads-up-mailer' ),
+			__( 'Settings', 'heads-up-mailer' ),
+			'manage_options',
+			'heads-up-mailer-settings',
+			array( $this, 'render_settings' )
+		);
 	}
 
 	/**
@@ -172,7 +184,12 @@ class Plugin {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read to scope asset loading.
 		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
 
-		$hum_pages = array( 'heads-up-mailer', 'heads-up-mailer-groups', 'heads-up-mailer-subscribers' );
+		$hum_pages = array(
+			'heads-up-mailer',
+			'heads-up-mailer-groups',
+			'heads-up-mailer-subscribers',
+			'heads-up-mailer-settings',
+		);
 
 		if ( ! in_array( $page, $hum_pages, true ) ) {
 			return;
@@ -185,6 +202,19 @@ class Plugin {
 			HUM_VERSION,
 			true
 		);
+	}
+
+	/**
+	 * Render the Settings page (tab wrapper + options.php form).
+	 *
+	 * @since 0.2.0
+	 */
+	public function render_settings(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to access this page.', 'heads-up-mailer' ) );
+		}
+
+		require HUM_PATH . 'admin-templates/settings-page.php';
 	}
 
 	/**

@@ -31,6 +31,8 @@ require_once HUM_PATH . 'includes/class-database.php';
 require_once HUM_PATH . 'includes/class-groups-controller.php';
 require_once HUM_PATH . 'includes/class-subscribers-controller.php';
 require_once HUM_PATH . 'includes/class-csv-importer.php';
+require_once HUM_PATH . 'includes/class-crypto.php';
+require_once HUM_PATH . 'includes/class-settings.php';
 require_once HUM_PATH . 'includes/class-plugin.php';
 
 /**
