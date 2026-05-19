@@ -28,6 +28,7 @@ class Plugin {
 	public function run(): void {
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_init', array( $this, 'check_first_run' ), 1 );
+		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 	}
 
 	/**
@@ -81,5 +82,30 @@ class Plugin {
 			$database->create_tables();
 			update_option( OPTION_DB_VERSION, DB_VERSION );
 		}
+	}
+
+	/**
+	 * Render admin notices.
+	 *
+	 * Currently warns when the PHP `imap` extension is missing —
+	 * needed by the mailbox poller for mailto-form unsubscribes.
+	 * Sending still works without it; only the poller is affected.
+	 *
+	 * @since 0.1.0
+	 */
+	public function admin_notices(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( extension_loaded( 'imap' ) ) {
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-error"><p><strong>%s</strong> %s</p></div>',
+			esc_html__( 'Heads Up Mailer: PHP imap extension missing.', 'heads-up-mailer' ),
+			esc_html__( 'The mailbox poller used for mailto-form unsubscribes requires the PHP imap extension. Sending still works without it.', 'heads-up-mailer' )
+		);
 	}
 }

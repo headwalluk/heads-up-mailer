@@ -1,10 +1,10 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** Design complete; coding not started
-**Current Version:** 0.1.0 (pre-development)
-**Current Phase:** M1 — Foundation
+**Status:** M1 complete; M2 ready to start
+**Current Version:** 0.1.0
+**Current Phase:** M2 — Subscribers and Groups
 **Last Updated:** 19 May 2026
-**Progress:** 0 of 9 milestones complete (3 deferred for v1.0.0+)
+**Progress:** 1 of 9 milestones complete (3 deferred for v1.0.0+)
 
 ---
 
@@ -14,86 +14,104 @@
 errors, database tables exist, the version option is stamped, and
 the IMAP extension is detected.
 
-**Status:** 📋 Not started
+**Status:** ✅ Complete
 
 ### Tasks
 
 #### Bootstrap (`heads-up-mailer.php`)
 
-- [ ] Plugin header (name, version, requires PHP 8.0, text domain)
-- [ ] Top-level `define()`s: `HUM_VERSION`, `HUM_FILE`, `HUM_PATH`,
+- [x] Plugin header (name, version, requires PHP 8.0, text domain)
+- [x] Top-level `define()`s: `HUM_VERSION`, `HUM_FILE`, `HUM_PATH`,
       `HUM_URL`, `HUM_BASENAME`
-- [ ] `require_once` chain: `constants.php`,
+- [x] `require_once` chain: `constants.php`,
       `functions-private.php`, each `includes/class-*.php`
-- [ ] `register_activation_hook` → `hum_activate()` (installs
-      defaults, runs schema, stamps version option, seeds groups)
-- [ ] `register_deactivation_hook` → `hum_deactivate()` (clear
-      transients only; tables stay)
-- [ ] Bootstrap fn `hum_run()` → sets `global $hum_plugin` and
-      calls `$hum_plugin->run()`
+- [x] `register_activation_hook` → `hum_activate()` (installs
+      defaults, runs schema, stamps version option)
+- [x] Bootstrap fn `hum_plugin_run()` → sets `global $hum_plugin`
+      and calls `$hum_plugin->run()` (renamed from `hum_run()` to
+      avoid potential collision)
+- [x] ~~`register_deactivation_hook` → `hum_deactivate()`~~ —
+      removed. Object cache hosts make the transient cleanup
+      pointless; can reinstate later if we ship to cheap hosting.
 
 #### Constants (`constants.php`)
 
-- [ ] Namespace `Heads_Up_Mailer`
-- [ ] Constant groups: `OPTION_*`, `META_*`, `DEF_*`, `MODE_*`,
-      `TRANSIENT_*`, `LOG_*`, `RATE_LIMIT_*`
-- [ ] `DB_VERSION` constant (start at `1`)
+- [x] Namespace `Heads_Up_Mailer`
+- [x] Constant groups in use: `OPTION_*`, `STATUS_*`,
+      `DRAFT_STATUS_*`, `SEND_STATUS_*`, `TRANSIENT_*`, `CRON_*`,
+      `DEF_*`. `META_*` / `MODE_*` / `LOG_*` / `RATE_LIMIT_*` get
+      added as their owning milestones land.
+- [x] `DB_VERSION` constant (start at `1`)
 
 #### Private helpers (`functions-private.php`)
 
-- [ ] `hum_get_default_settings()` (lazy-init via
-      `global $hum_default_settings`)
-- [ ] Utility stubs for IP / user-agent / current admin URL (mirror
-      quick-2fa's helpers)
+- [x] `get_default_settings()` (lazy-init via
+      `global $hum_default_settings`) — namespaced, no `hum_`
+      prefix.
+- [x] `get_plugin()` canonical accessor returning the bootstrap
+      global.
+- [x] `now_utc()` UTC-formatted timestamp helper.
+- [ ] Utility stubs for IP / user-agent / current admin URL —
+      deferred until first consumer needs them (probably M6 public
+      endpoint).
 
 #### Main plugin class (`includes/class-plugin.php`)
 
-- [ ] `run()` registers hooks
-- [ ] `check_first_run()` on `admin_init` priority 1 (MU plugin
+- [x] `run()` registers hooks (`init`, `admin_init`,
+      `admin_notices`)
+- [x] `check_first_run()` on `admin_init` priority 1 (MU plugin
       safety)
-- [ ] `load_textdomain()` on `init`
-- [ ] Migration runner: compare stamped vs `DB_VERSION`, run
-      migrations if behind
+- [x] `load_textdomain()` on `init`
+- [x] Migration runner: compare stamped vs `DB_VERSION`, re-run
+      `create_tables()` if behind (currently a no-op at v1)
 
 #### Database class (`includes/class-database.php`)
 
-- [ ] `create_tables()` runs `dbDelta` for all 6 tables
-- [ ] Schema (per `01-requirements.md` "Schema sketch"):
-  - [ ] `wp_hum_subscribers`
-  - [ ] `wp_hum_groups`
-  - [ ] `wp_hum_subscriber_groups`
-  - [ ] `wp_hum_drafts`
-  - [ ] `wp_hum_sends`
-  - [ ] `wp_hum_send_recipients` with
+- [x] `create_tables()` runs `dbDelta` for all 6 tables
+- [x] Schema (per `01-requirements.md` "Schema sketch"):
+  - [x] `wp_hum_subscribers` with `UNIQUE(email)`
+  - [x] `wp_hum_groups` with `UNIQUE(slug)`
+  - [x] `wp_hum_subscriber_groups`
+  - [x] `wp_hum_drafts`
+  - [x] `wp_hum_sends`
+  - [x] `wp_hum_send_recipients` with
         `UNIQUE(send_id, subscriber_id)`
-- [ ] All datetime columns stored as `VARCHAR(30)` holding
+- [x] All datetime columns stored as `VARCHAR(30)` holding
       `Y-m-d H:i:s UTC`
 
 #### Activation safety
 
-- [ ] Detect missing `ext-imap` at activation → admin notice on
-      next admin page load. Do **not** block activation (poller
-      milestone will fail gracefully without it).
+- [x] Detect missing `ext-imap` at runtime → admin notice via
+      `Plugin::admin_notices()`. Live check on every admin page
+      load (no transient/option to manage). Sending still works
+      without it.
 
 #### Tooling
 
-- [ ] `phpcs.xml` with `WordPress` ruleset, prefixes
-      `Heads_Up_Mailer`, `HUM`, `hum`, excludes for `dev-notes/`,
-      `assets/`, `.git/`
+- [x] `phpcs.xml` with `WordPress` ruleset, prefixes
+      `Heads_Up_Mailer`, `HUM`, `hum`, `heads_up_mailer`; excludes
+      for `dev-notes/`, `assets/`, `.git/`, `languages/`,
+      `vendor/`, `node_modules/`
 - [x] `README.md` (development readme) + `readme.txt`
       (WordPress.org format) + `CHANGELOG.md`
 - [x] `docs/` directory with `.gitkeep` placeholder for
       end-user docs
 
-#### Smoke test
+#### Smoke test (wp-cli, 2026-05-19)
 
-- [ ] Plugin activates without PHP errors or warnings
-- [ ] All 6 tables exist with correct columns and indexes
-- [ ] `OPTION_DB_VERSION` is stamped
-- [ ] `phpcs` returns clean
+- [x] Plugin activates without PHP errors or warnings
+- [x] All 6 tables exist with correct columns
+- [x] `UNIQUE` constraints verified on `email` and
+      `(send_id, subscriber_id)`
+- [x] `OPTION_VERSION` = `0.1.0`, `OPTION_DB_VERSION` = `1`
+- [x] Default settings options seeded
+- [x] `Heads_Up_Mailer\get_plugin()` returns the `Plugin` instance
+- [x] `Heads_Up_Mailer\now_utc()` returns
+      `2026-05-19 ... UTC`
+- [x] `phpcs` returns clean
 
 **Deliverable:** Activatable plugin shell with database schema in
-place and prefix conventions enforced.
+place and prefix conventions enforced. ✅ Achieved.
 
 ---
 

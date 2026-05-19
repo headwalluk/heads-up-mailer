@@ -21,8 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `functions-private.php` with the canonical `get_plugin()`
     accessor, `get_default_settings()` lazy-init helper, and
     `now_utc()` for the project's stored datetime format.
-  - `includes/class-plugin.php` with `run()` hook registration
-    and `check_first_run()` for MU plugin safety.
+  - `includes/class-plugin.php` with `run()` hook registration,
+    `check_first_run()` for MU plugin safety, and
+    `admin_notices()` warning when PHP `imap` extension is
+    missing.
   - `includes/class-database.php` with `dbDelta` schema for all
     six tables. Datetime columns stored as `VARCHAR(30)` holding
     `Y-m-d H:i:s UTC` strings.
