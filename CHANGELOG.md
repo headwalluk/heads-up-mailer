@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `TABLE_*` constants in `constants.php` for all six custom-table
+  name suffixes; `Database::create_tables()` refactored to use
+  them.
+- `includes/class-groups-controller.php` — CRUD for the
+  `hum_groups` table, returning `WP_Error` on failure, plus
+  `seed_defaults()` that idempotently inserts the
+  `hosting-customers` and `web-designers` groups.
+- Seed call wired into `hum_activate()` and
+  `Plugin::check_first_run()` (MU plugin safety).
+
 ## [0.1.0] — 2026-05-19
 
 ### Added

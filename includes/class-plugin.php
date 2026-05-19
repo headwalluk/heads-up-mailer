@@ -68,6 +68,9 @@ class Plugin {
 				}
 			}
 
+			$groups = new Groups_Controller();
+			$groups->seed_defaults();
+
 			add_option( OPTION_VERSION, HUM_VERSION, '', 'yes' );
 			add_option( OPTION_DB_VERSION, DB_VERSION, '', 'yes' );
 		} elseif ( HUM_VERSION !== $stored_version ) {

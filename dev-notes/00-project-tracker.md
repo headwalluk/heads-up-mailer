@@ -121,20 +121,22 @@ place and prefix conventions enforced. ✅ Achieved.
 import the MailerLite export via CSV. Sequenced early so the
 MailerLite subscription can be cancelled.
 
-**Status:** 📋 Not started
+**Status:** 🔄 In progress (groups foundation done; admin UI next)
 **Dependencies:** M1
 
 ### Tasks
 
 #### Groups admin
 
-- [ ] `Groups_Controller` class — CRUD methods returning `WP_Error`
+- [x] `Groups_Controller` class — CRUD methods returning `WP_Error`
       on failure
 - [ ] Admin page `admin-templates/groups-list.php` (code-first PHP,
       `printf` / `echo`)
 - [ ] Add / edit form `admin-templates/group-edit.php`
-- [ ] Seed `hosting-customers` and `web-designers` on activation
+- [x] Seed `hosting-customers` and `web-designers` on activation
       (idempotent — only inserts if missing)
+- [x] `TABLE_*` constants in `constants.php` to centralise the
+      table-name suffixes used by the controllers
 
 #### Subscribers admin
 

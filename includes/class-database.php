@@ -33,11 +33,16 @@ class Database {
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$charset_collate = $wpdb->get_charset_collate();
-		$prefix          = $wpdb->prefix . 'hum_';
+		$charset_collate         = $wpdb->get_charset_collate();
+		$table_subscribers       = $wpdb->prefix . TABLE_SUBSCRIBERS;
+		$table_groups            = $wpdb->prefix . TABLE_GROUPS;
+		$table_subscriber_groups = $wpdb->prefix . TABLE_SUBSCRIBER_GROUPS;
+		$table_drafts            = $wpdb->prefix . TABLE_DRAFTS;
+		$table_sends             = $wpdb->prefix . TABLE_SENDS;
+		$table_send_recipients   = $wpdb->prefix . TABLE_SEND_RECIPIENTS;
 
 		$statements = array(
-			"CREATE TABLE {$prefix}subscribers (
+			"CREATE TABLE {$table_subscribers} (
 				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 				email varchar(254) NOT NULL,
 				name varchar(255) NOT NULL DEFAULT '',
@@ -52,7 +57,7 @@ class Database {
 				KEY status (status)
 			) {$charset_collate}",
 
-			"CREATE TABLE {$prefix}groups (
+			"CREATE TABLE {$table_groups} (
 				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 				slug varchar(100) NOT NULL,
 				name varchar(255) NOT NULL,
@@ -61,14 +66,14 @@ class Database {
 				UNIQUE KEY slug (slug)
 			) {$charset_collate}",
 
-			"CREATE TABLE {$prefix}subscriber_groups (
+			"CREATE TABLE {$table_subscriber_groups} (
 				subscriber_id bigint(20) unsigned NOT NULL,
 				group_id bigint(20) unsigned NOT NULL,
 				PRIMARY KEY  (subscriber_id, group_id),
 				KEY group_id (group_id)
 			) {$charset_collate}",
 
-			"CREATE TABLE {$prefix}drafts (
+			"CREATE TABLE {$table_drafts} (
 				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 				subject varchar(255) NOT NULL DEFAULT '',
 				html_body longtext NOT NULL,
@@ -80,7 +85,7 @@ class Database {
 				KEY status (status)
 			) {$charset_collate}",
 
-			"CREATE TABLE {$prefix}sends (
+			"CREATE TABLE {$table_sends} (
 				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 				draft_id bigint(20) unsigned NOT NULL,
 				group_ids_json text NOT NULL,
@@ -93,7 +98,7 @@ class Database {
 				KEY draft_id (draft_id)
 			) {$charset_collate}",
 
-			"CREATE TABLE {$prefix}send_recipients (
+			"CREATE TABLE {$table_send_recipients} (
 				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 				send_id bigint(20) unsigned NOT NULL,
 				subscriber_id bigint(20) unsigned NOT NULL,

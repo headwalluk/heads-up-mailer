@@ -18,6 +18,18 @@ defined( 'ABSPATH' ) || die();
 const DB_VERSION = 1;
 
 /**
+ * Custom table name suffixes (after `$wpdb->prefix`).
+ *
+ * @since 0.1.0
+ */
+const TABLE_SUBSCRIBERS       = 'hum_subscribers';
+const TABLE_GROUPS            = 'hum_groups';
+const TABLE_SUBSCRIBER_GROUPS = 'hum_subscriber_groups';
+const TABLE_DRAFTS            = 'hum_drafts';
+const TABLE_SENDS             = 'hum_sends';
+const TABLE_SEND_RECIPIENTS   = 'hum_send_recipients';
+
+/**
  * Option keys (wp_options).
  *
  * @since 0.1.0

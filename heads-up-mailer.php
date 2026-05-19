@@ -28,6 +28,7 @@ require_once HUM_PATH . 'constants.php';
 require_once HUM_PATH . 'functions-private.php';
 
 require_once HUM_PATH . 'includes/class-database.php';
+require_once HUM_PATH . 'includes/class-groups-controller.php';
 require_once HUM_PATH . 'includes/class-plugin.php';
 
 /**
@@ -46,6 +47,9 @@ function hum_activate(): void {
 			add_option( $key, $value, '', 'yes' );
 		}
 	}
+
+	$groups = new Heads_Up_Mailer\Groups_Controller();
+	$groups->seed_defaults();
 
 	add_option( Heads_Up_Mailer\OPTION_VERSION, HUM_VERSION, '', 'yes' );
 	add_option( Heads_Up_Mailer\OPTION_DB_VERSION, Heads_Up_Mailer\DB_VERSION, '', 'yes' );
