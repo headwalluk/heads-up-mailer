@@ -48,18 +48,21 @@ heads-up-mailer/
 
 ## Prefixes and naming
 
-| What                              | Prefix                          | Example                          |
-| --------------------------------- | ------------------------------- | -------------------------------- |
-| Root-level PHP constants          | `HUM_*`                         | `HUM_VERSION`, `HUM_PATH`        |
-| Namespaced PHP constants          | typed (see below)               | `OPTION_BATCH_SIZE`              |
-| Functions, variables, globals     | `hum_*`                         | `hum_get_token()`, `$hum_plugin` |
-| `wp_options` keys (string values) | `hum_*`                         | `'hum_batch_size'`               |
-| User meta keys (string values)    | `_hum_*`                        | `'_hum_consent_at'`              |
-| Transient prefixes                | `hum_*`                         | `'hum_imap_lock'`                |
-| DB tables (after `$wpdb->prefix`) | `hum_*`                         | `wp_hum_subscribers`             |
-| PHP namespace                     | `Heads_Up_Mailer`               |                                  |
-| Text domain                       | `heads-up-mailer`               |                                  |
-| phpcs `PrefixAllGlobals`          | `Heads_Up_Mailer`, `HUM`, `hum` |                                  |
+| What                                       | Prefix                          | Example                                  |
+| ------------------------------------------ | ------------------------------- | ---------------------------------------- |
+| Root-level PHP constants                   | `HUM_*`                         | `HUM_VERSION`, `HUM_PATH`                |
+| Namespaced PHP constants                   | typed (see below)               | `OPTION_BATCH_SIZE`                      |
+| Root-namespace functions (bootstrap)       | `hum_*`                         | `hum_activate()`, `hum_plugin_run()`     |
+| Namespaced functions (`functions-private.php`, `includes/`) | none — namespace handles it | `get_plugin()`, `get_default_settings()` |
+| Namespaced public helpers (`functions.php`, if added) | `hum_*`              | `hum_render_unsubscribe_link()`          |
+| Variables and globals                      | `hum_*`                         | `$hum_plugin`, `$hum_default_settings`   |
+| `wp_options` keys (string values)          | `hum_*`                         | `'hum_batch_size'`                       |
+| User meta keys (string values)             | `_hum_*`                        | `'_hum_consent_at'`                      |
+| Transient prefixes                         | `hum_*`                         | `'hum_imap_lock'`                        |
+| DB tables (after `$wpdb->prefix`)          | `hum_*`                         | `wp_hum_subscribers`                     |
+| PHP namespace                              | `Heads_Up_Mailer`               |                                          |
+| Text domain                                | `heads-up-mailer`               |                                          |
+| phpcs `PrefixAllGlobals`                   | `Heads_Up_Mailer`, `HUM`, `hum` |                                          |
 
 Namespaced constant groups (no extra prefix — namespace handles it):
 `OPTION_*`, `META_*`, `DEF_*`, `MODE_*`, `TRANSIENT_*`, `LOG_*`,
@@ -70,8 +73,10 @@ Namespaced constant groups (no extra prefix — namespace handles it):
 - PHP 8.0+. Type hints and return types everywhere.
 - **No** `declare(strict_types=1);` — breaks WordPress hook
   signatures.
-- **Plugin instance**: `global $hum_plugin;` set during bootstrap.
-  No singleton, no static `instance()` method.
+- **Plugin instance**: `global $hum_plugin;` is set during
+  bootstrap. Read it everywhere else via the canonical accessor
+  `Heads_Up_Mailer\get_plugin()` — don't touch the global
+  directly. No singleton, no static `instance()` method.
 - **SESE (modified)**: validate-and-bail guards at the **top** of
   a function are fine. **No** mid-function returns. **No** returns
   nested inside loops. Body converges to a single `return` at the

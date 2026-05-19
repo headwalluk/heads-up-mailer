@@ -229,7 +229,15 @@ record.
 - **Prefixes**:
   - Top-level constants: `HUM_*` (e.g., `HUM_VERSION`,
     `HUM_PATH`).
-  - Variables, globals, function names: `hum_*`.
+  - Variables and globals: `hum_*`.
+  - Root-namespace bootstrap functions (in `heads-up-mailer.php`):
+    `hum_*` (e.g., `hum_activate`, `hum_plugin_run`).
+  - Namespaced functions in `functions-private.php` and
+    `includes/`: **no prefix** — the `Heads_Up_Mailer` namespace
+    handles it (e.g., `get_plugin`, `get_default_settings`,
+    `now_utc`).
+  - Namespaced public helpers in `functions.php` (if added later):
+    `hum_*` to make their public-API role visible at call sites.
   - Namespaced PHP constants: `OPTION_*`, `META_*`, `DEF_*`,
     `MODE_*`, `TRANSIENT_*`, `LOG_*`, `RATE_LIMIT_*` (no extra
     prefix — namespace handles it).

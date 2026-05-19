@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<ruleset name="Heads Up Mailer Standards">
+	<description>WordPress Coding Standards for Heads Up Mailer</description>
+
+	<file>.</file>
+
+	<!-- Exclude patterns -->
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/assets/*</exclude-pattern>
+	<exclude-pattern>*/.git/*</exclude-pattern>
+	<exclude-pattern>*/dev-notes/*</exclude-pattern>
+	<exclude-pattern>*/languages/*</exclude-pattern>
+
+	<!-- Arguments -->
+	<arg value="sp"/>
+	<arg name="basepath" value="."/>
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+	<arg name="parallel" value="8"/>
+
+	<!-- Rules -->
+	<rule ref="WordPress">
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+	</rule>
+
+	<!-- Prefixes -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="heads_up_mailer"/>
+				<element value="hum"/>
+				<element value="HUM"/>
+				<element value="Heads_Up_Mailer"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>
