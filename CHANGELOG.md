@@ -7,7 +7,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-05-21
+
 ### Added
+
+- `includes/class-drafts-controller.php` — CRUD on `hum_drafts`
+  with validation: subject required and ≤ `DEF_DRAFT_SUBJECT_MAX`
+  (200) characters, `html_body` non-empty after
+  `wp_strip_all_tags()`, `suggested_groups` resolved against
+  `Groups_Controller::get_by_slug()` (unknown slugs surfaced as
+  `hum_draft_unknown_groups`). HTML body stored raw — the
+  endpoint is gated on `manage_options` and the preview iframe
+  is sandboxed (see below). Stores `suggested_groups_json` as a
+  JSON-encoded string list, `created_by` from
+  `get_current_user_id()`, and `created_at` from `now_utc()`.
+- `includes/class-rest-controller.php` — registers the
+  `heads-up-mailer/v1` REST namespace on `rest_api_init`. Routes:
+  `POST /drafts` (returns 201) and `GET /drafts/{id}` (404 when
+  missing). `permission_callback` checks `manage_options`, which
+  works with WordPress application passwords. Controller errors
+  decorated with `status` so REST returns 400 instead of 500.
+- `admin-templates/drafts-list.php` — list table with id, subject,
+  status chip, created_at, and edit / delete actions.
+- `admin-templates/draft-edit.php` — add/edit form with subject
+  input (maxlength enforced client-side), HTML body textarea
+  (`large-text code` class), suggested-groups multi-checkbox
+  picker, and an inline iframe preview (only shown for saved
+  drafts). Disabled "Send (coming soon)" button placeholder for
+  the M5 queue handler.
+- `admin-templates/draft-preview.php` — echoes the raw stored
+  HTML so an MJML-style full document (`<html>`, `<head>`,
+  `<style>`) renders intact. Served via `admin-post.php` so no
+  admin chrome is emitted; sets `X-Frame-Options: SAMEORIGIN` and
+  `X-Content-Type-Options: nosniff`. The parent iframe carries
+  `sandbox=""` (no allow-list), so scripts, forms, top-level
+  navigation, and same-origin DOM access are disabled regardless
+  of body content.
+- `Plugin::run()` instantiates `REST_Controller` and registers
+  `admin_post_hum_save_draft`, `admin_post_hum_delete_draft`, and
+  `admin_post_hum_preview_draft` handlers.
+- `Plugin::admin_menu()` adds a "Drafts" submenu.
+- `Plugin::render_drafts()`, `handle_save_draft()`,
+  `handle_delete_draft()`, and `handle_preview_draft()`.
+- `DEF_DRAFT_SUBJECT_MAX` (200) and `REST_NAMESPACE`
+  (`heads-up-mailer/v1`) constants.
+- `docs/ai-agent-rest-guide.md` — end-user-facing guide for the
+  AI agent operator: auth, endpoints, request / response shapes,
+  group slugs, error codes, and `curl` examples.
+
+### Fixed
+
+- `Drafts_Controller::validate()` no longer pipes `html_body`
+  through `wp_kses_post`. The sanitiser is built for fragment
+  blog-post HTML and was stripping `<html>` / `<head>` / `<style>`
+  / `<body>` from MJML-style full-document email HTML, leaving
+  CSS reset rules dumped as visible text in the preview. The
+  preview iframe's `sandbox=""` attribute carries the XSS
+  containment now.
+
+### Added (M3 — settings + IMAP credentials)
 
 - `includes/class-crypto.php` — libsodium `crypto_secretbox`
   wrapper with a 32-byte key derived from `AUTH_KEY` via

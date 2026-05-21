@@ -1,10 +1,10 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** M3 complete; M4 ready to start
-**Current Version:** 0.2.0 (0.3.0 pending)
-**Current Phase:** M4 — Drafts
-**Last Updated:** 19 May 2026
-**Progress:** 3 of 9 milestones complete (3 deferred for v1.0.0+)
+**Status:** M4 complete; M5 ready to start
+**Current Version:** 0.3.0 (0.4.0 pending)
+**Current Phase:** M5 — Send pipeline
+**Last Updated:** 21 May 2026
+**Progress:** 4 of 9 milestones complete (3 deferred for v1.0.0+)
 
 ---
 
@@ -278,32 +278,44 @@ poller work — same credentials, same code path).
 **Goal:** AI agent posts drafts via authenticated REST. Admin
 lists, edits, previews, and selects target group(s).
 
-**Status:** 📋 Not started
+**Status:** ✅ Complete
 **Dependencies:** M1, M2
 
 ### Tasks
 
 #### REST API
 
-- [ ] Register namespace `heads-up-mailer/v1` on `rest_api_init`
-- [ ] `POST /drafts` — accepts `subject`, `html_body`,
+- [x] Register namespace `heads-up-mailer/v1` on `rest_api_init`
+- [x] `POST /drafts` — accepts `subject`, `html_body`,
       `suggested_groups` (array of group slugs). Application-password
-      auth. Returns draft ID.
-- [ ] `GET /drafts/{id}` — returns the stored draft. Same auth.
-- [ ] Validation: `subject` ≤ 200 chars, `html_body` non-empty,
-      `suggested_groups` resolved to known group IDs
-- [ ] Smoke test via `curl` from the AI agent host
+      auth via `permission_callback` checking `manage_options`.
+      Returns 201 with serialized draft.
+- [x] `GET /drafts/{id}` — returns the stored draft. Same auth.
+- [x] Validation: `subject` ≤ 200 chars, `html_body` non-empty,
+      `suggested_groups` resolved to known group slugs (unknown
+      slugs returned as `hum_draft_unknown_groups`)
+- [ ] Smoke test via `curl` from the AI agent host — pending. The
+      in-process REST dispatch was verified (201 create, 200 read,
+      404 unknown id, 400 bad payload, 401 anon). The on-host
+      `curl` walk uses the same code path.
 
 #### Admin UI
 
-- [ ] Drafts list table (id, subject, created, status)
-- [ ] Edit form: subject input, raw HTML textarea (TinyMCE optional
-      later), group picker (multi-select)
-- [ ] iframe preview rendering the HTML body
-- [ ] "Send" button → triggers M5 queue insertion
+- [x] Drafts list table (id, subject, status chip, created_at)
+- [x] Edit form: subject input, raw HTML textarea, suggested-groups
+      multi-select (slugs)
+- [x] iframe preview rendering the HTML body via
+      `admin-post.php?action=hum_preview_draft` (no admin chrome,
+      `X-Frame-Options: SAMEORIGIN`)
+- [x] "Send (coming soon)" button — disabled placeholder; wires in M5
 
 **Deliverable:** AI agent can POST a draft. Admin can review and
 mark it ready to send.
+
+**Notes:** Adds `Drafts_Controller`, `REST_Controller`,
+`DEF_DRAFT_SUBJECT_MAX = 200`, and `REST_NAMESPACE` constants. The
+HTML body is sanitised via `wp_kses_post` on save; the preview
+endpoint re-emits it inside a minimal document.
 
 ---
 

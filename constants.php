@@ -112,3 +112,11 @@ const DEF_MAILBOX_FOLDER        = 'INBOX';
 const DEF_MAILBOX_TLS           = true;
 const DEF_MAILBOX_VALIDATE_CERT = true;
 const DEF_MAILBOX_INTERVAL      = 5;
+const DEF_DRAFT_SUBJECT_MAX     = 200;
+
+/**
+ * REST API namespace.
+ *
+ * @since 0.3.0
+ */
+const REST_NAMESPACE = 'heads-up-mailer/v1';

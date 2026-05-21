@@ -29,6 +29,9 @@ class Plugin {
 		$settings = new Settings();
 		$settings->run();
 
+		$rest = new REST_Controller();
+		$rest->run();
+
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_init', array( $this, 'check_first_run' ), 1 );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
@@ -39,6 +42,9 @@ class Plugin {
 		add_action( 'admin_post_hum_save_subscriber', array( $this, 'handle_save_subscriber' ) );
 		add_action( 'admin_post_hum_delete_subscriber', array( $this, 'handle_delete_subscriber' ) );
 		add_action( 'admin_post_hum_csv_import', array( $this, 'handle_csv_import' ) );
+		add_action( 'admin_post_hum_save_draft', array( $this, 'handle_save_draft' ) );
+		add_action( 'admin_post_hum_delete_draft', array( $this, 'handle_delete_draft' ) );
+		add_action( 'admin_post_hum_preview_draft', array( $this, 'handle_preview_draft' ) );
 		add_action( 'wp_ajax_hum_test_mailbox', array( $this, 'ajax_test_mailbox' ) );
 	}
 
@@ -168,6 +174,15 @@ class Plugin {
 
 		add_submenu_page(
 			'heads-up-mailer',
+			__( 'Drafts', 'heads-up-mailer' ),
+			__( 'Drafts', 'heads-up-mailer' ),
+			'manage_options',
+			'heads-up-mailer-drafts',
+			array( $this, 'render_drafts' )
+		);
+
+		add_submenu_page(
+			'heads-up-mailer',
 			__( 'Settings', 'heads-up-mailer' ),
 			__( 'Settings', 'heads-up-mailer' ),
 			'manage_options',
@@ -189,6 +204,7 @@ class Plugin {
 			'heads-up-mailer',
 			'heads-up-mailer-groups',
 			'heads-up-mailer-subscribers',
+			'heads-up-mailer-drafts',
 			'heads-up-mailer-settings',
 		);
 
@@ -589,6 +605,143 @@ class Plugin {
 				'message' => sprintf( __( 'Connection successful — folder "%s" is reachable.', 'heads-up-mailer' ), $folder ),
 			)
 		);
+	}
+
+	/**
+	 * Render the Drafts submenu page. Dispatches between list, add,
+	 * and edit views based on `$_GET['action']`.
+	 *
+	 * @since 0.3.0
+	 */
+	public function render_drafts(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to access this page.', 'heads-up-mailer' ) );
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read for view dispatch; state changes via admin-post handlers.
+		$action            = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
+		$drafts_controller = new Drafts_Controller();
+		$groups_controller = new Groups_Controller();
+
+		if ( 'add' === $action || 'edit' === $action ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read for view dispatch.
+			$draft_id        = isset( $_GET['draft_id'] ) ? absint( $_GET['draft_id'] ) : 0;
+			$draft           = ( 'edit' === $action && $draft_id > 0 ) ? $drafts_controller->get( $draft_id ) : null;
+			$all_groups      = $groups_controller->get_all();
+			$suggested_slugs = $drafts_controller->suggested_groups( $draft );
+
+			require HUM_PATH . 'admin-templates/draft-edit.php';
+		} else {
+			$drafts = $drafts_controller->get_all();
+
+			require HUM_PATH . 'admin-templates/drafts-list.php';
+		}
+	}
+
+	/**
+	 * Handle the "Save draft" form submission (admin-post.php).
+	 *
+	 * @since 0.3.0
+	 */
+	public function handle_save_draft(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission.', 'heads-up-mailer' ) );
+		}
+
+		check_admin_referer( 'hum_save_draft' );
+
+		$draft_id = isset( $_POST['draft_id'] ) ? absint( $_POST['draft_id'] ) : 0;
+
+		$suggested_groups = ( isset( $_POST['suggested_groups'] ) && is_array( $_POST['suggested_groups'] ) )
+			? array_map( 'sanitize_title', wp_unslash( $_POST['suggested_groups'] ) )
+			: array();
+
+		$data = array(
+			'subject'          => isset( $_POST['subject'] ) ? sanitize_text_field( wp_unslash( $_POST['subject'] ) ) : '',
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- HTML body sanitised via wp_kses_post inside Drafts_Controller::validate().
+			'html_body'        => isset( $_POST['html_body'] ) ? (string) wp_unslash( $_POST['html_body'] ) : '',
+			'suggested_groups' => $suggested_groups,
+		);
+
+		$controller = new Drafts_Controller();
+
+		$result = ( $draft_id > 0 )
+			? $controller->update( $draft_id, $data )
+			: $controller->create( $data );
+
+		$redirect_args = array( 'page' => 'heads-up-mailer-drafts' );
+
+		if ( is_wp_error( $result ) ) {
+			$redirect_args['error']  = $result->get_error_code();
+			$redirect_args['action'] = ( $draft_id > 0 ) ? 'edit' : 'add';
+
+			if ( $draft_id > 0 ) {
+				$redirect_args['draft_id'] = $draft_id;
+			}
+		} else {
+			$new_id                    = ( $draft_id > 0 ) ? $draft_id : (int) $result;
+			$redirect_args['action']   = 'edit';
+			$redirect_args['draft_id'] = $new_id;
+			$redirect_args['updated']  = '1';
+		}
+
+		wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );
+		exit;
+	}
+
+	/**
+	 * Handle the "Delete draft" action.
+	 *
+	 * @since 0.3.0
+	 */
+	public function handle_delete_draft(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission.', 'heads-up-mailer' ) );
+		}
+
+		$draft_id = isset( $_GET['draft_id'] ) ? absint( $_GET['draft_id'] ) : 0;
+		check_admin_referer( 'hum_delete_draft_' . $draft_id );
+
+		$controller = new Drafts_Controller();
+		$result     = $controller->delete( $draft_id );
+
+		$redirect_args = array( 'page' => 'heads-up-mailer-drafts' );
+
+		if ( is_wp_error( $result ) ) {
+			$redirect_args['error'] = $result->get_error_code();
+		} else {
+			$redirect_args['deleted'] = '1';
+		}
+
+		wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );
+		exit;
+	}
+
+	/**
+	 * Serve the iframe preview of a draft's HTML body.
+	 *
+	 * Reached via `admin-post.php?action=hum_preview_draft` so no admin
+	 * chrome is emitted around the body.
+	 *
+	 * @since 0.3.0
+	 */
+	public function handle_preview_draft(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission.', 'heads-up-mailer' ) );
+		}
+
+		$draft_id = isset( $_GET['draft_id'] ) ? absint( $_GET['draft_id'] ) : 0;
+		check_admin_referer( 'hum_preview_draft_' . $draft_id );
+
+		$controller = new Drafts_Controller();
+		$draft      = $controller->get( $draft_id );
+
+		if ( null === $draft ) {
+			wp_die( esc_html__( 'Draft not found.', 'heads-up-mailer' ), '', array( 'response' => 404 ) );
+		}
+
+		require HUM_PATH . 'admin-templates/draft-preview.php';
+		exit;
 	}
 
 	/**

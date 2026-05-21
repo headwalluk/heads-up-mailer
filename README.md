@@ -41,10 +41,21 @@ In-depth guides live in [`docs/`](docs/):
 
 ## Status
 
-Pre-release (`0.2.0`). See [`CHANGELOG.md`](CHANGELOG.md) for what
-has landed so far, and
+Pre-release (`0.3.0`). Milestones 1–4 of 9 are complete: schema,
+subscribers + groups (with CSV import), settings (with encrypted
+IMAP credentials), and draft authoring (REST + admin UI with
+sandboxed preview). The send pipeline, public preference
+endpoint, IMAP poller, and sent-log UI are still to come. See
+[`CHANGELOG.md`](CHANGELOG.md) for what has landed and
 [`dev-notes/00-project-tracker.md`](dev-notes/00-project-tracker.md)
 for the milestone roadmap.
+
+## REST API
+
+AI agents post drafts via the `heads-up-mailer/v1` namespace with
+WordPress application-password auth. See
+[`docs/ai-agent-rest-guide.md`](docs/ai-agent-rest-guide.md) for
+endpoints, request / response shapes, and `curl` examples.
 
 ## License
 
