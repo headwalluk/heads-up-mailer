@@ -7,6 +7,80 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-05-21
+
+### Added
+
+- `includes/class-tokens.php` — bearer-token primitive shared by
+  the M5 worker (emit) and M6 `/manage-comms/` handler (verify).
+  Format `{subscriber_id}.{hmac_hex}` where the HMAC key is the
+  subscriber's stored `token_salt`. `verify()` is constant-time
+  (`hash_equals`); every failure mode (bad format, unknown
+  subscriber, missing salt, MAC mismatch) collapses to `null` so
+  callers can't distinguish them.
+- `Subscribers_Controller::regenerate_token_salt()` — rotates a
+  subscriber's salt and invalidates all outstanding tokens.
+- `includes/class-sends-controller.php` — `queue()` orchestrates
+  the send: pre-flight (draft exists; not already in flight;
+  `from_email` configured; at least one valid group; at least one
+  subscribed recipient), then a single transaction that writes
+  the `hum_sends` row, N `hum_send_recipients` rows (deduped
+  union of the selected groups, `status = subscribed` only), and
+  flips the draft to a new `DRAFT_STATUS_SENDING`. Re-sending
+  from a `sent` draft writes a fresh `send_id`.
+- `compute_recipient_ids()` SQL helper — one query against
+  `hum_subscriber_groups` ⨝ `hum_subscribers` with `DISTINCT`
+  + `status = subscribed`.
+- `admin_post_hum_send_draft` handler and a real Send button on
+  the draft-edit page. The form is its own `<form>` (separate
+  from Save) with a confirm dialog that names the recipient count
+  ("Send to N recipients?" / "Send AGAIN to N recipients?" for
+  resends). When sending is blocked, the button is disabled and
+  the reason is shown inline.
+- "Sending" settings tab with four new options: `hum_from_name`,
+  `hum_from_email`, `hum_footer_html` (with `{{unsubscribe_url}}`
+  placeholder), and `hum_manage_slug`. Each has its own sanitize
+  callback. Slug changes hook `update_option_hum_manage_slug` to
+  flush the WordPress rewrite-rules cache so M6's eventual
+  `/manage-comms/` rewrite picks up the new value on save.
+- `includes/class-worker.php` — WP-Cron-driven worker. Registers
+  a custom `hum_tick` interval (clamped 1–60 min from settings),
+  scheduled on activation + `admin_init`, cleared on
+  deactivation. Each tick: acquires `TRANSIENT_DRAIN_LOCK`,
+  claims pending rows atomically (`UPDATE … WHERE
+  status = pending`), builds the message, calls `wp_mail()`,
+  writes the outcome back, then runs `finalize_completed_sends()`
+  to stamp counters + `finished_at` and flip the draft to `sent`.
+  Wall-clock budget of 25s per tick.
+- Outgoing headers per RFC 8058: `List-Unsubscribe` (mailto +
+  https), `List-Unsubscribe-Post: List-Unsubscribe=One-Click`,
+  `List-ID: <heads-up-mailer.<host>>`, `Precedence: bulk`,
+  `Content-Type: text/html; charset=UTF-8`. Sender identity
+  applied via `wp_mail_from` / `wp_mail_from_name` filters
+  attached and detached per call, so the override is scoped to
+  the newsletter send.
+- Footer injection: the `{{unsubscribe_url}}` token in the
+  configured template is replaced with the per-recipient
+  `esc_url`-quoted URL; the rendered footer is inserted before
+  the last `</body>` (appended for fragment HTML).
+- Plain-text alternative attached via `phpmailer_init`:
+  `wp_strip_all_tags()` + leading-space trim + collapsed runs of
+  blank lines.
+- New constants: `DRAFT_STATUS_SENDING`, `SEND_STATUS_PROCESSING`,
+  `OPTION_FROM_NAME`, `OPTION_FROM_EMAIL`, `OPTION_FOOTER_HTML`,
+  `OPTION_MANAGE_SLUG`, `DEF_FROM_NAME`, `DEF_FROM_EMAIL`,
+  `DEF_MANAGE_SLUG`, and a `DEF_FOOTER_HTML` template carrying
+  the unsubscribe placeholder.
+- `register_deactivation_hook` clears the recurring drain event
+  so a removed plugin doesn't leave a ghost cron entry.
+
+### Changed
+
+- `Drafts_Controller::update()` refuses edits on `sending`
+  drafts (`hum_draft_locked_while_sending`). The draft-edit
+  template disables form inputs and the Save button in the UI
+  while the worker is processing.
+
 ## [0.3.0] — 2026-05-21
 
 ### Added

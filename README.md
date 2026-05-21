@@ -41,11 +41,14 @@ In-depth guides live in [`docs/`](docs/):
 
 ## Status
 
-Pre-release (`0.3.0`). Milestones 1–4 of 9 are complete: schema,
+Pre-release (`0.4.0`). Milestones 1–5 of 9 are complete: schema,
 subscribers + groups (with CSV import), settings (with encrypted
-IMAP credentials), and draft authoring (REST + admin UI with
-sandboxed preview). The send pipeline, public preference
-endpoint, IMAP poller, and sent-log UI are still to come. See
+IMAP credentials), draft authoring (REST + admin UI with sandboxed
+preview), and the send pipeline (WP-Cron worker with RFC 8058
+one-click unsubscribe headers, sandboxed footer injection,
+plain-text alternative, optimistic per-row claim). The public
+preference endpoint, IMAP poller, and sent-log UI are still to
+come. See
 [`CHANGELOG.md`](CHANGELOG.md) for what has landed and
 [`dev-notes/00-project-tracker.md`](dev-notes/00-project-tracker.md)
 for the milestone roadmap.

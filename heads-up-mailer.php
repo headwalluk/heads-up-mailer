@@ -3,7 +3,7 @@
  * Plugin Name: Heads Up Mailer
  * Plugin URI: https://headgit.net/headwall/heads-up-mailer
  * Description: In-house newsletter sender for headwall-hosting.com. Async send queue, RFC-8058 one-click unsubscribe, IMAP poll for mailto unsubscribes.
- * Version: 0.3.0
+ * Version: 0.4.0
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: Paul Faulkner
@@ -18,7 +18,7 @@
 
 defined( 'ABSPATH' ) || die();
 
-define( 'HUM_VERSION', '0.3.0' );
+define( 'HUM_VERSION', '0.4.0' );
 define( 'HUM_FILE', __FILE__ );
 define( 'HUM_PATH', plugin_dir_path( __FILE__ ) );
 define( 'HUM_URL', plugin_dir_url( __FILE__ ) );
@@ -31,6 +31,9 @@ require_once HUM_PATH . 'includes/class-database.php';
 require_once HUM_PATH . 'includes/class-groups-controller.php';
 require_once HUM_PATH . 'includes/class-subscribers-controller.php';
 require_once HUM_PATH . 'includes/class-drafts-controller.php';
+require_once HUM_PATH . 'includes/class-tokens.php';
+require_once HUM_PATH . 'includes/class-sends-controller.php';
+require_once HUM_PATH . 'includes/class-worker.php';
 require_once HUM_PATH . 'includes/class-csv-importer.php';
 require_once HUM_PATH . 'includes/class-crypto.php';
 require_once HUM_PATH . 'includes/class-settings.php';
@@ -59,8 +62,21 @@ function hum_activate(): void {
 
 	add_option( Heads_Up_Mailer\OPTION_VERSION, HUM_VERSION, '', 'yes' );
 	add_option( Heads_Up_Mailer\OPTION_DB_VERSION, Heads_Up_Mailer\DB_VERSION, '', 'yes' );
+
+	( new Heads_Up_Mailer\Worker() )->ensure_scheduled();
 }
 register_activation_hook( __FILE__, 'hum_activate' );
+
+/**
+ * Deactivation hook. Clear the recurring drain event so a removed
+ * plugin doesn't leave a ghost cron entry behind.
+ *
+ * @since 0.4.0
+ */
+function hum_deactivate(): void {
+	wp_clear_scheduled_hook( Heads_Up_Mailer\CRON_DRAIN_QUEUE );
+}
+register_deactivation_hook( __FILE__, 'hum_deactivate' );
 
 /**
  * Bootstrap. Sets the plugin global and runs the main class.

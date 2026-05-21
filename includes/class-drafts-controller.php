@@ -138,6 +138,13 @@ class Drafts_Controller {
 			);
 		}
 
+		if ( DRAFT_STATUS_SENDING === (string) $existing->status ) {
+			return new \WP_Error(
+				'hum_draft_locked_while_sending',
+				__( 'Cannot edit a draft while it is sending.', 'heads-up-mailer' )
+			);
+		}
+
 		$validated = $this->validate( $data );
 
 		if ( is_wp_error( $validated ) ) {

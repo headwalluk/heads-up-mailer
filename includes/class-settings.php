@@ -39,6 +39,10 @@ class Settings {
 	 */
 	public function run(): void {
 		add_action( 'admin_init', array( $this, 'register' ) );
+		// Slug changes invalidate the cached rewrite rule table. Hooked
+		// here so a flush happens once, on save, rather than on every
+		// admin pageview. M6 owns the `/manage-comms/` rule itself.
+		add_action( 'update_option_' . OPTION_MANAGE_SLUG, array( $this, 'flush_rewrites_on_slug_change' ), 10, 2 );
 	}
 
 	/**
@@ -64,6 +68,46 @@ class Settings {
 				'type'              => 'integer',
 				'sanitize_callback' => array( $this, 'sanitize_minutes' ),
 				'default'           => DEF_TICK_MINUTES,
+			)
+		);
+
+		register_setting(
+			self::GROUP,
+			OPTION_FROM_NAME,
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => array( $this, 'sanitize_text' ),
+				'default'           => DEF_FROM_NAME,
+			)
+		);
+
+		register_setting(
+			self::GROUP,
+			OPTION_FROM_EMAIL,
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => array( $this, 'sanitize_from_email' ),
+				'default'           => DEF_FROM_EMAIL,
+			)
+		);
+
+		register_setting(
+			self::GROUP,
+			OPTION_FOOTER_HTML,
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => array( $this, 'sanitize_footer_html' ),
+				'default'           => DEF_FOOTER_HTML,
+			)
+		);
+
+		register_setting(
+			self::GROUP,
+			OPTION_MANAGE_SLUG,
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => array( $this, 'sanitize_slug' ),
+				'default'           => DEF_MANAGE_SLUG,
 			)
 		);
 
@@ -229,5 +273,91 @@ class Settings {
 			: Crypto::encrypt( $trimmed );
 
 		return $result;
+	}
+
+	/**
+	 * Sanitise the From: email field.
+	 *
+	 * Empty input is allowed — the send-time check will refuse to
+	 * queue without a value. A non-empty but malformed value is
+	 * rejected with a settings error; the previously stored value
+	 * is preserved.
+	 *
+	 * @since 0.4.0
+	 * @param mixed $value Raw form value.
+	 * @return string
+	 */
+	public function sanitize_from_email( $value ): string {
+		$trimmed = trim( (string) $value );
+		$clean   = sanitize_email( $trimmed );
+		$valid   = ( '' !== $clean ) && (bool) is_email( $clean );
+
+		if ( '' !== $trimmed && ! $valid ) {
+			add_settings_error(
+				OPTION_FROM_EMAIL,
+				'hum_invalid_from_email',
+				__( 'From email address is not valid. The previous value was kept.', 'heads-up-mailer' )
+			);
+		}
+
+		if ( '' === $trimmed ) {
+			$result = '';
+		} elseif ( $valid ) {
+			$result = $clean;
+		} else {
+			$result = (string) get_option( OPTION_FROM_EMAIL, '' );
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Sanitise the footer HTML.
+	 *
+	 * `wp_kses_post` allows the usual post-content tags and inline
+	 * styling (enough for a small footer block) but blocks scripts
+	 * and unsafe protocols. The `{{unsubscribe_url}}` placeholder is
+	 * plain text and passes through unchanged.
+	 *
+	 * @since 0.4.0
+	 * @param mixed $value Raw form value.
+	 * @return string
+	 */
+	public function sanitize_footer_html( $value ): string {
+		return wp_kses_post( (string) wp_unslash( (string) $value ) );
+	}
+
+	/**
+	 * Sanitise the public unsubscribe slug.
+	 *
+	 * Falls back to the default on empty input — a blank slug would
+	 * collide with the site root.
+	 *
+	 * @since 0.4.0
+	 * @param mixed $value Raw form value.
+	 * @return string
+	 */
+	public function sanitize_slug( $value ): string {
+		$clean = sanitize_title( (string) $value );
+
+		return ( '' === $clean ) ? DEF_MANAGE_SLUG : $clean;
+	}
+
+	/**
+	 * Flush rewrite rules after the manage-comms slug changes.
+	 *
+	 * No-op for now — M6 will register the `/manage-comms/` rewrite
+	 * rule itself. Wiring the flush here means slug changes pick
+	 * up the new pattern immediately once M6 lands, without an
+	 * extra "save permalinks" step.
+	 *
+	 * @since 0.4.0
+	 * @param mixed $old_value Previous slug.
+	 * @param mixed $new_value New slug.
+	 */
+	public function flush_rewrites_on_slug_change( $old_value, $new_value ): void {
+		if ( (string) $old_value !== (string) $new_value ) {
+			flush_rewrite_rules( false );
+		}
 	}
 }

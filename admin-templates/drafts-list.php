@@ -35,6 +35,8 @@ $updated = isset( $_GET['updated'] ) ? sanitize_key( wp_unslash( $_GET['updated'
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read only.
 $deleted = isset( $_GET['deleted'] ) ? sanitize_key( wp_unslash( $_GET['deleted'] ) ) : '';
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read only.
+$sent_flag = isset( $_GET['sent'] ) ? sanitize_key( wp_unslash( $_GET['sent'] ) ) : '';
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read only.
 $error_code = isset( $_GET['error'] ) ? sanitize_key( wp_unslash( $_GET['error'] ) ) : '';
 
 if ( '' !== $updated ) {
@@ -51,6 +53,13 @@ if ( '' !== $deleted ) {
 	);
 }
 
+if ( '' !== $sent_flag ) {
+	printf(
+		'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
+		esc_html__( 'Draft queued for sending. The cron worker will drain the queue in the background.', 'heads-up-mailer' )
+	);
+}
+
 if ( '' !== $error_code ) {
 	$error_messages = array(
 		'hum_draft_invalid_subject'   => __( 'Subject is required.', 'heads-up-mailer' ),
@@ -61,6 +70,13 @@ if ( '' !== $error_code ) {
 		'hum_draft_insert_failed'     => __( 'Failed to insert draft.', 'heads-up-mailer' ),
 		'hum_draft_update_failed'     => __( 'Failed to update draft.', 'heads-up-mailer' ),
 		'hum_draft_delete_failed'     => __( 'Failed to delete draft.', 'heads-up-mailer' ),
+		'hum_send_draft_not_found'    => __( 'Draft not found.', 'heads-up-mailer' ),
+		'hum_send_already_in_flight'  => __( 'Already sending. Wait for the worker to finish.', 'heads-up-mailer' ),
+		'hum_send_from_email_missing' => __( 'Configure a From: email on Settings → Sending before sending.', 'heads-up-mailer' ),
+		'hum_send_no_groups'          => __( 'Select at least one group on the draft before sending.', 'heads-up-mailer' ),
+		'hum_send_no_recipients'      => __( 'No subscribed recipients in the selected groups.', 'heads-up-mailer' ),
+		'hum_send_insert_failed'      => __( 'Failed to queue send (database write failed).', 'heads-up-mailer' ),
+		'hum_send_update_failed'      => __( 'Failed to mark draft as sending.', 'heads-up-mailer' ),
 	);
 
 	$msg = isset( $error_messages[ $error_code ] )
@@ -75,6 +91,7 @@ if ( '' !== $error_code ) {
 
 $status_labels = array(
 	DRAFT_STATUS_DRAFT     => __( 'Draft', 'heads-up-mailer' ),
+	DRAFT_STATUS_SENDING   => __( 'Sending', 'heads-up-mailer' ),
 	DRAFT_STATUS_SENT      => __( 'Sent', 'heads-up-mailer' ),
 	DRAFT_STATUS_CANCELLED => __( 'Cancelled', 'heads-up-mailer' ),
 );

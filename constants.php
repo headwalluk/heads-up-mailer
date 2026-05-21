@@ -40,6 +40,16 @@ const OPTION_BATCH_SIZE   = 'hum_batch_size';
 const OPTION_TICK_MINUTES = 'hum_tick_minutes';
 
 /**
+ * Sending (sender identity, footer, public unsubscribe slug).
+ *
+ * @since 0.4.0
+ */
+const OPTION_FROM_NAME   = 'hum_from_name';
+const OPTION_FROM_EMAIL  = 'hum_from_email';
+const OPTION_FOOTER_HTML = 'hum_footer_html';
+const OPTION_MANAGE_SLUG = 'hum_manage_slug';
+
+/**
  * Mailbox (IMAP) settings.
  *
  * @since 0.1.0
@@ -69,6 +79,7 @@ const STATUS_COMPLAINED   = 'complained';
  * @since 0.1.0
  */
 const DRAFT_STATUS_DRAFT     = 'draft';
+const DRAFT_STATUS_SENDING   = 'sending';
 const DRAFT_STATUS_SENT      = 'sent';
 const DRAFT_STATUS_CANCELLED = 'cancelled';
 
@@ -77,9 +88,10 @@ const DRAFT_STATUS_CANCELLED = 'cancelled';
  *
  * @since 0.1.0
  */
-const SEND_STATUS_PENDING = 'pending';
-const SEND_STATUS_SENT    = 'sent';
-const SEND_STATUS_FAILED  = 'failed';
+const SEND_STATUS_PENDING    = 'pending';
+const SEND_STATUS_PROCESSING = 'processing';
+const SEND_STATUS_SENT       = 'sent';
+const SEND_STATUS_FAILED     = 'failed';
 
 /**
  * Transient keys / prefixes.
@@ -113,6 +125,23 @@ const DEF_MAILBOX_TLS           = true;
 const DEF_MAILBOX_VALIDATE_CERT = true;
 const DEF_MAILBOX_INTERVAL      = 5;
 const DEF_DRAFT_SUBJECT_MAX     = 200;
+const DEF_FROM_NAME             = '';
+const DEF_FROM_EMAIL            = '';
+const DEF_MANAGE_SLUG           = 'manage-comms';
+
+/**
+ * Default footer HTML. The worker replaces `{{unsubscribe_url}}`
+ * with the per-recipient URL at send time and injects this block
+ * before the body's closing `</body>` tag (or appends, for
+ * fragment HTML).
+ *
+ * @since 0.4.0
+ */
+const DEF_FOOTER_HTML = '<hr style="border:none;border-top:1px solid #ddd;margin:32px 0 16px;">' .
+	'<p style="font-size:11px;color:#666;text-align:center;">' .
+	'You\'re receiving this because you subscribed to Headwall Hosting updates.<br>' .
+	'<a href="{{unsubscribe_url}}">Unsubscribe</a>' .
+	'</p>';
 
 /**
  * REST API namespace.

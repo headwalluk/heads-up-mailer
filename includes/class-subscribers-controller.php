@@ -323,6 +323,43 @@ class Subscribers_Controller {
 	}
 
 	/**
+	 * Generate a fresh `token_salt` for a subscriber.
+	 *
+	 * Invalidates every outstanding `{id}.{hmac}` token for the
+	 * subscriber, including in-flight `List-Unsubscribe` links from
+	 * already-sent newsletters. Use sparingly — typically only on an
+	 * admin-driven "rotate token" action or when a leak is suspected.
+	 *
+	 * @since 0.4.0
+	 * @param int $id Subscriber ID.
+	 * @return true|\WP_Error
+	 */
+	public function regenerate_token_salt( int $id ): true|\WP_Error {
+		if ( null === $this->get( $id ) ) {
+			return new \WP_Error(
+				'hum_subscriber_not_found',
+				__( 'Subscriber not found.', 'heads-up-mailer' )
+			);
+		}
+
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom-table write.
+		$updated = $wpdb->update(
+			$this->table(),
+			array( 'token_salt' => bin2hex( random_bytes( 32 ) ) ),
+			array( 'id' => $id ),
+			array( '%s' ),
+			array( '%d' )
+		);
+
+		$result = ( false === $updated )
+			? new \WP_Error( 'hum_subscriber_update_failed', __( 'Failed to update subscriber.', 'heads-up-mailer' ) )
+			: true;
+
+		return $result;
+	}
+
+	/**
 	 * Validate and sanitise incoming subscriber data.
 	 *
 	 * Excludes `token_salt` and `created_at` — those are managed by

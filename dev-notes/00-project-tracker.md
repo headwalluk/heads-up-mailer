@@ -1,10 +1,10 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** M4 complete; M5 ready to start
-**Current Version:** 0.3.0 (0.4.0 pending)
-**Current Phase:** M5 — Send pipeline
+**Status:** M5 complete; M6 ready to start
+**Current Version:** 0.4.0 (0.5.0 pending)
+**Current Phase:** M6 — Public /manage-comms/ endpoint
 **Last Updated:** 21 May 2026
-**Progress:** 4 of 9 milestones complete (3 deferred for v1.0.0+)
+**Progress:** 5 of 9 milestones complete (3 deferred for v1.0.0+)
 
 ---
 
@@ -325,46 +325,84 @@ endpoint re-emits it inside a minimal document.
 asynchronously. Every outbound carries the required headers and a
 plain-text alternative.
 
-**Status:** 📋 Not started
+**Status:** ✅ Complete
 **Dependencies:** M2, M3, M4
 
 ### Tasks
 
-#### Queueing
+#### Tokens helper (M5 chunk A — also consumed by M6/M7)
 
-- [ ] Admin "Send" handler — nonce + capability check
-- [ ] Single transaction: insert `hum_sends` row + N
-      `hum_send_recipients` rows (status `pending`)
-- [ ] Skip subscribers whose status is not `subscribed`
-- [ ] Return immediately to admin with success notice + sent-log
-      link
+- [x] `includes/class-tokens.php` — `generate(int): string` and
+      `verify(string): ?int`. Constant-time `hash_equals`; all
+      failure modes collapse to `null`.
+- [x] `Subscribers_Controller::regenerate_token_salt()` for future
+      rotation flows.
 
-#### Worker
+#### Sending settings tab (M5 chunk B)
 
-- [ ] Custom WP-Cron interval `hum_tick` (configurable, default 5
-      minutes) registered via `cron_schedules` filter
-- [ ] Worker hook `hum_drain_queue`:
-  - [ ] Acquire transient lock `hum_drain_lock` to prevent
+- [x] New `OPTION_FROM_NAME`, `OPTION_FROM_EMAIL`,
+      `OPTION_FOOTER_HTML`, `OPTION_MANAGE_SLUG` with sanitize
+      callbacks. Footer ships with a default template carrying
+      `{{unsubscribe_url}}`.
+- [x] Slug-change hook flushes the WordPress rewrite-rules cache
+      so M6's eventual `/manage-comms/` rewrite picks up the new
+      value on save.
+
+#### Queueing (M5 chunk C)
+
+- [x] Admin "Send" handler — nonce + capability check, separate
+      `<form>` on the draft-edit page with a confirm dialog that
+      names the recipient count
+- [x] `Sends_Controller::queue()` — single transaction: insert
+      `hum_sends` row + N `hum_send_recipients` rows (status
+      `pending`) + flip draft to `DRAFT_STATUS_SENDING`
+- [x] Skip subscribers whose status is not `subscribed`
+- [x] Return immediately to admin with success notice; re-sends
+      from a `sent` draft write a fresh `send_id`
+
+#### Worker (M5 chunk D)
+
+- [x] Custom WP-Cron interval `hum_tick` (configurable, default 5
+      minutes) registered via `cron_schedules` filter; rescheduled
+      automatically when the tick-interval setting changes
+- [x] Activation hook + `admin_init` ensure the recurring drain
+      is scheduled; deactivation hook clears it
+- [x] Worker hook `hum_drain_queue`:
+  - [x] Acquire transient lock `hum_drain_lock` to prevent
         overlapping ticks
-  - [ ] Pull up to N pending rows ordered by ID
-  - [ ] Wall-clock budget: bail after ~25 s regardless of remaining
+  - [x] Pull up to N pending rows ordered by ID
+  - [x] Wall-clock budget: bail after ~25 s regardless of remaining
         rows
-  - [ ] Per-recipient: build `$headers`, build `$body`, call
-        `wp_mail()`, update row status atomically
-  - [ ] Failures logged in `last_error`; `attempts` incremented
-- [ ] `phpmailer_init` action to attach plain-text alternative
+  - [x] Per-recipient: optimistic `pending → processing` claim,
+        build `$headers`, build `$body`, call `wp_mail()`, update
+        row status atomically
+  - [x] Failures logged in `last_error`; `attempts` incremented
+- [x] `phpmailer_init` action to attach plain-text alternative
 
 #### Headers and footer
 
-- [ ] `List-Unsubscribe: <mailto:unsub@...?subject=unsubscribe-{token}>, <https://.../manage-comms/?token=...&action=unsubscribe>`
-- [ ] `List-Unsubscribe-Post: List-Unsubscribe=One-Click`
-- [ ] `List-ID: <heads-up-mailer.headwall-hosting.com>`
-- [ ] `Precedence: bulk`
-- [ ] HTML footer injected with unsubscribe link
-- [ ] Plain-text alternative auto-generated from HTML
+- [x] `List-Unsubscribe: <mailto:unsub@...?subject=unsubscribe-{token}>, <https://.../manage-comms/?token=...&action=unsubscribe>`
+- [x] `List-Unsubscribe-Post: List-Unsubscribe=One-Click`
+- [x] `List-ID: <heads-up-mailer.<host>>`
+- [x] `Precedence: bulk`
+- [x] HTML footer injected before last `</body>` (appended for
+      fragment HTML)
+- [x] Plain-text alternative auto-generated from HTML
+
+#### Save guard
+
+- [x] `Drafts_Controller::update()` refuses edits while
+      `status = sending` (`hum_draft_locked_while_sending`).
+      Edit form inputs and Save button disable in the UI to match.
 
 **Deliverable:** Drafts can be sent. Send completes within a few
 ticks. Sent rows show in `hum_send_recipients` with timestamps.
+✅ Achieved.
+
+**Notes:** End-to-end verified against a live Gmail inbox on
+2026-05-21. Sender identity, headers, footer, plain-text
+alternative, optimistic claim, and finalisation all behaved as
+designed. Released as 0.4.0.
 
 ---
 

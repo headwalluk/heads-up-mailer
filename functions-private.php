@@ -41,6 +41,10 @@ function get_default_settings(): array {
 		$hum_default_settings = array(
 			OPTION_BATCH_SIZE            => DEF_BATCH_SIZE,
 			OPTION_TICK_MINUTES          => DEF_TICK_MINUTES,
+			OPTION_FROM_NAME             => DEF_FROM_NAME,
+			OPTION_FROM_EMAIL            => DEF_FROM_EMAIL,
+			OPTION_FOOTER_HTML           => DEF_FOOTER_HTML,
+			OPTION_MANAGE_SLUG           => DEF_MANAGE_SLUG,
 			OPTION_MAILBOX_HOST          => '',
 			OPTION_MAILBOX_PORT          => DEF_MAILBOX_PORT,
 			OPTION_MAILBOX_USER          => DEF_MAILBOX_USER,

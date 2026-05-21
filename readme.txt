@@ -4,7 +4,7 @@ Tags: newsletter, email, subscribers, mailer, unsubscribe
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 0.3.0
+Stable tag: 0.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,6 +45,17 @@ Yes. Heads Up Mailer sends via `wp_mail()`, so whatever you configure as the Wor
 See the `docs/` directory in the plugin folder.
 
 == Changelog ==
+
+= 0.4.0 =
+* Send pipeline (M5). Admins can click Send on a draft and the cron worker drains the queue in the background. End-to-end verified against a live Gmail inbox.
+* `Sends_Controller::queue()` writes a `hum_sends` row plus N `hum_send_recipients` rows in a single transaction, dedupes recipients across the selected groups, filters to `status = subscribed`, and flips the draft to `sending`.
+* WP-Cron worker (`hum_tick` interval, configurable) processes recipients in batches with an optimistic `pending → processing` claim that prevents double-sends, a wall-clock budget per tick, and a finalisation pass that stamps `finished_at` + flips the draft to `sent` once every row reaches a terminal status.
+* RFC 8058-compliant headers on every outgoing message: `List-Unsubscribe` (mailto + https), `List-Unsubscribe-Post: List-Unsubscribe=One-Click`, `List-ID`, `Precedence: bulk`. Plain-text alternative auto-generated from the HTML body via `phpmailer_init`. Sender identity (`OPTION_FROM_NAME` / `OPTION_FROM_EMAIL`) scoped to the send via `wp_mail_from` filters that attach and detach per call.
+* New "Sending" settings tab: from name, from email, footer HTML template with `{{unsubscribe_url}}` placeholder, and the public unsubscribe slug. Slug changes flush the WordPress rewrite-rules cache.
+* `includes/class-tokens.php` — bearer-token primitive shared by M5 (emit) and M6 (verify). `{subscriber_id}.{hmac_hex}` format with constant-time comparison and a `regenerate_token_salt()` helper on `Subscribers_Controller`.
+* Footer injected before the last `</body>` (appended for fragment HTML), with the per-recipient unsubscribe URL substituted into the template.
+* Save guard: admins can no longer edit a draft while it is sending (`hum_draft_locked_while_sending`). Form inputs and Save button disable in the UI as well.
+* Resends from a `sent` draft write a fresh `send_id` so the `UNIQUE(send_id, subscriber_id)` constraint stays clean.
 
 = 0.3.0 =
 * Settings page (Queue + Mailbox tabs) with per-field sanitize callbacks. Numeric ranges clamped, booleans normalised, mailbox password encrypted at rest via libsodium `crypto_secretbox` keyed off `AUTH_KEY` (HKDF-SHA256).

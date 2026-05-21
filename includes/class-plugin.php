@@ -32,6 +32,9 @@ class Plugin {
 		$rest = new REST_Controller();
 		$rest->run();
 
+		$worker = new Worker();
+		$worker->run();
+
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_init', array( $this, 'check_first_run' ), 1 );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
@@ -45,6 +48,7 @@ class Plugin {
 		add_action( 'admin_post_hum_save_draft', array( $this, 'handle_save_draft' ) );
 		add_action( 'admin_post_hum_delete_draft', array( $this, 'handle_delete_draft' ) );
 		add_action( 'admin_post_hum_preview_draft', array( $this, 'handle_preview_draft' ) );
+		add_action( 'admin_post_hum_send_draft', array( $this, 'handle_send_draft' ) );
 		add_action( 'wp_ajax_hum_test_mailbox', array( $this, 'ajax_test_mailbox' ) );
 	}
 
@@ -711,6 +715,41 @@ class Plugin {
 			$redirect_args['error'] = $result->get_error_code();
 		} else {
 			$redirect_args['deleted'] = '1';
+		}
+
+		wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );
+		exit;
+	}
+
+	/**
+	 * Handle the "Send" form submission (admin-post.php).
+	 *
+	 * Delegates to `Sends_Controller::queue()`, which runs pre-flight
+	 * and performs the transactional insert. Redirects back to the
+	 * drafts list on success (the draft is now `sending` and locked
+	 * from edits until the worker finishes).
+	 *
+	 * @since 0.4.0
+	 */
+	public function handle_send_draft(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission.', 'heads-up-mailer' ) );
+		}
+
+		$draft_id = isset( $_POST['draft_id'] ) ? absint( $_POST['draft_id'] ) : 0;
+		check_admin_referer( 'hum_send_draft_' . $draft_id );
+
+		$controller = new Sends_Controller();
+		$result     = $controller->queue( $draft_id );
+
+		$redirect_args = array( 'page' => 'heads-up-mailer-drafts' );
+
+		if ( is_wp_error( $result ) ) {
+			$redirect_args['error']    = $result->get_error_code();
+			$redirect_args['action']   = 'edit';
+			$redirect_args['draft_id'] = $draft_id;
+		} else {
+			$redirect_args['sent'] = '1';
 		}
 
 		wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );
