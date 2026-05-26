@@ -1,10 +1,10 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** M5 complete; M6 ready to start
-**Current Version:** 0.4.0 (0.5.0 pending)
-**Current Phase:** M6 — Public /manage-comms/ endpoint
-**Last Updated:** 21 May 2026
-**Progress:** 5 of 9 milestones complete (3 deferred for v1.0.0+)
+**Status:** M6 complete; M7 ready to start
+**Current Version:** 0.5.0 (0.6.0 pending)
+**Current Phase:** M7 — Mailbox poller (mailto unsubscribes)
+**Last Updated:** 26 May 2026
+**Progress:** 6 of 9 milestones complete (3 deferred for v1.0.0+)
 
 ---
 
@@ -411,30 +411,38 @@ designed. Released as 0.4.0.
 **Goal:** Recipients can manage preferences and one-click
 unsubscribe via signed tokens.
 
-**Status:** 📋 Not started
+**Status:** ✅ Complete
 **Dependencies:** M2
 
 ### Tasks
 
-- [ ] Rewrite rule for `/manage-comms/` → handler
-- [ ] Token parser: split on `.`, validate `subscriber_id` integer,
-      verify `HMAC-SHA256(subscriber_id, token_salt)`
-- [ ] **GET handler** — render preference page
+- [x] Rewrite rule for `/manage-comms/` → handler (slug driven by
+      `OPTION_MANAGE_SLUG`; activation flushes rewrite rules)
+- [x] Token parser via shared `Tokens::verify()` (already landed in
+      M5 chunk A; reused here)
+- [x] **GET handler** — render preference page
       (`public-templates/manage-comms.php`)
-  - [ ] Per-group checkboxes reflecting current memberships
-  - [ ] "Unsubscribe all" checkbox
-  - [ ] CSRF nonce (separate from access token) on the form
-- [ ] **POST handler — preferences** — update group memberships,
+  - [x] Per-group checkboxes reflecting current memberships
+  - [x] "Unsubscribe all" checkbox
+  - [x] CSRF nonce (separate from access token) on the form
+- [x] **POST handler — preferences** — update group memberships,
       re-render with confirmation
-- [ ] **POST handler — `action=unsubscribe`** (one-click)
-  - [ ] Flip status to `unsubscribed`, stamp `unsubscribed_at`
-  - [ ] Return 200 + plain-text "thanks" (no confirmation page)
-  - [ ] Idempotent — re-POST does nothing
-- [ ] Throttle by token (transient counter) — 20 requests / hour
-      per token
+- [x] **POST handler — `action=unsubscribe`** (one-click)
+  - [x] Flip status to `unsubscribed`, stamp `unsubscribed_at`
+  - [x] Return 200 + plain-text "thanks" (no confirmation page)
+  - [x] Idempotent — re-POST does nothing (`unsubscribe()` returns
+        early for rows already in `unsubscribed` status)
+- [x] Throttle by token (transient counter) — 20 requests / hour
+      per token (`RATE_LIMIT_MANAGE_PER_HOUR`)
 
 **Deliverable:** Recipients can self-manage. Gmail's one-click
-button works.
+button works. ✅ Achieved.
+
+**Notes:** Released as 0.5.0 on 2026-05-26. Adds
+`Public_Controller`, `public-templates/manage-comms.php`, and
+`Subscribers_Controller::unsubscribe()` / `resubscribe()`
+idempotent helpers. Manually verified end-to-end on the dev
+site — token URLs, preference save, one-click POST.
 
 ---
 

@@ -251,13 +251,14 @@ class Sends_Controller {
 
 		$recipients_table  = $this->recipients_table();
 		$placeholders_join = implode( ', ', $placeholders );
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Placeholders fanned out from integer subscriber IDs; values prepared.
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Placeholders fanned out from integer subscriber IDs; values prepared.
 		$inserted_recipients = $wpdb->query(
 			$wpdb->prepare(
 				"INSERT INTO {$recipients_table} (send_id, subscriber_id) VALUES {$placeholders_join}",
 				$values
 			)
 		);
+		// phpcs:enable
 
 		if ( false === $inserted_recipients ) {
 			return new \WP_Error( 'hum_send_insert_failed', __( 'Failed to insert recipients.', 'heads-up-mailer' ) );

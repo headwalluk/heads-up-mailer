@@ -57,6 +57,7 @@ class Worker {
 	 * @since 0.4.0
 	 */
 	public function run(): void {
+		// phpcs:ignore WordPress.WP.CronInterval.ChangeDetected -- Interval value is dynamic (clamped 1..60 min from settings); sniff can't statically infer it.
 		add_filter( 'cron_schedules', array( $this, 'register_interval' ) );
 		add_action( CRON_DRAIN_QUEUE, array( $this, 'drain' ) );
 		add_action( 'admin_init', array( $this, 'ensure_scheduled' ) );
@@ -72,7 +73,6 @@ class Worker {
 	 * @param array<string, array<string, mixed>> $schedules Existing schedules.
 	 * @return array<string, array<string, mixed>>
 	 */
-	// phpcs:ignore WordPress.WP.CronInterval.ChangeDetected -- Interval value is dynamic (clamped 1..60 minutes from settings); sniff can't statically infer it.
 	public function register_interval( array $schedules ): array {
 		$minutes = (int) get_option( OPTION_TICK_MINUTES, DEF_TICK_MINUTES );
 		$minutes = max( 1, min( 60, $minutes ) );

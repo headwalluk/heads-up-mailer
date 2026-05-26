@@ -112,6 +112,20 @@ const CRON_POLL_MAILBOX  = 'hum_poll_mailbox';
 const CRON_INTERVAL_TICK = 'hum_tick';
 
 /**
+ * Query var the rewrite rule sets to flag a `/manage-comms/` hit.
+ *
+ * @since 0.5.0
+ */
+const QUERY_VAR_MANAGE = 'hum_manage';
+
+/**
+ * Public-endpoint rate limit.
+ *
+ * @since 0.5.0
+ */
+const RATE_LIMIT_MANAGE_PER_HOUR = 20;
+
+/**
  * Defaults.
  *
  * @since 0.1.0

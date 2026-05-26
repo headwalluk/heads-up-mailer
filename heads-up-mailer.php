@@ -3,7 +3,7 @@
  * Plugin Name: Heads Up Mailer
  * Plugin URI: https://headgit.net/headwall/heads-up-mailer
  * Description: In-house newsletter sender for headwall-hosting.com. Async send queue, RFC-8058 one-click unsubscribe, IMAP poll for mailto unsubscribes.
- * Version: 0.4.0
+ * Version: 0.5.0
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: Paul Faulkner
@@ -18,7 +18,7 @@
 
 defined( 'ABSPATH' ) || die();
 
-define( 'HUM_VERSION', '0.4.0' );
+define( 'HUM_VERSION', '0.5.0' );
 define( 'HUM_FILE', __FILE__ );
 define( 'HUM_PATH', plugin_dir_path( __FILE__ ) );
 define( 'HUM_URL', plugin_dir_url( __FILE__ ) );
@@ -38,6 +38,7 @@ require_once HUM_PATH . 'includes/class-csv-importer.php';
 require_once HUM_PATH . 'includes/class-crypto.php';
 require_once HUM_PATH . 'includes/class-settings.php';
 require_once HUM_PATH . 'includes/class-rest-controller.php';
+require_once HUM_PATH . 'includes/class-public-controller.php';
 require_once HUM_PATH . 'includes/class-plugin.php';
 
 /**
@@ -64,17 +65,25 @@ function hum_activate(): void {
 	add_option( Heads_Up_Mailer\OPTION_DB_VERSION, Heads_Up_Mailer\DB_VERSION, '', 'yes' );
 
 	( new Heads_Up_Mailer\Worker() )->ensure_scheduled();
+
+	// Register the manage-comms rewrite once before flushing, so the
+	// flushed rule table includes it. The `init` hook in
+	// Public_Controller hasn't fired during activation.
+	( new Heads_Up_Mailer\Public_Controller() )->register_rewrite();
+	flush_rewrite_rules( false );
 }
 register_activation_hook( __FILE__, 'hum_activate' );
 
 /**
  * Deactivation hook. Clear the recurring drain event so a removed
- * plugin doesn't leave a ghost cron entry behind.
+ * plugin doesn't leave a ghost cron entry, and flush rewrite rules
+ * so our `/manage-comms/` slug stops resolving.
  *
  * @since 0.4.0
  */
 function hum_deactivate(): void {
 	wp_clear_scheduled_hook( Heads_Up_Mailer\CRON_DRAIN_QUEUE );
+	flush_rewrite_rules( false );
 }
 register_deactivation_hook( __FILE__, 'hum_deactivate' );
 

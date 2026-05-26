@@ -323,6 +323,98 @@ class Subscribers_Controller {
 	}
 
 	/**
+	 * Flip a subscriber to `unsubscribed` and stamp `unsubscribed_at`.
+	 *
+	 * Idempotent — already-unsubscribed rows are left untouched
+	 * (existing `unsubscribed_at` preserved). The recipient never
+	 * needs to know whether their click "worked" the first time.
+	 *
+	 * @since 0.5.0
+	 * @param int $id Subscriber ID.
+	 * @return true|\WP_Error
+	 */
+	public function unsubscribe( int $id ): true|\WP_Error {
+		$existing = $this->get( $id );
+
+		if ( null === $existing ) {
+			return new \WP_Error(
+				'hum_subscriber_not_found',
+				__( 'Subscriber not found.', 'heads-up-mailer' )
+			);
+		}
+
+		if ( STATUS_UNSUBSCRIBED === (string) $existing->status ) {
+			return true;
+		}
+
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom-table write.
+		$updated = $wpdb->update(
+			$this->table(),
+			array(
+				'status'          => STATUS_UNSUBSCRIBED,
+				'unsubscribed_at' => now_utc(),
+			),
+			array( 'id' => $id ),
+			array( '%s', '%s' ),
+			array( '%d' )
+		);
+
+		$result = ( false === $updated )
+			? new \WP_Error( 'hum_subscriber_update_failed', __( 'Failed to update subscriber.', 'heads-up-mailer' ) )
+			: true;
+
+		return $result;
+	}
+
+	/**
+	 * Flip a subscriber back to `subscribed` and clear
+	 * `unsubscribed_at`.
+	 *
+	 * Idempotent. Only acts on rows currently in `unsubscribed`
+	 * status; `bounced` and `complained` are left alone — those
+	 * states need admin intervention, not a token-bearing
+	 * recipient re-ticking a box.
+	 *
+	 * @since 0.5.0
+	 * @param int $id Subscriber ID.
+	 * @return true|\WP_Error
+	 */
+	public function resubscribe( int $id ): true|\WP_Error {
+		$existing = $this->get( $id );
+
+		if ( null === $existing ) {
+			return new \WP_Error(
+				'hum_subscriber_not_found',
+				__( 'Subscriber not found.', 'heads-up-mailer' )
+			);
+		}
+
+		if ( STATUS_UNSUBSCRIBED !== (string) $existing->status ) {
+			return true;
+		}
+
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom-table write.
+		$updated = $wpdb->update(
+			$this->table(),
+			array(
+				'status'          => STATUS_SUBSCRIBED,
+				'unsubscribed_at' => '',
+			),
+			array( 'id' => $id ),
+			array( '%s', '%s' ),
+			array( '%d' )
+		);
+
+		$result = ( false === $updated )
+			? new \WP_Error( 'hum_subscriber_update_failed', __( 'Failed to update subscriber.', 'heads-up-mailer' ) )
+			: true;
+
+		return $result;
+	}
+
+	/**
 	 * Generate a fresh `token_salt` for a subscriber.
 	 *
 	 * Invalidates every outstanding `{id}.{hmac}` token for the

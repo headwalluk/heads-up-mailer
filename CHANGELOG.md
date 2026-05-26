@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-05-26
+
+### Added
+
+- `includes/class-public-controller.php` — public `/manage-comms/`
+  endpoint. Rewrite rule driven by `OPTION_MANAGE_SLUG`. Bearer
+  token parsed via the shared `Tokens::verify()` helper. Per-token
+  rate limit (`RATE_LIMIT_MANAGE_PER_HOUR = 20` requests/hour) via
+  transient counter. Dispatch:
+  - **GET** → renders `public-templates/manage-comms.php` with per-
+    group checkboxes reflecting current memberships and an
+    "Unsubscribe all" option.
+  - **POST `action=unsubscribe`** → idempotent one-click flow:
+    flips status, stamps `unsubscribed_at`, returns 200 + plain
+    text. Re-POSTing is a no-op.
+  - **POST form** → updates group memberships and re-renders with
+    confirmation.
+  All POSTs carry a CSRF nonce that's separate from the bearer
+  token.
+- `Subscribers_Controller::unsubscribe()` / `resubscribe()` —
+  idempotent status flips with `unsubscribed_at` housekeeping.
+  `resubscribe()` only acts on rows currently in `unsubscribed`;
+  `bounced` / `complained` are left alone.
+- Activation hook now pre-registers the rewrite rule before
+  `flush_rewrite_rules()` so the flushed table includes
+  `/manage-comms/` on first activation.
+- Deactivation hook now flushes rewrites so the public slug stops
+  resolving after the plugin is removed.
+
+### Changed
+
+- `Sends_Controller::compute_recipient_ids()` — phpcs ignore
+  comment switched from single-line `// phpcs:ignore` to a
+  `disable` / `enable` block. No behavioural change.
+- `Worker::run()` — moved the `WordPress.WP.CronInterval.ChangeDetected`
+  ignore comment to the `add_filter()` call site so phpcs actually
+  honours it; the prior placement above `register_interval()` was
+  on the wrong statement.
+
 ## [0.4.0] — 2026-05-21
 
 ### Added

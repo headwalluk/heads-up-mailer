@@ -35,6 +35,9 @@ class Plugin {
 		$worker = new Worker();
 		$worker->run();
 
+		$public = new Public_Controller();
+		$public->run();
+
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_init', array( $this, 'check_first_run' ), 1 );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
