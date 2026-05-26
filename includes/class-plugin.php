@@ -35,6 +35,9 @@ class Plugin {
 		$worker = new Worker();
 		$worker->run();
 
+		$poller = new Mailbox_Poller();
+		$poller->run();
+
 		$public = new Public_Controller();
 		$public->run();
 
@@ -53,6 +56,7 @@ class Plugin {
 		add_action( 'admin_post_hum_preview_draft', array( $this, 'handle_preview_draft' ) );
 		add_action( 'admin_post_hum_send_draft', array( $this, 'handle_send_draft' ) );
 		add_action( 'wp_ajax_hum_test_mailbox', array( $this, 'ajax_test_mailbox' ) );
+		add_action( 'wp_ajax_hum_poll_mailbox', array( $this, 'ajax_poll_mailbox' ) );
 	}
 
 	/**
@@ -125,14 +129,50 @@ class Plugin {
 			return;
 		}
 
-		if ( extension_loaded( 'imap' ) ) {
+		if ( ! extension_loaded( 'imap' ) ) {
+			printf(
+				'<div class="notice notice-error"><p><strong>%s</strong> %s</p></div>',
+				esc_html__( 'Heads Up Mailer: PHP imap extension missing.', 'heads-up-mailer' ),
+				esc_html__( 'The mailbox poller used for mailto-form unsubscribes requires the PHP imap extension. Sending still works without it.', 'heads-up-mailer' )
+			);
+
 			return;
 		}
 
+		// Stale-poll warning. Only show when creds are configured —
+		// otherwise the admin hasn't asked us to poll yet and a
+		// "stale" notice would be noise.
+		$host          = (string) get_option( OPTION_MAILBOX_HOST, '' );
+		$user          = (string) get_option( OPTION_MAILBOX_USER, '' );
+		$has_password  = '' !== (string) get_option( OPTION_MAILBOX_PASSWORD, '' );
+		$creds_present = ( '' !== $host && '' !== $user && $has_password );
+
+		if ( ! $creds_present ) {
+			return;
+		}
+
+		$last_ok       = (int) get_option( OPTION_MAILBOX_LAST_OK, 0 );
+		$is_stale      = ( $last_ok < ( time() - MAILBOX_STALE_THRESHOLD_SECONDS ) );
+		$last_error    = (string) get_option( OPTION_MAILBOX_LAST_ERROR, '' );
+		$last_error_at = (int) get_option( OPTION_MAILBOX_LAST_ERROR_AT, 0 );
+
+		if ( ! $is_stale ) {
+			return;
+		}
+
+		$detail = ( '' !== $last_error && $last_error_at > 0 )
+			? sprintf(
+				/* translators: 1: error message from imap_errors(), 2: relative time since the error. */
+				__( 'Last attempt failed: %1$s (%2$s).', 'heads-up-mailer' ),
+				$last_error,
+				human_time_diff( $last_error_at )
+			)
+			: __( 'No successful poll on record yet. Check IMAP credentials and the cron schedule.', 'heads-up-mailer' );
+
 		printf(
-			'<div class="notice notice-error"><p><strong>%s</strong> %s</p></div>',
-			esc_html__( 'Heads Up Mailer: PHP imap extension missing.', 'heads-up-mailer' ),
-			esc_html__( 'The mailbox poller used for mailto-form unsubscribes requires the PHP imap extension. Sending still works without it.', 'heads-up-mailer' )
+			'<div class="notice notice-warning"><p><strong>%s</strong> %s</p></div>',
+			esc_html__( 'Heads Up Mailer: mailbox poller is stale.', 'heads-up-mailer' ),
+			esc_html( $detail )
 		);
 	}
 
@@ -233,6 +273,7 @@ class Plugin {
 			array(
 				'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
 				'testMailboxNonce' => wp_create_nonce( 'hum_test_mailbox' ),
+				'pollMailboxNonce' => wp_create_nonce( 'hum_poll_mailbox' ),
 			)
 		);
 	}
@@ -612,6 +653,32 @@ class Plugin {
 				'message' => sprintf( __( 'Connection successful — folder "%s" is reachable.', 'heads-up-mailer' ), $folder ),
 			)
 		);
+	}
+
+	/**
+	 * AJAX: trigger a synchronous mailbox poll using the stored
+	 * credentials.
+	 *
+	 * The same code path the WP-Cron tick runs, just invoked
+	 * inline. Honours the poll lock so it can't overlap with a
+	 * concurrent tick.
+	 *
+	 * @since 0.6.0
+	 */
+	public function ajax_poll_mailbox(): void {
+		check_ajax_referer( 'hum_poll_mailbox', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions.', 'heads-up-mailer' ) ) );
+		}
+
+		$result = ( new Mailbox_Poller() )->poll_now();
+
+		if ( $result['ok'] ) {
+			wp_send_json_success( array( 'message' => $result['message'] ) );
+		} else {
+			wp_send_json_error( array( 'message' => $result['message'] ) );
+		}
 	}
 
 	/**

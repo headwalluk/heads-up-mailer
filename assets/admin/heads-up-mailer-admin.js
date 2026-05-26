@@ -1,7 +1,7 @@
 /**
  * Heads Up Mailer admin JS.
  *
- * Three delegated handlers:
+ * Four delegated handlers:
  *
  * - `data-hum-confirm` on any element prompts the user before the
  *   default action proceeds (used for destructive links).
@@ -10,6 +10,8 @@
  *   hash so reloads and deep links land on the right tab.
  * - `#hum-mb-test` POSTs the mailbox tab's current values to the
  *   `hum_test_mailbox` AJAX endpoint and prints the result inline.
+ * - `#hum-mb-poll` triggers a synchronous mailbox poll using the
+ *   stored credentials and prints the result inline.
  *
  * @since 0.1.0
  */
@@ -130,4 +132,56 @@ document.addEventListener('click', (event) => {
 
 	event.preventDefault();
 	humTestMailbox(button);
+});
+
+async function humPollMailbox(button) {
+	if (typeof humAdminData === 'undefined') {
+		return;
+	}
+
+	const result = document.getElementById('hum-mb-poll-result');
+
+	const body = new FormData();
+	body.append('action', 'hum_poll_mailbox');
+	body.append('nonce', humAdminData.pollMailboxNonce);
+
+	button.disabled = true;
+	if (result) {
+		result.textContent = 'Polling…';
+		result.className = 'description';
+	}
+
+	try {
+		const response = await fetch(humAdminData.ajaxUrl, {
+			method: 'POST',
+			body: body,
+			credentials: 'same-origin',
+		});
+
+		const json = await response.json();
+		const message = json?.data?.message ?? (json?.success ? 'OK' : 'Failed');
+
+		if (result) {
+			result.textContent = message;
+			result.className = json?.success ? 'description hum-mb-poll-success' : 'description hum-mb-poll-error';
+		}
+	} catch (err) {
+		if (result) {
+			result.textContent = 'Network error: ' + err.message;
+			result.className = 'description hum-mb-poll-error';
+		}
+	} finally {
+		button.disabled = false;
+	}
+}
+
+document.addEventListener('click', (event) => {
+	const button = event.target.closest('#hum-mb-poll');
+
+	if (!button) {
+		return;
+	}
+
+	event.preventDefault();
+	humPollMailbox(button);
 });

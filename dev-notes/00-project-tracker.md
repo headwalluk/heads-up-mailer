@@ -1,10 +1,10 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** M6 complete; M7 ready to start
-**Current Version:** 0.5.0 (0.6.0 pending)
-**Current Phase:** M7 — Mailbox poller (mailto unsubscribes)
+**Status:** M7 complete; M8 ready to start
+**Current Version:** 0.6.0 (0.7.0 pending)
+**Current Phase:** M8 — Sent log UI
 **Last Updated:** 26 May 2026
-**Progress:** 6 of 9 milestones complete (3 deferred for v1.0.0+)
+**Progress:** 7 of 9 milestones complete (3 deferred for v1.0.0+)
 
 ---
 
@@ -451,24 +451,48 @@ site — token URLs, preference save, one-click POST.
 **Goal:** Inbound mails to `unsub@…` are parsed and translated into
 status flips.
 
-**Status:** 📋 Not started
+**Status:** ✅ Complete
 **Dependencies:** M3 (IMAP creds), M6 (token validation)
 
 ### Tasks
 
-- [ ] WP-Cron job `hum_poll_mailbox` (interval from settings)
-- [ ] IMAP connection helper using `imap_open` (PHP `ext-imap`)
-- [ ] Fetch unread messages from the configured folder
-- [ ] Subject parser: regex `^unsubscribe-([A-Za-z0-9._-]+)$`
-- [ ] Re-use M6 token validator
-- [ ] Flip status, stamp `unsubscribed_at`
-- [ ] Move processed messages to `Processed` subfolder (create if
-      missing); failures move to `Errors`
-- [ ] Connection error handling — surface as admin notice if the
-      poller can't connect for > 1 hour
+- [x] WP-Cron job `hum_poll_mailbox` on a custom `hum_mailbox_tick`
+      interval (driven by `OPTION_MAILBOX_INTERVAL`, clamped 1–60
+      min, auto-reschedules when the setting changes)
+- [x] IMAP connection helper using `imap_open` (PHP `ext-imap`) —
+      shares the connection-string convention with the M3
+      test-connection AJAX handler
+- [x] Fetch UNSEEN messages from the configured folder; wall-clock
+      budget of 25s per tick (mirrors the M5 worker)
+- [x] Subject parser: regex `^unsubscribe-([A-Za-z0-9._-]+)$`
+- [x] Re-use shared `Tokens::verify()` (lifted in M5 chunk A)
+- [x] Flip status via `Subscribers_Controller::unsubscribe()`
+      (the M6 idempotent helper); stamping is handled there
+- [x] Move processed messages to `Processed` subfolder (created via
+      `imap_createmailbox` if missing, guarded by `imap_list`);
+      anything unparseable / token-invalid / unsubscribe-failed →
+      `Errors`
+- [x] Connection error handling — `OPTION_MAILBOX_LAST_OK` /
+      `OPTION_MAILBOX_LAST_ERROR` health-state options drive a
+      `Plugin::admin_notices()` warning if the last successful
+      poll is >`MAILBOX_STALE_THRESHOLD_SECONDS` (2 hours) old
+      **and** creds are configured
+- [x] **Bonus**: "Poll now" button on the Mailbox settings tab
+      (AJAX endpoint `hum_poll_mailbox`) — runs `poll_now()`
+      inline against stored creds. Honours the same transient
+      lock so it can't race the cron tick.
 
 **Deliverable:** Replying to a list email with the mailto: form
-unsubscribes the recipient.
+unsubscribes the recipient. ✅ Achieved.
+
+**Notes:** Released as 0.6.0 on 2026-05-26. The chroot dev site's
+"Validate certificate" toggle is already off (no CA bundle in the
+PHP-FPM jail) — production should re-enable it. Verified the
+poller wiring with `wp cron event run hum_poll_mailbox` and a
+direct `Mailbox_Poller::poll_now()` call: IMAP opens, `Processed`
+/ `Errors` folders are ensured, `OPTION_MAILBOX_LAST_OK` stamps
+correctly. The end-to-end mailto round-trip lives in M9's soak
+test.
 
 ---
 

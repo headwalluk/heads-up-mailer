@@ -64,6 +64,16 @@ const OPTION_MAILBOX_VALIDATE_CERT = 'hum_mailbox_validate_cert';
 const OPTION_MAILBOX_INTERVAL      = 'hum_mailbox_interval';
 
 /**
+ * Mailbox poller health state — written by `Mailbox_Poller` on
+ * each tick, read by the admin notice and the dashboard.
+ *
+ * @since 0.6.0
+ */
+const OPTION_MAILBOX_LAST_OK       = 'hum_mailbox_last_ok';
+const OPTION_MAILBOX_LAST_ERROR    = 'hum_mailbox_last_error';
+const OPTION_MAILBOX_LAST_ERROR_AT = 'hum_mailbox_last_error_at';
+
+/**
  * Subscriber statuses.
  *
  * @since 0.1.0
@@ -107,9 +117,10 @@ const TRANSIENT_RATE_LIMIT = 'hum_rate_limit_';
  *
  * @since 0.1.0
  */
-const CRON_DRAIN_QUEUE   = 'hum_drain_queue';
-const CRON_POLL_MAILBOX  = 'hum_poll_mailbox';
-const CRON_INTERVAL_TICK = 'hum_tick';
+const CRON_DRAIN_QUEUE           = 'hum_drain_queue';
+const CRON_POLL_MAILBOX          = 'hum_poll_mailbox';
+const CRON_INTERVAL_TICK         = 'hum_tick';
+const CRON_INTERVAL_MAILBOX_TICK = 'hum_mailbox_tick';
 
 /**
  * Query var the rewrite rule sets to flag a `/manage-comms/` hit.
@@ -124,6 +135,17 @@ const QUERY_VAR_MANAGE = 'hum_manage';
  * @since 0.5.0
  */
 const RATE_LIMIT_MANAGE_PER_HOUR = 20;
+
+/**
+ * Mailbox poller — folders that processed and failed messages
+ * are moved into, plus the threshold beyond which a healthy
+ * poller is considered stale enough to warn the admin.
+ *
+ * @since 0.6.0
+ */
+const MAILBOX_FOLDER_PROCESSED        = 'Processed';
+const MAILBOX_FOLDER_ERRORS           = 'Errors';
+const MAILBOX_STALE_THRESHOLD_SECONDS = 2 * HOUR_IN_SECONDS;
 
 /**
  * Defaults.

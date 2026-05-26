@@ -129,3 +129,13 @@ printf(
 	'<p><button type="button" class="button" id="hum-mb-test">%s</button> <span id="hum-mb-test-result" class="description" role="status" aria-live="polite"></span></p>',
 	esc_html__( 'Test connection', 'heads-up-mailer' )
 );
+
+// Poll-now button — runs the IMAP poller inline against the
+// stored credentials. The form values are ignored; this exists
+// so admins can verify the mailto-unsubscribe round-trip without
+// waiting for the next cron tick.
+printf(
+	'<p><button type="button" class="button" id="hum-mb-poll">%s</button> <span id="hum-mb-poll-result" class="description" role="status" aria-live="polite"></span><br><span class="description">%s</span></p>',
+	esc_html__( 'Poll now', 'heads-up-mailer' ),
+	esc_html__( 'Uses the saved credentials. Save changes before polling to apply edits.', 'heads-up-mailer' )
+);

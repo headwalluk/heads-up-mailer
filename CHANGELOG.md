@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-05-26
+
+### Added
+
+- `includes/class-mailbox-poller.php` — WP-Cron-driven IMAP
+  poller for the `unsub@…` mailbox. Each tick acquires the
+  shared `TRANSIENT_POLL_LOCK`, decrypts the stored password via
+  `Crypto`, opens IMAP with a single retry (same flag the
+  test-connection handler uses), ensures `Processed` /
+  `Errors` sibling folders exist, walks UNSEEN messages within a
+  25s wall-clock budget, and translates subjects matching
+  `^unsubscribe-([A-Za-z0-9._-]+)$` into status flips via the M6
+  idempotent `unsubscribe()` helper. Anything unparseable or
+  token-invalid is moved to `Errors`. Cron schedule is a custom
+  `hum_mailbox_tick` interval driven by `OPTION_MAILBOX_INTERVAL`,
+  auto-reschedules when the setting changes (same pattern as the
+  M5 worker).
+- "Poll now" button on the Mailbox settings tab —
+  `wp_ajax_hum_poll_mailbox` runs `Mailbox_Poller::poll_now()`
+  against the stored credentials. Honours the transient lock so
+  it can't race the cron tick.
+- Stale-poll admin notice — when mailbox credentials are
+  configured but `OPTION_MAILBOX_LAST_OK` is older than
+  `MAILBOX_STALE_THRESHOLD_SECONDS` (2 hours), `Plugin::admin_notices()`
+  surfaces the last `imap_errors()` message with a `human_time_diff`
+  on how long since it failed.
+- New constants: `OPTION_MAILBOX_LAST_OK`, `OPTION_MAILBOX_LAST_ERROR`,
+  `OPTION_MAILBOX_LAST_ERROR_AT`, `CRON_INTERVAL_MAILBOX_TICK`,
+  `MAILBOX_FOLDER_PROCESSED`, `MAILBOX_FOLDER_ERRORS`,
+  `MAILBOX_STALE_THRESHOLD_SECONDS`.
+
+### Changed
+
+- Activation hook now also calls `Mailbox_Poller::ensure_scheduled()`
+  so the poll event is registered on first activate.
+- Deactivation hook now also clears `CRON_POLL_MAILBOX` so a
+  removed plugin doesn't leave a ghost cron entry behind.
+
 ## [0.5.0] — 2026-05-26
 
 ### Added
