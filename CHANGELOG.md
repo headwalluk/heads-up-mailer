@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] — 2026-05-26
+
+### Added
+
+- `includes/class-sent-log-controller.php` — read-only query
+  layer over `hum_sends` / `hum_send_recipients`:
+  - `get_sends_with_counts()` returns every send joined to its
+    parent draft, decorated with live per-status recipient
+    counters (`COUNT(r.id)`, `SUM(r.status = …)`). Live counts are
+    used rather than the cached `attempted` / `sent` / `failed`
+    columns on `hum_sends` so in-flight sends show accurate
+    numbers before `Worker::finalize_completed_sends()` runs.
+  - `get_send_with_counts( int $send_id )` — same shape, single
+    row, used by the drill-down.
+  - `get_recipients_for_send( int $send_id, string $status = '' )` —
+    recipient rows joined to `hum_subscribers` so the email column
+    doesn't need a second lookup; optional `SEND_STATUS_*` filter.
+- New "Sent log" admin submenu — list view shows every send with
+  per-status counters and links into a per-send drill-down. The
+  drill-down has a status filter row (All / Sent / Failed /
+  Pending / Processing) with counts on each link.
+- Templates: `admin-templates/sent-log-list.php` and
+  `admin-templates/sent-log-detail.php` — code-first PHP, matches
+  the drafts-list table conventions.
+
 ## [0.6.0] — 2026-05-26
 
 ### Added

@@ -1,10 +1,10 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** M7 complete; M8 ready to start
-**Current Version:** 0.6.0 (0.7.0 pending)
-**Current Phase:** M8 — Sent log UI
+**Status:** M8 complete; M9 (soak test) is the last v1 blocker
+**Current Version:** 0.7.0
+**Current Phase:** M9 — Soak test (real-world rendering + RFC 8058)
 **Last Updated:** 26 May 2026
-**Progress:** 7 of 9 milestones complete (3 deferred for v1.0.0+)
+**Progress:** 8 of 9 milestones complete (3 deferred for v1.0.0+)
 
 ---
 
@@ -501,19 +501,32 @@ test.
 **Goal:** Admin can review what was sent, to whom, and what
 failed.
 
-**Status:** 📋 Not started
+**Status:** ✅ Complete
 **Dependencies:** M5
 
 ### Tasks
 
-- [ ] Sent-log list table (`hum_sends` rows with counters)
-- [ ] Per-send drill-down (`hum_send_recipients` filtered by
-      `send_id`)
-- [ ] Status filters (sent / failed / pending)
-- [ ] Re-queue button for individual `failed` rows — TBD whether to
-      model this (new `send_id` keeps the UNIQUE constraint clean)
+- [x] Sent-log list table (`hum_sends` rows with live counters
+      from a `LEFT JOIN` against `hum_send_recipients` — accurate
+      mid-flight, not just after `finalize_completed_sends`)
+- [x] Per-send drill-down (`hum_send_recipients` filtered by
+      `send_id`, joined to `hum_subscribers` for the email column)
+- [x] Status filters (sent / failed / pending / processing) — link
+      row above the drill-down table, each link carrying a count
+- [ ] **Deferred to v1.1:** Re-queue button for individual `failed`
+      rows. Admin can re-send the draft to a one-person group as
+      the manual workaround until then.
 
-**Deliverable:** Visibility into past sends.
+**Deliverable:** Visibility into past sends. ✅ Achieved.
+
+**Notes:** Released as 0.7.0 on 2026-05-26. New
+`Sent_Log_Controller` (read-only — no UPDATE / DELETE surface),
+new admin submenu `heads-up-mailer-sent-log`, templates in
+`admin-templates/sent-log-{list,detail}.php`. Schema integration
+discovered the parent table column is `started_at` not
+`created_at` — corrected before commit. Smoke-tested against the
+two real sends from M5 (2026-05-25): list, detail, and all four
+status filters return correct row counts.
 
 ---
 

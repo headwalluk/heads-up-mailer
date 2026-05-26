@@ -3,7 +3,7 @@
  * Plugin Name: Heads Up Mailer
  * Plugin URI: https://headgit.net/headwall/heads-up-mailer
  * Description: In-house newsletter sender for headwall-hosting.com. Async send queue, RFC-8058 one-click unsubscribe, IMAP poll for mailto unsubscribes.
- * Version: 0.6.0
+ * Version: 0.7.0
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: Paul Faulkner
@@ -18,7 +18,7 @@
 
 defined( 'ABSPATH' ) || die();
 
-define( 'HUM_VERSION', '0.6.0' );
+define( 'HUM_VERSION', '0.7.0' );
 define( 'HUM_FILE', __FILE__ );
 define( 'HUM_PATH', plugin_dir_path( __FILE__ ) );
 define( 'HUM_URL', plugin_dir_url( __FILE__ ) );
@@ -33,6 +33,7 @@ require_once HUM_PATH . 'includes/class-subscribers-controller.php';
 require_once HUM_PATH . 'includes/class-drafts-controller.php';
 require_once HUM_PATH . 'includes/class-tokens.php';
 require_once HUM_PATH . 'includes/class-sends-controller.php';
+require_once HUM_PATH . 'includes/class-sent-log-controller.php';
 require_once HUM_PATH . 'includes/class-worker.php';
 require_once HUM_PATH . 'includes/class-csv-importer.php';
 require_once HUM_PATH . 'includes/class-crypto.php';

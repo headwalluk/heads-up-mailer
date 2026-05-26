@@ -230,6 +230,15 @@ class Plugin {
 
 		add_submenu_page(
 			'heads-up-mailer',
+			__( 'Sent log', 'heads-up-mailer' ),
+			__( 'Sent log', 'heads-up-mailer' ),
+			'manage_options',
+			'heads-up-mailer-sent-log',
+			array( $this, 'render_sent_log' )
+		);
+
+		add_submenu_page(
+			'heads-up-mailer',
 			__( 'Settings', 'heads-up-mailer' ),
 			__( 'Settings', 'heads-up-mailer' ),
 			'manage_options',
@@ -252,6 +261,7 @@ class Plugin {
 			'heads-up-mailer-groups',
 			'heads-up-mailer-subscribers',
 			'heads-up-mailer-drafts',
+			'heads-up-mailer-sent-log',
 			'heads-up-mailer-settings',
 		);
 
@@ -709,6 +719,49 @@ class Plugin {
 			$drafts = $drafts_controller->get_all();
 
 			require HUM_PATH . 'admin-templates/drafts-list.php';
+		}
+	}
+
+	/**
+	 * Render the Sent-log submenu page.
+	 *
+	 * Dispatches between the list view and a per-send drill-down
+	 * based on the `send_id` query param. The drill-down accepts an
+	 * optional `status` filter (one of `SEND_STATUS_*`).
+	 *
+	 * @since 0.7.0
+	 */
+	public function render_sent_log(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to access this page.', 'heads-up-mailer' ) );
+		}
+
+		$controller = new Sent_Log_Controller();
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read for view dispatch; this surface is read-only.
+		$send_id = isset( $_GET['send_id'] ) ? absint( $_GET['send_id'] ) : 0;
+
+		if ( $send_id <= 0 ) {
+			$sends = $controller->get_sends_with_counts();
+
+			require HUM_PATH . 'admin-templates/sent-log-list.php';
+		} else {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read for view dispatch.
+			$requested_status = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : '';
+
+			$allowed_statuses = array(
+				SEND_STATUS_SENT,
+				SEND_STATUS_FAILED,
+				SEND_STATUS_PENDING,
+				SEND_STATUS_PROCESSING,
+			);
+
+			$status_filter = in_array( $requested_status, $allowed_statuses, true ) ? $requested_status : '';
+
+			$send       = $controller->get_send_with_counts( $send_id );
+			$recipients = ( null === $send ) ? array() : $controller->get_recipients_for_send( $send_id, $status_filter );
+
+			require HUM_PATH . 'admin-templates/sent-log-detail.php';
 		}
 	}
 
