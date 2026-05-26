@@ -54,6 +54,7 @@ const OPTION_MANAGE_SLUG = 'hum_manage_slug';
  *
  * @since 0.1.0
  */
+const OPTION_MAILBOX_POLL_ENABLED  = 'hum_mailbox_poll_enabled';
 const OPTION_MAILBOX_HOST          = 'hum_mailbox_host';
 const OPTION_MAILBOX_PORT          = 'hum_mailbox_port';
 const OPTION_MAILBOX_USER          = 'hum_mailbox_user';
@@ -154,6 +155,7 @@ const MAILBOX_STALE_THRESHOLD_SECONDS = 2 * HOUR_IN_SECONDS;
  */
 const DEF_BATCH_SIZE            = 10;
 const DEF_TICK_MINUTES          = 5;
+const DEF_MAILBOX_POLL_ENABLED  = true;
 const DEF_MAILBOX_PORT          = 993;
 const DEF_MAILBOX_USER          = 'unsub@headwall-hosting.com';
 const DEF_MAILBOX_FOLDER        = 'INBOX';

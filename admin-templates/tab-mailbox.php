@@ -16,6 +16,7 @@ namespace Heads_Up_Mailer;
 
 defined( 'ABSPATH' ) || die();
 
+$poll_enabled  = (bool) filter_var( get_option( OPTION_MAILBOX_POLL_ENABLED, DEF_MAILBOX_POLL_ENABLED ), FILTER_VALIDATE_BOOLEAN );
 $host          = (string) get_option( OPTION_MAILBOX_HOST, '' );
 $port          = (int) get_option( OPTION_MAILBOX_PORT, DEF_MAILBOX_PORT );
 $user          = (string) get_option( OPTION_MAILBOX_USER, DEF_MAILBOX_USER );
@@ -48,6 +49,20 @@ if ( ! $imap_loaded ) {
 }
 
 printf( '<table class="form-table" role="presentation"><tbody>' );
+
+// Master switch. Defaults to enabled so upgrades from <0.8.0
+// keep their current behaviour. When unchecked, the WP-Cron tick
+// becomes a no-op; the "Poll now" button below still runs so
+// admins can verify connectivity without re-enabling.
+printf(
+	'<tr><th scope="row"><label for="hum-mb-poll-enabled">%s</label></th><td><input type="hidden" name="%s" value="0" /><label><input name="%s" id="hum-mb-poll-enabled" type="checkbox" value="1"%s /> %s</label><p class="description">%s</p></td></tr>',
+	esc_html__( 'Enable polling', 'heads-up-mailer' ),
+	esc_attr( OPTION_MAILBOX_POLL_ENABLED ),
+	esc_attr( OPTION_MAILBOX_POLL_ENABLED ),
+	checked( $poll_enabled, true, false ),
+	esc_html__( 'Poll the unsubscribe mailbox on the configured interval.', 'heads-up-mailer' ),
+	esc_html__( 'Untick to stop the scheduled poll without removing credentials. The "Poll now" button below still works.', 'heads-up-mailer' )
+);
 
 printf(
 	'<tr><th scope="row"><label for="hum-mb-host">%s</label></th><td><input name="%s" id="hum-mb-host" type="text" class="regular-text" value="%s" placeholder="imap.example.com" /></td></tr>',

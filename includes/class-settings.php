@@ -113,6 +113,16 @@ class Settings {
 
 		register_setting(
 			self::GROUP,
+			OPTION_MAILBOX_POLL_ENABLED,
+			array(
+				'type'              => 'boolean',
+				'sanitize_callback' => array( $this, 'sanitize_boolean' ),
+				'default'           => DEF_MAILBOX_POLL_ENABLED,
+			)
+		);
+
+		register_setting(
+			self::GROUP,
 			OPTION_MAILBOX_HOST,
 			array(
 				'type'              => 'string',

@@ -127,9 +127,21 @@ class Mailbox_Poller {
 	/**
 	 * Cron entry point. Acquires the lock and runs `run_poll`.
 	 *
+	 * Honours the `OPTION_MAILBOX_POLL_ENABLED` master switch so
+	 * the admin can pause polling without removing credentials.
+	 * The "Poll now" button bypasses this check on purpose — it's
+	 * an explicit manual action, the switch governs the recurring
+	 * one.
+	 *
 	 * @since 0.6.0
 	 */
 	public function poll(): void {
+		$enabled = (bool) filter_var( get_option( OPTION_MAILBOX_POLL_ENABLED, DEF_MAILBOX_POLL_ENABLED ), FILTER_VALIDATE_BOOLEAN );
+
+		if ( ! $enabled ) {
+			return;
+		}
+
 		$config = $this->load_config();
 
 		if ( null === $config ) {

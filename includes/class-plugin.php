@@ -139,9 +139,16 @@ class Plugin {
 			return;
 		}
 
-		// Stale-poll warning. Only show when creds are configured —
-		// otherwise the admin hasn't asked us to poll yet and a
+		// Stale-poll warning. Only show when creds are configured
+		// AND polling is enabled — otherwise the admin hasn't asked
+		// us to poll yet (or has explicitly paused it) and a
 		// "stale" notice would be noise.
+		$poll_enabled = (bool) filter_var( get_option( OPTION_MAILBOX_POLL_ENABLED, DEF_MAILBOX_POLL_ENABLED ), FILTER_VALIDATE_BOOLEAN );
+
+		if ( ! $poll_enabled ) {
+			return;
+		}
+
 		$host          = (string) get_option( OPTION_MAILBOX_HOST, '' );
 		$user          = (string) get_option( OPTION_MAILBOX_USER, '' );
 		$has_password  = '' !== (string) get_option( OPTION_MAILBOX_PASSWORD, '' );

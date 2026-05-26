@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.1] — 2026-05-26
+
+### Added
+
+- "Enable polling" master switch on the Mailbox settings tab
+  (`OPTION_MAILBOX_POLL_ENABLED`, default on). When unchecked,
+  the WP-Cron mailbox tick bails immediately without opening
+  IMAP, and the stale-poll admin notice is suppressed. The
+  "Poll now" button is unaffected — it's an explicit manual
+  action and the switch governs the recurring one.
+
 ## [0.7.0] — 2026-05-26
 
 ### Added
