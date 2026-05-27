@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.1] — 2026-05-27
+
+### Fixed
+
+- `Subscribers_Controller::update()` partial-payload bug: calling
+  with a subset of fields (e.g. `{ email, name, status }`) used to
+  silently wipe omitted columns (`consent_at`, `consent_source`)
+  because the validated array was written wholesale. Internal
+  callers always passed complete arrays so it hadn't bitten in
+  production, but it was a footgun for ad-hoc scripts and future
+  integration code. Reproduced by the M10 smoke test damaging row
+  143's consent fields (since restored).
+  - New `validate_partial()` validates only the fields present
+    in the input; missing fields are not defaulted.
+  - `update()` writes only the validated subset, so omitted
+    columns keep their existing values.
+  - `unsubscribed_at` stamping logic now gates on whether
+    `status` was actually passed — a name-only update no longer
+    touches the timestamp.
+  - Groups-only updates (`{ groups: [...] }` with no column
+    fields) now skip the column write entirely and just update
+    memberships. Empty `$data` is a clean no-op.
+
 ## [0.10.0] — 2026-05-27
 
 ### Added

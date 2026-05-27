@@ -208,9 +208,19 @@ class Subscribers_Controller {
 	/**
 	 * Update a subscriber.
 	 *
+	 * Partial update: only fields present in `$data` are written.
+	 * Omitted fields (e.g. `consent_at`, `consent_source`) keep
+	 * their existing values. This matters because internal callers
+	 * historically passed complete arrays — a partial caller used
+	 * to silently wipe omitted columns, which bit during M10 smoke
+	 * testing.
+	 *
 	 * Handles `unsubscribed_at` stamping/clearing on status
-	 * transitions. The `groups` key (if present) replaces existing
-	 * memberships; omit it to leave memberships untouched.
+	 * transitions, but only when `status` is actually in `$data`.
+	 * The `groups` key (if present) replaces existing memberships;
+	 * omit it to leave memberships untouched. Passing `array()` or
+	 * `array( 'groups' => [...] )` is valid — the column-level
+	 * write is skipped and only memberships change.
 	 *
 	 * @since 0.1.0
 	 * @param int                 $id   Subscriber ID.
@@ -227,68 +237,74 @@ class Subscribers_Controller {
 			);
 		}
 
-		$validated = $this->validate( $data );
+		$validated = $this->validate_partial( $data );
 
 		if ( is_wp_error( $validated ) ) {
 			return $validated;
 		}
 
-		$email_conflict = false;
-		if ( $validated['email'] !== $existing->email ) {
-			$other          = $this->get_by_email( $validated['email'] );
-			$email_conflict = ( null !== $other && (int) $other->id !== $id );
-		}
+		// Email-conflict check only when email is changing.
+		if ( isset( $validated['email'] ) && $validated['email'] !== $existing->email ) {
+			$other = $this->get_by_email( $validated['email'] );
 
-		if ( $email_conflict ) {
-			return new \WP_Error(
-				'hum_subscriber_exists',
-				__( 'A subscriber with that email already exists.', 'heads-up-mailer' )
-			);
+			if ( null !== $other && (int) $other->id !== $id ) {
+				return new \WP_Error(
+					'hum_subscriber_exists',
+					__( 'A subscriber with that email already exists.', 'heads-up-mailer' )
+				);
+			}
 		}
 
 		$row = $validated;
 
-		// Status-transition logic for unsubscribed_at. "Stopped"
-		// covers both `unsubscribed` and `never_contact` — entering
-		// either state stamps the timestamp, leaving for any other
-		// status clears it, and staying within the stopped bucket
+		// Status-transition logic for unsubscribed_at. Only runs
+		// when status is being updated — a name-only update
+		// shouldn't touch the timestamp. "Stopped" covers both
+		// `unsubscribed` and `never_contact`: entering either
+		// state stamps the timestamp, leaving for any other status
+		// clears it, and staying within the stopped bucket
 		// preserves the original stamp.
-		$stopped_statuses = array( STATUS_UNSUBSCRIBED, STATUS_NEVER_CONTACT );
-		$was_stopped      = in_array( (string) $existing->status, $stopped_statuses, true );
-		$is_stopped       = in_array( (string) $row['status'], $stopped_statuses, true );
+		if ( isset( $row['status'] ) ) {
+			$stopped_statuses = array( STATUS_UNSUBSCRIBED, STATUS_NEVER_CONTACT );
+			$was_stopped      = in_array( (string) $existing->status, $stopped_statuses, true );
+			$is_stopped       = in_array( (string) $row['status'], $stopped_statuses, true );
 
-		if ( $is_stopped && ! $was_stopped ) {
-			$row['unsubscribed_at'] = now_utc();
-		} elseif ( ! $is_stopped ) {
-			$row['unsubscribed_at'] = '';
-		} else {
-			$row['unsubscribed_at'] = (string) $existing->unsubscribed_at;
-		}
-
-		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom-table write.
-		$updated = $wpdb->update(
-			$this->table(),
-			$row,
-			array( 'id' => $id ),
-			array( '%s', '%s', '%s', '%s', '%s', '%s' ),
-			array( '%d' )
-		);
-
-		if ( false === $updated ) {
-			$result = new \WP_Error(
-				'hum_subscriber_update_failed',
-				__( 'Failed to update subscriber.', 'heads-up-mailer' )
-			);
-		} else {
-			if ( isset( $data['groups'] ) && is_array( $data['groups'] ) ) {
-				$this->set_groups( $id, array_map( 'intval', $data['groups'] ) );
+			if ( $is_stopped && ! $was_stopped ) {
+				$row['unsubscribed_at'] = now_utc();
+			} elseif ( ! $is_stopped && $was_stopped ) {
+				$row['unsubscribed_at'] = '';
 			}
-
-			$result = true;
+			// else: no transition between stopped / not-stopped,
+			// don't touch the timestamp.
 		}
 
-		return $result;
+		// Column-level write only if we actually have fields to
+		// set. Callers passing just `groups` get a memberships-only
+		// update.
+		if ( ! empty( $row ) ) {
+			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom-table write; format omitted so wpdb treats all values as strings (all updatable columns are VARCHAR).
+			$updated = $wpdb->update(
+				$this->table(),
+				$row,
+				array( 'id' => $id ),
+				null,
+				array( '%d' )
+			);
+
+			if ( false === $updated ) {
+				return new \WP_Error(
+					'hum_subscriber_update_failed',
+					__( 'Failed to update subscriber.', 'heads-up-mailer' )
+				);
+			}
+		}
+
+		if ( isset( $data['groups'] ) && is_array( $data['groups'] ) ) {
+			$this->set_groups( $id, array_map( 'intval', $data['groups'] ) );
+		}
+
+		return true;
 	}
 
 	/**
@@ -574,6 +590,76 @@ class Subscribers_Controller {
 		$result = ( false === $updated )
 			? new \WP_Error( 'hum_subscriber_update_failed', __( 'Failed to update subscriber.', 'heads-up-mailer' ) )
 			: true;
+
+		return $result;
+	}
+
+	/**
+	 * Partial-validation variant. Only validates fields that are
+	 * actually present in `$data`; missing fields are NOT defaulted
+	 * to anything.
+	 *
+	 * Used by `update()` so partial-payload callers (M10 smoke
+	 * test, future integration helpers, ad-hoc admin scripts)
+	 * don't silently wipe omitted columns. The full-validation
+	 * `validate()` is still used by `create()`, where defaults
+	 * make sense.
+	 *
+	 * Validation rules match `validate()` per-field but each
+	 * field's check is gated on `isset()`.
+	 *
+	 * @since 0.10.1
+	 * @param array<string,mixed> $data Raw input — partial allowed.
+	 * @return array<string,string>|\WP_Error Validated subset (only keys present in `$data`).
+	 */
+	private function validate_partial( array $data ): array|\WP_Error {
+		$result = array();
+
+		if ( isset( $data['email'] ) ) {
+			$email = strtolower( sanitize_email( wp_unslash( $data['email'] ) ) );
+
+			if ( '' === $email || ! is_email( $email ) ) {
+				return new \WP_Error(
+					'hum_subscriber_invalid_email',
+					__( 'A valid email address is required.', 'heads-up-mailer' )
+				);
+			}
+
+			$result['email'] = $email;
+		}
+
+		if ( isset( $data['name'] ) ) {
+			$result['name'] = sanitize_text_field( wp_unslash( $data['name'] ) );
+		}
+
+		if ( isset( $data['status'] ) ) {
+			$status = sanitize_key( wp_unslash( $data['status'] ) );
+
+			$allowed_statuses = array(
+				STATUS_SUBSCRIBED,
+				STATUS_UNSUBSCRIBED,
+				STATUS_BOUNCED,
+				STATUS_COMPLAINED,
+				STATUS_NEVER_CONTACT,
+			);
+
+			if ( ! in_array( $status, $allowed_statuses, true ) ) {
+				return new \WP_Error(
+					'hum_subscriber_invalid_status',
+					__( 'Invalid subscriber status.', 'heads-up-mailer' )
+				);
+			}
+
+			$result['status'] = $status;
+		}
+
+		if ( isset( $data['consent_source'] ) ) {
+			$result['consent_source'] = sanitize_text_field( wp_unslash( $data['consent_source'] ) );
+		}
+
+		if ( isset( $data['consent_at'] ) ) {
+			$result['consent_at'] = sanitize_text_field( wp_unslash( $data['consent_at'] ) );
+		}
 
 		return $result;
 	}
