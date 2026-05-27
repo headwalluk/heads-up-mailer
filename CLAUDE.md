@@ -13,7 +13,7 @@ RFC-8058 one-click unsubscribe, and IMAP-poll harvesting of
 mailto-form unsubscribes.
 
 Single-site, internal. No open/click tracking, no built-in SMTP,
-no auto-updater (yet).
+in-plugin GitHub auto-updater (since 0.10.0).
 
 ## Where to look
 
@@ -158,10 +158,10 @@ Namespaced constant groups (no extra prefix — namespace handles it):
 - Drip campaigns, automations, A/B testing, scheduling-for-later.
 - Multi-site / multi-tenant.
 - Built-in SMTP — `wp_mail()` is the only sending surface.
-- GitHub auto-updater — deferred. Repo now lives at
-  `git@github.com:headwalluk/heads-up-mailer.git`; the updater
-  itself (pattern lifted from quick-2fa, loaded admin + cron
-  only) is still TODO.
+- GitHub auto-updater shipped in 0.10.0 (pattern lifted from
+  quick-2fa, loaded admin + cron only). Repo at
+  `git@github.com:headwalluk/heads-up-mailer.git`; releases are
+  built by `.github/workflows/release.yml` on `v*.*.*` tag pushes.
 - WP-CLI commands — deferred to a project-tracker milestone.
 - Composer / build step — `phpcs` and `phpcbf` are installed
   globally on the host.

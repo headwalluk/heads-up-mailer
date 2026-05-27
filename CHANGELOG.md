@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] — 2026-05-27
+
+### Added
+
+- `includes/class-github-updater.php` — in-plugin GitHub
+  auto-updater. Pattern lifted from quick-2fa: hooks
+  `pre_set_site_transient_update_plugins`, `plugins_api`, and
+  `upgrader_process_complete` to surface new GitHub releases as
+  standard WordPress plugin updates. Wired only on admin / cron
+  requests (`is_admin() || wp_doing_cron()`) — front-end pages
+  skip the init.
+  - Cached release data lives in transient
+    `hum_updater_release` (12-hour TTL).
+  - Filter `hum_updater_enabled` lets site owners disable
+    update checks (staging environments, pinned versions).
+  - Prefers the stable `heads-up-mailer.zip` asset emitted by
+    the release workflow; falls back to any
+    `heads-up-mailer-*.zip` for older releases.
+  - Errors (HTTP failures, missing `tag_name`, no zip asset)
+    log unconditionally with a `Heads Up Mailer Github_Updater
+    [error]:` prefix. Routine flow tracing logs only when
+    `WP_DEBUG` is on.
+- `.github/workflows/release.yml` — GitHub Actions workflow that
+  builds and publishes a release zip on every `v*.*.*` tag
+  push. Produces both `heads-up-mailer-<version>.zip` and a
+  byte-identical `heads-up-mailer.zip` (the stable filename the
+  updater prefers).
+- `.distignore` — files excluded from the release zip
+  (`.git`, `.github`, `dev-notes/`, `phpcs.xml`, `CLAUDE.md`,
+  IDE / editor noise).
+- New constants: `UPDATER_GITHUB_REPO`, `UPDATER_CACHE_KEY`,
+  `UPDATER_CACHE_TTL`.
+
 ## [0.9.1] — 2026-05-27
 
 ### Fixed

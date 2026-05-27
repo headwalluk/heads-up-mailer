@@ -133,6 +133,19 @@ const TRANSIENT_POLL_LOCK  = 'hum_poll_lock';
 const TRANSIENT_RATE_LIMIT = 'hum_rate_limit_';
 
 /**
+ * GitHub auto-updater.
+ *
+ * Configuration the updater needs at runtime — repo slug to
+ * check, transient key for the cached release payload, and TTL
+ * before we re-poll. Pattern lifted from quick-2fa.
+ *
+ * @since 0.10.0
+ */
+const UPDATER_GITHUB_REPO = 'headwalluk/heads-up-mailer';
+const UPDATER_CACHE_KEY   = 'hum_updater_release';
+const UPDATER_CACHE_TTL   = 12 * HOUR_IN_SECONDS;
+
+/**
  * Cron hook names and custom interval slug.
  *
  * @since 0.1.0

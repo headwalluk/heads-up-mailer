@@ -1,0 +1,30 @@
+# Files / directories excluded from the release zip.
+# Consumed by `.github/workflows/release.yml`'s
+# `rsync --exclude-from=.distignore` step.
+
+# Version control + repo metadata
+.git
+.github
+.gitignore
+.gitattributes
+.distignore
+
+# Build output / intermediates
+build
+node_modules
+vendor
+*.zip
+
+# Project-internal docs that don't ship to end users
+CLAUDE.md
+dev-notes
+
+# Linting config — phpcs runs locally / in CI, not on installed sites
+phpcs.xml
+phpcs.xml.dist
+
+# IDE / editor scratch
+.idea
+.vscode
+*.swp
+.DS_Store

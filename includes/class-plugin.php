@@ -71,6 +71,15 @@ class Plugin {
 		// and `is_active()` checks return reliable answers.
 		add_action( 'plugins_loaded', array( $this, 'run_integrations' ), 20 );
 
+		// Updater only matters in admin / cron contexts — the
+		// `update_plugins` transient is read on those code paths.
+		// Skipping init on front-end requests saves a small but
+		// real amount of per-request work.
+		if ( is_admin() || wp_doing_cron() ) {
+			$updater = new Github_Updater();
+			$updater->run();
+		}
+
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_init', array( $this, 'check_first_run' ), 1 );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );

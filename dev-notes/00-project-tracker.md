@@ -655,12 +655,15 @@ operation and the list view stays usable as long as the
 subscriber count is in the hundreds. Pick this up before the
 plugin grows past a few thousand subscribers.
 
-### GitHub auto-updater
+### ~~GitHub auto-updater~~ — shipped 0.10.0
 
-Repo moved to `git@github.com:headwalluk/heads-up-mailer.git` on
-2026-05-27. Updater itself still TODO — add
-`class-github-updater.php` (pattern lifted from quick-2fa,
-loaded admin + cron only). Self-update from GitHub release tags.
+Repo at `git@github.com:headwalluk/heads-up-mailer.git`. Updater
+(`includes/class-github-updater.php`, pattern lifted from
+quick-2fa, loaded admin + cron only) self-updates from release
+tags. Releases built by `.github/workflows/release.yml` on
+`v*.*.*` tag pushes. Push `git tag v0.10.0 && git push origin
+v0.10.0` to publish the first release after the 0.10.0 commit
+lands on master.
 
 ### WP-CLI commands
 
