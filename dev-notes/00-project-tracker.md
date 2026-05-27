@@ -1,10 +1,10 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** M8 complete; M9 (soak test) is the last v1 blocker
-**Current Version:** 0.7.0
-**Current Phase:** M9 — Soak test (real-world rendering + RFC 8058)
-**Last Updated:** 26 May 2026
-**Progress:** 8 of 9 milestones complete (3 deferred for v1.0.0+)
+**Status:** v1 shipped (M9 soak completed in production); M10 complete; M11 next
+**Current Version:** 0.8.0
+**Current Phase:** M11 — Plugin integrations framework (CF7, WooCommerce)
+**Last Updated:** 27 May 2026
+**Progress:** 10 of 11 milestones complete (3 deferred for v1.0.0+); v1 successor track underway
 
 ---
 
@@ -535,26 +535,96 @@ status filters return correct row counts.
 **Goal:** Verify headers and one-click POST in real-world
 mailboxes before declaring v1.
 
-**Status:** 📋 Not started
+**Status:** ✅ Complete (implicit — shipped to production)
 **Dependencies:** M1–M7
+
+**Notes:** v1 (0.7.1) was pushed to live on 2026-05-27 and the
+MailerLite plugin retired. Real subscriber list of ~140 imported
+from the MailerLite CSV. Headers, RFC-8058 one-click, footer
+links, plain-text alternative, and IMAP poll all observed working
+in production. Formal Gmail / Outlook / Fastmail matrix was
+folded into the actual mail-out rather than a separate test
+group.
+
+---
+
+## Milestone 10: Never-contact + manage-comms refactor
+
+**Goal:** GDPR-flavoured sticky terminal state on the subscribers
+table, plus a clearer UI on the public preference page that
+splits "save group memberships" from "stop everything".
+
+**Status:** ✅ Complete
+**Dependencies:** M1, M2, M6
 
 ### Tasks
 
-- [ ] Test group with 3 addresses: a Gmail, an Outlook.com, a
-      Fastmail
-- [ ] Send a sample newsletter
-- [ ] Verify in each client:
-  - [ ] List-Unsubscribe button appears
-  - [ ] One-click POST succeeds (status flips)
-  - [ ] mailto-form fallback works (poller picks up the inbound)
-  - [ ] Footer link works for opted-out reactivation
-- [ ] Verify `Precedence: bulk` is honoured (Gmail tabbing)
-- [ ] Verify HTML + plain-text render correctly in each client
-- [ ] Confirm SPF / DKIM / DMARC alignment on
-      `nexus.headwall.co.uk` — out of plugin scope but blocking
-      for the soak
+- [x] New `STATUS_NEVER_CONTACT` constant.
+- [x] `Subscribers_Controller::mark_never_contact()` — idempotent,
+      mirrors the existing `unsubscribe()` / `resubscribe()` shape.
+- [x] CSV importer refuses to update rows in `never_contact`
+      status, surfacing them in the per-row report's `skipped`
+      bucket.
+- [x] `/manage-comms/` template refactored into two visibly
+      distinct sections — groups + Save preferences in the
+      primary card, a separate danger-styled card with a single
+      "Unsubscribe me from everything" button. New CSRF nonce on
+      the button's form, separate handler in `Public_Controller`.
+- [x] Lockdown view on `/manage-comms/` for never-contact
+      subscribers — no group list, no controls, no info leak.
+- [x] One-click RFC 8058 path KEEPS flipping to `unsubscribed`
+      (not `never_contact`). The button on the page is the
+      explicit-intent path.
+- [x] Subscribers list page: bulk-actions UI with "Mark as never
+      contact"; column-header select-all toggle (JS); per-row
+      "Mark never-contact" action (hidden on rows already in that
+      state).
+- [x] Subscriber edit form: `never_contact` in the status
+      dropdown + `notice-warning` banner explaining the
+      stickiness on rows currently in that state.
+- [x] `Subscribers_Controller::update()` / `create()`: unified
+      "stopped" bucket — entering either `unsubscribed` or
+      `never_contact` stamps `unsubscribed_at`, leaving for any
+      other status clears it.
 
-**Deliverable:** v1 release candidate.
+**Deliverable:** Released as 0.8.0 on 2026-05-27.
+
+---
+
+## Milestone 11: Plugin integrations framework
+
+**Goal:** Pluggable integration system so other plugins / themes
+can feed subscribers into Heads Up Mailer. Ship with Contact Form
+7 and WooCommerce as the built-in integrations.
+
+**Status:** 📋 Not started
+**Dependencies:** M1, M2
+
+### Tasks
+
+- [ ] Integration registry — `apply_filters( 'hum_integrations', $list )`
+      so built-ins and third-parties register the same way.
+- [ ] `integrations/<slug>/class-<slug>.php` always
+      `require_once`'d from the bootstrap; each runs its own
+      `class_exists()` / `function_exists()` parent-check before
+      binding hooks.
+- [ ] New "Integrations" settings tab with a section per active
+      integration; "no integrations available, install one of:
+      ..." card listing every registered integration when none
+      are active.
+- [ ] Contact Form 7: register a new tag `[hum_signup group:slug]`
+      so editors can drop a sign-up checkbox onto any CF7 form.
+      Captured email comes from the form's email field; consent
+      = checkbox tick + submit.
+- [ ] WooCommerce: checkout integration auto-creates a `customers`
+      group on activation if missing. Per-group "show at checkout"
+      config stored in a single wp_option JSON map
+      (`hum_wc_checkout_groups`) — no schema migration. Intro
+      text + per-group label text configurable from the
+      integration's settings section.
+
+**Deliverable:** End-to-end signup flow from CF7 + WooCommerce
+into the existing groups system. Bumps version to 0.9.0.
 
 ---
 

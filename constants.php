@@ -79,10 +79,11 @@ const OPTION_MAILBOX_LAST_ERROR_AT = 'hum_mailbox_last_error_at';
  *
  * @since 0.1.0
  */
-const STATUS_SUBSCRIBED   = 'subscribed';
-const STATUS_UNSUBSCRIBED = 'unsubscribed';
-const STATUS_BOUNCED      = 'bounced';
-const STATUS_COMPLAINED   = 'complained';
+const STATUS_SUBSCRIBED    = 'subscribed';
+const STATUS_UNSUBSCRIBED  = 'unsubscribed';
+const STATUS_BOUNCED       = 'bounced';
+const STATUS_COMPLAINED    = 'complained';
+const STATUS_NEVER_CONTACT = 'never_contact';
 
 /**
  * Draft statuses.

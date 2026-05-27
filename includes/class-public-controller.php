@@ -143,12 +143,15 @@ class Public_Controller {
 	}
 
 	/**
-	 * Route a POST request between the two supported flows.
+	 * Route a POST request between the three supported flows.
 	 *
 	 * Signals:
-	 *   - `_hum_nonce` field present → form save (nonce-verified).
+	 *   - `_hum_unsubscribe_all_nonce` field present → "Unsubscribe
+	 *     from everything" button — flips to never-contact.
+	 *   - `_hum_nonce` field present → groups-only form save.
 	 *   - Per RFC 8058: body contains `List-Unsubscribe=One-Click`
-	 *     OR query string carries `action=unsubscribe` → one-click.
+	 *     OR query string carries `action=unsubscribe` → one-click
+	 *     (mail-client triggered, no CSRF nonce possible).
 	 *   - Anything else → 400. Don't silently treat unknown POSTs as
 	 *     no-ops; an attacker could otherwise hammer the endpoint
 	 *     under the rate-limit budget without any feedback loop.
@@ -158,12 +161,19 @@ class Public_Controller {
 	 * @param string $token      Verified bearer token.
 	 */
 	private function handle_post( object $subscriber, string $token ): void {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce-presence is itself the router signal; verified below in handle_preferences_save().
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce-presence is the router signal; verified below in the handler.
+		$has_unsub_all_nonce = isset( $_POST['_hum_unsubscribe_all_nonce'] );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce-presence is the router signal; verified below in handle_preferences_save().
 		$has_nonce_field = isset( $_POST['_hum_nonce'] );
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- One-click body is compared as an exact string; bearer token is the auth.
 		$is_one_click_body = isset( $_POST['List-Unsubscribe'] ) && 'One-Click' === $_POST['List-Unsubscribe'];
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Bearer-token auth on a public endpoint; query string read.
 		$is_unsub_action = isset( $_GET['action'] ) && 'unsubscribe' === sanitize_key( wp_unslash( $_GET['action'] ) );
+
+		if ( $has_unsub_all_nonce ) {
+			$this->handle_unsubscribe_everything( $subscriber, $token );
+			return;
+		}
 
 		if ( $has_nonce_field ) {
 			$this->handle_preferences_save( $subscriber, $token );
@@ -181,12 +191,55 @@ class Public_Controller {
 	}
 
 	/**
+	 * "Unsubscribe from everything" button — flips to
+	 * `never_contact` (deliberately stickier than the one-click
+	 * RFC 8058 path, which is `unsubscribed`).
+	 *
+	 * Browser-side flow with a CSRF nonce, separate from the
+	 * groups-save form so an admin can spot it in network logs.
+	 * PRG redirect to the same page so the never-contact lockdown
+	 * view renders on refresh.
+	 *
+	 * @since 0.8.0
+	 * @param object $subscriber Authenticated subscriber row.
+	 * @param string $token      Verified bearer token (round-tripped into the redirect).
+	 */
+	private function handle_unsubscribe_everything( object $subscriber, string $token ): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce value passed verbatim to wp_verify_nonce() on the next line.
+		$nonce = isset( $_POST['_hum_unsubscribe_all_nonce'] ) ? (string) $_POST['_hum_unsubscribe_all_nonce'] : '';
+
+		if ( ! wp_verify_nonce( $nonce, 'hum_manage_unsub_all_' . (int) $subscriber->id ) ) {
+			status_header( 403 );
+			header( 'Content-Type: text/plain; charset=utf-8' );
+			echo esc_html__( 'Security check failed. Please reload the page and try again.', 'heads-up-mailer' ) . "\n";
+			return;
+		}
+
+		$subs_controller = new Subscribers_Controller();
+		$subs_controller->set_groups( (int) $subscriber->id, array() );
+		$subs_controller->mark_never_contact( (int) $subscriber->id );
+
+		$redirect_url = add_query_arg(
+			array( 'token' => $token ),
+			home_url( '/' . trim( (string) get_option( OPTION_MANAGE_SLUG, DEF_MANAGE_SLUG ), '/' ) . '/' )
+		);
+
+		wp_safe_redirect( $redirect_url, 303 );
+	}
+
+	/**
 	 * RFC 8058 one-click unsubscribe target.
 	 *
 	 * No CSRF nonce — the bearer token is the authentication. Mail
 	 * clients (e.g. Gmail) POST without ever loading the page, so
 	 * nonce issuance isn't possible. The response is plain text
 	 * because mail clients don't render the body.
+	 *
+	 * Lands the row in `unsubscribed`, not `never_contact`:
+	 * mail-client buttons are easy to hit by accident, and the
+	 * resubscribe-via-groups path on `/manage-comms/` is the
+	 * kindest recovery. The explicit "Unsubscribe from everything"
+	 * button on the page IS the never-contact trigger.
 	 *
 	 * Idempotent: re-POSTing on an already-unsubscribed row is a
 	 * no-op that still returns 200.
@@ -230,10 +283,6 @@ class Public_Controller {
 			? array_map( 'intval', wp_unslash( $_POST['groups'] ) )
 			: array();
 
-		// Checkbox presence is the signal; the value is the literal
-		// "1" we emitted but we don't depend on it.
-		$unsubscribe_all = isset( $_POST['unsubscribe_all'] );
-
 		$subs_controller   = new Subscribers_Controller();
 		$groups_controller = new Groups_Controller();
 
@@ -245,18 +294,20 @@ class Public_Controller {
 			$valid_ids[] = (int) $group->id;
 		}
 
-		$selected_ids = $unsubscribe_all
-			? array()
-			: array_values( array_intersect( $posted_groups, $valid_ids ) );
+		$selected_ids = array_values( array_intersect( $posted_groups, $valid_ids ) );
 
 		$subs_controller->set_groups( (int) $subscriber->id, $selected_ids );
 
-		if ( $unsubscribe_all ) {
-			$subs_controller->unsubscribe( (int) $subscriber->id );
-		} elseif ( ! empty( $selected_ids ) ) {
+		if ( ! empty( $selected_ids ) ) {
 			// Ticking groups while unsubscribed implies resubscribe.
-			// `resubscribe()` is a no-op for already-subscribed rows.
+			// `resubscribe()` is a no-op for already-subscribed rows
+			// and (per its contract) won't touch never-contact rows.
 			$subs_controller->resubscribe( (int) $subscriber->id );
+		} else {
+			// Untick-everything via the groups form = soft
+			// unsubscribe, NOT never-contact. The page's separate
+			// button is the never-contact trigger.
+			$subs_controller->unsubscribe( (int) $subscriber->id );
 		}
 
 		$redirect_url = add_query_arg(
@@ -314,6 +365,16 @@ class Public_Controller {
 	/**
 	 * Render the preference page for an authenticated subscriber.
 	 *
+	 * Three rendering branches, switched in the template:
+	 *
+	 *   - `$is_never_contact` — lockdown view, no controls. Anyone
+	 *     holding a stale token still gets a friendly response but
+	 *     no information leak about group memberships.
+	 *   - `$is_already_unsubscribed` — render the form but show a
+	 *     "you're currently unsubscribed; tick a group to resubscribe"
+	 *     notice.
+	 *   - Default — render the form normally.
+	 *
 	 * @since 0.5.0
 	 * @param object $subscriber Subscriber row.
 	 * @param string $token      Verified bearer token (round-tripped into the form).
@@ -325,9 +386,7 @@ class Public_Controller {
 		$all_groups   = $groups_controller->get_all();
 		$attached_ids = $subs_controller->get_groups( (int) $subscriber->id );
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- GET query-param read for default-tick of unsubscribe-all box.
-		$prefill_unsub_all = isset( $_GET['action'] ) && 'unsubscribe' === sanitize_key( wp_unslash( $_GET['action'] ) );
-
+		$is_never_contact        = ( STATUS_NEVER_CONTACT === (string) $subscriber->status );
 		$is_already_unsubscribed = ( STATUS_UNSUBSCRIBED === (string) $subscriber->status );
 
 		status_header( 200 );

@@ -173,7 +173,7 @@ class Subscribers_Controller {
 		$row                    = $validated;
 		$row['token_salt']      = bin2hex( random_bytes( 32 ) );
 		$row['created_at']      = $now;
-		$row['unsubscribed_at'] = ( STATUS_UNSUBSCRIBED === $row['status'] ) ? $now : '';
+		$row['unsubscribed_at'] = in_array( $row['status'], array( STATUS_UNSUBSCRIBED, STATUS_NEVER_CONTACT ), true ) ? $now : '';
 
 		if ( '' === $row['consent_at'] ) {
 			$row['consent_at'] = $now;
@@ -248,13 +248,18 @@ class Subscribers_Controller {
 
 		$row = $validated;
 
-		// Status-transition logic for unsubscribed_at.
-		$was_unsubscribed = ( STATUS_UNSUBSCRIBED === $existing->status );
-		$is_unsubscribed  = ( STATUS_UNSUBSCRIBED === $row['status'] );
+		// Status-transition logic for unsubscribed_at. "Stopped"
+		// covers both `unsubscribed` and `never_contact` — entering
+		// either state stamps the timestamp, leaving for any other
+		// status clears it, and staying within the stopped bucket
+		// preserves the original stamp.
+		$stopped_statuses = array( STATUS_UNSUBSCRIBED, STATUS_NEVER_CONTACT );
+		$was_stopped      = in_array( (string) $existing->status, $stopped_statuses, true );
+		$is_stopped       = in_array( (string) $row['status'], $stopped_statuses, true );
 
-		if ( $is_unsubscribed && ! $was_unsubscribed ) {
+		if ( $is_stopped && ! $was_stopped ) {
 			$row['unsubscribed_at'] = now_utc();
-		} elseif ( ! $is_unsubscribed ) {
+		} elseif ( ! $is_stopped ) {
 			$row['unsubscribed_at'] = '';
 		} else {
 			$row['unsubscribed_at'] = (string) $existing->unsubscribed_at;
@@ -415,6 +420,60 @@ class Subscribers_Controller {
 	}
 
 	/**
+	 * Flip a subscriber to `never_contact` and stamp `unsubscribed_at`.
+	 *
+	 * The harder cousin of `unsubscribe()`. Recorded as a deliberate
+	 * GDPR-style "do not contact under any circumstances" flag —
+	 * `resubscribe()` ignores rows in this state, and the CSV
+	 * importer refuses to update them, so a stale MailerLite export
+	 * can't resurrect them by accident. Admins can still flip the
+	 * status back via the subscriber edit form if they really mean
+	 * to — the warning notice on that form names the intent.
+	 *
+	 * Idempotent — already-never-contact rows are left alone
+	 * (existing `unsubscribed_at` preserved). Used by the public
+	 * "Unsubscribe from everything" button and the admin row /
+	 * bulk action on the subscribers list.
+	 *
+	 * @since 0.8.0
+	 * @param int $id Subscriber ID.
+	 * @return true|\WP_Error
+	 */
+	public function mark_never_contact( int $id ): true|\WP_Error {
+		$existing = $this->get( $id );
+
+		if ( null === $existing ) {
+			return new \WP_Error(
+				'hum_subscriber_not_found',
+				__( 'Subscriber not found.', 'heads-up-mailer' )
+			);
+		}
+
+		if ( STATUS_NEVER_CONTACT === (string) $existing->status ) {
+			return true;
+		}
+
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom-table write.
+		$updated = $wpdb->update(
+			$this->table(),
+			array(
+				'status'          => STATUS_NEVER_CONTACT,
+				'unsubscribed_at' => now_utc(),
+			),
+			array( 'id' => $id ),
+			array( '%s', '%s' ),
+			array( '%d' )
+		);
+
+		$result = ( false === $updated )
+			? new \WP_Error( 'hum_subscriber_update_failed', __( 'Failed to update subscriber.', 'heads-up-mailer' ) )
+			: true;
+
+		return $result;
+	}
+
+	/**
 	 * Generate a fresh `token_salt` for a subscriber.
 	 *
 	 * Invalidates every outstanding `{id}.{hmac}` token for the
@@ -481,6 +540,7 @@ class Subscribers_Controller {
 			STATUS_UNSUBSCRIBED,
 			STATUS_BOUNCED,
 			STATUS_COMPLAINED,
+			STATUS_NEVER_CONTACT,
 		);
 
 		if ( ! in_array( $status, $allowed_statuses, true ) ) {

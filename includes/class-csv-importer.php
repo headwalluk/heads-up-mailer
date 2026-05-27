@@ -171,6 +171,18 @@ class CSV_Importer {
 
 		$existing = $this->subscribers->get_by_email( $email );
 
+		// Refuse to touch rows that have been deliberately flagged
+		// "never contact". Otherwise a stale MailerLite re-import
+		// could quietly resurrect a GDPR-protected subscriber.
+		if ( null !== $existing && STATUS_NEVER_CONTACT === (string) $existing->status ) {
+			return array(
+				'line'    => $line,
+				'email'   => $email,
+				'status'  => 'skipped',
+				'message' => __( 'Subscriber is flagged "never contact" — row skipped.', 'heads-up-mailer' ),
+			);
+		}
+
 		if ( null !== $existing ) {
 			$op_result = $this->subscribers->update( (int) $existing->id, $data );
 			$status    = is_wp_error( $op_result ) ? 'errors' : 'updated';

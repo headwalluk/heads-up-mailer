@@ -30,6 +30,26 @@ document.addEventListener('click', (event) => {
 	}
 });
 
+// Subscribers-list bulk select: header checkbox toggles every
+// subscriber_ids[] checkbox in the same form.
+document.addEventListener('change', (event) => {
+	const master = event.target.closest('#hum-cb-all');
+
+	if (!master) {
+		return;
+	}
+
+	const form = master.closest('form');
+
+	if (!form) {
+		return;
+	}
+
+	form.querySelectorAll('input[type="checkbox"][name="subscriber_ids[]"]').forEach((cb) => {
+		cb.checked = master.checked;
+	});
+});
+
 function humActivateTab(name) {
 	if (!name) {
 		return;

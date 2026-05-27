@@ -50,6 +50,8 @@ class Plugin {
 		add_action( 'admin_post_hum_delete_group', array( $this, 'handle_delete_group' ) );
 		add_action( 'admin_post_hum_save_subscriber', array( $this, 'handle_save_subscriber' ) );
 		add_action( 'admin_post_hum_delete_subscriber', array( $this, 'handle_delete_subscriber' ) );
+		add_action( 'admin_post_hum_mark_never_contact', array( $this, 'handle_mark_never_contact' ) );
+		add_action( 'admin_post_hum_bulk_subscribers', array( $this, 'handle_bulk_subscribers' ) );
 		add_action( 'admin_post_hum_csv_import', array( $this, 'handle_csv_import' ) );
 		add_action( 'admin_post_hum_save_draft', array( $this, 'handle_save_draft' ) );
 		add_action( 'admin_post_hum_delete_draft', array( $this, 'handle_delete_draft' ) );
@@ -522,6 +524,94 @@ class Plugin {
 			$redirect_args['error'] = $result->get_error_code();
 		} else {
 			$redirect_args['deleted'] = '1';
+		}
+
+		wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );
+		exit;
+	}
+
+	/**
+	 * Handle the "Mark as never contact" row action.
+	 *
+	 * Idempotent — re-running on an already-never-contact row
+	 * succeeds silently (the controller method returns true).
+	 *
+	 * @since 0.8.0
+	 */
+	public function handle_mark_never_contact(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission.', 'heads-up-mailer' ) );
+		}
+
+		$subscriber_id = isset( $_GET['subscriber_id'] ) ? absint( $_GET['subscriber_id'] ) : 0;
+		check_admin_referer( 'hum_mark_never_contact_' . $subscriber_id );
+
+		$controller = new Subscribers_Controller();
+		$result     = $controller->mark_never_contact( $subscriber_id );
+
+		$redirect_args = array( 'page' => 'heads-up-mailer-subscribers' );
+
+		if ( is_wp_error( $result ) ) {
+			$redirect_args['error'] = $result->get_error_code();
+		} else {
+			$redirect_args['never_contact'] = '1';
+		}
+
+		wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );
+		exit;
+	}
+
+	/**
+	 * Handle bulk actions submitted from the subscribers list.
+	 *
+	 * Currently dispatches a single action — `never_contact` —
+	 * flipping every selected subscriber via the same idempotent
+	 * `mark_never_contact()` helper used by the row action and
+	 * the public "unsubscribe me from everything" button.
+	 *
+	 * Extra actions can be added by extending the switch.
+	 *
+	 * @since 0.8.0
+	 */
+	public function handle_bulk_subscribers(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission.', 'heads-up-mailer' ) );
+		}
+
+		check_admin_referer( 'hum_bulk_subscribers' );
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above.
+		$action = isset( $_POST['bulk_action'] ) ? sanitize_key( wp_unslash( $_POST['bulk_action'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above.
+		$raw_ids = isset( $_POST['subscriber_ids'] ) && is_array( $_POST['subscriber_ids'] )
+			? array_map( 'absint', wp_unslash( $_POST['subscriber_ids'] ) )
+			: array();
+
+		$ids = array_values( array_filter( $raw_ids, static fn( int $id ): bool => $id > 0 ) );
+
+		$redirect_args = array( 'page' => 'heads-up-mailer-subscribers' );
+
+		if ( '' === $action || empty( $ids ) ) {
+			$redirect_args['error'] = 'hum_bulk_no_selection';
+			wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );
+			exit;
+		}
+
+		$controller = new Subscribers_Controller();
+		$flipped    = 0;
+
+		if ( 'never_contact' === $action ) {
+			foreach ( $ids as $id ) {
+				$result = $controller->mark_never_contact( (int) $id );
+
+				if ( true === $result ) {
+					++$flipped;
+				}
+			}
+
+			$redirect_args['bulk_never_contact'] = (string) $flipped;
+		} else {
+			$redirect_args['error'] = 'hum_bulk_unknown_action';
 		}
 
 		wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );

@@ -56,6 +56,16 @@ if ( '' !== $error_code ) {
 	printf( '<div class="notice notice-error"><p>%s</p></div>', esc_html( $msg ) );
 }
 
+// Surface the GDPR-flavoured nature of the never-contact flag so
+// an admin doesn't flip it back to subscribed without thinking.
+if ( $is_edit && STATUS_NEVER_CONTACT === $current_status ) {
+	printf(
+		'<div class="notice notice-warning"><p><strong>%s</strong> %s</p></div>',
+		esc_html__( 'This subscriber is flagged "never contact".', 'heads-up-mailer' ),
+		esc_html__( 'They will not receive newsletters, and CSV re-imports will skip them. Only change the status here if you have explicit consent to resume contact.', 'heads-up-mailer' )
+	);
+}
+
 printf( '<form method="post" action="%s">', esc_url( admin_url( 'admin-post.php' ) ) );
 printf( '<input type="hidden" name="action" value="hum_save_subscriber" />' );
 printf( '<input type="hidden" name="subscriber_id" value="%d" />', (int) $subscriber_id );
@@ -80,10 +90,11 @@ printf(
 
 // Status select.
 $status_options = array(
-	STATUS_SUBSCRIBED   => __( 'Subscribed', 'heads-up-mailer' ),
-	STATUS_UNSUBSCRIBED => __( 'Unsubscribed', 'heads-up-mailer' ),
-	STATUS_BOUNCED      => __( 'Bounced', 'heads-up-mailer' ),
-	STATUS_COMPLAINED   => __( 'Complained', 'heads-up-mailer' ),
+	STATUS_SUBSCRIBED    => __( 'Subscribed', 'heads-up-mailer' ),
+	STATUS_UNSUBSCRIBED  => __( 'Unsubscribed', 'heads-up-mailer' ),
+	STATUS_BOUNCED       => __( 'Bounced', 'heads-up-mailer' ),
+	STATUS_COMPLAINED    => __( 'Complained', 'heads-up-mailer' ),
+	STATUS_NEVER_CONTACT => __( 'Never contact', 'heads-up-mailer' ),
 );
 
 $status_html = '';

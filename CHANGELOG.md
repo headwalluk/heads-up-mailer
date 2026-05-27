@@ -7,6 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] — 2026-05-27
+
+### Added
+
+- `STATUS_NEVER_CONTACT` subscriber status. Sticky GDPR-flavoured
+  "do not contact under any circumstances" terminal state. Used by:
+  - `Subscribers_Controller::mark_never_contact()` — idempotent
+    helper mirroring `unsubscribe()` / `resubscribe()`. Stamps
+    `unsubscribed_at`; existing stamp preserved on re-call.
+  - The new "Unsubscribe from everything" button on `/manage-comms/`.
+  - The CSV importer (refuses to update never-contact rows; the
+    row counts toward a new `skipped` figure with a per-row message).
+  - The new admin row action ("Mark never-contact") and bulk action
+    on the subscribers list page.
+- `/manage-comms/` redesigned as two visibly distinct sections:
+  - Section A: groups + "Save preferences" button (resubscribe via
+    group tick stays as-is).
+  - Section B: dedicated card with a danger-styled "Unsubscribe me
+    from everything" button (real button, not a checkbox). Posts to
+    a separate handler with its own CSRF nonce, calls
+    `mark_never_contact()`, redirects to the same URL — which now
+    renders a lockdown view because the subscriber is never-contact.
+- Lockdown view on `/manage-comms/` when the subscriber is
+  never-contact: spare card with "you're already unsubscribed,
+  contact us if this is wrong" — no group list (avoids leaking
+  group memberships to anyone holding a stale token), no form, no
+  buttons.
+- Subscriber edit form gains `never_contact` in the status
+  dropdown and a `notice-warning` banner when the current row is
+  in that state, calling out that future imports will skip it and
+  manual restoration requires deliberate intent.
+- Subscribers list page: bulk-actions UI with "Mark as never
+  contact"; column-header select-all checkbox toggles every row's
+  selection via JS; "Mark never-contact" row action (hidden on
+  rows already in that state) sits between Edit and Delete.
+
+### Changed
+
+- One-click RFC 8058 unsubscribe (mail-client triggered) keeps
+  flipping to `unsubscribed`, NOT `never_contact`. Native client
+  buttons are easy to hit by accident; preserving the
+  resubscribe-via-groups recovery path is the kinder default. The
+  explicit on-page button IS the never-contact trigger.
+- `Subscribers_Controller::update()` / `create()` now treat
+  `unsubscribed` and `never_contact` as a unified "stopped" bucket
+  for the `unsubscribed_at` stamping logic. Entering either state
+  stamps the timestamp; leaving for any other status clears it;
+  staying within the bucket preserves the original stamp.
+
 ## [0.7.1] — 2026-05-26
 
 ### Added
