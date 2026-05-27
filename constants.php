@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || die();
  *
  * @since 0.1.0
  */
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 /**
  * Custom table name suffixes (after `$wpdb->prefix`).

@@ -7,6 +7,77 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] — 2026-05-27
+
+First stable release. Replaces MailerLite at headwall-hosting.com
+and is in active production use.
+
+The detailed feature history is in the 0.x entries below; this
+entry frames what the 1.0.0 surface actually covers.
+
+### Highlights
+
+- **Drafts → review → send**: AI agent posts drafts via
+  authenticated REST (`POST /wp-json/heads-up-mailer/v1/drafts`).
+  Admin reviews + edits in WP admin with sandboxed preview, picks
+  one or more target groups, and clicks Send. Queue + worker
+  drain the recipients asynchronously in batches.
+- **Subscribers and groups**: full CRUD admin, MailerLite-export
+  CSV import (idempotent update-or-create), per-subscriber group
+  memberships, configurable send window enforced in the site
+  timezone, optimistic per-recipient claim against
+  `UNIQUE(send_id, subscriber_id)` so concurrent ticks never
+  double-send.
+- **RFC 8058 compliance**: every send carries `List-Unsubscribe`
+  (mailto + https), `List-Unsubscribe-Post: One-Click`, `List-ID`,
+  and `Precedence: bulk`. One-click POST and the on-page
+  `/manage-comms/` flow both work; mailto-form replies are
+  harvested by an IMAP poller. Plain-text alternative
+  auto-generated from the HTML body.
+- **Never-contact status**: GDPR-flavoured sticky terminal state.
+  CSV re-imports refuse to update never-contact rows; the public
+  "Unsubscribe from everything" button flips to it; admin row +
+  bulk actions on the subscribers list expose it.
+- **Sent log**: list view of every send with live per-status
+  counters, drill-down to per-recipient rows with status filter.
+- **Integrations framework**: pluggable `Integration` base class +
+  `hum_integrations` filter so built-ins and third-parties
+  register the same way. Ships with **Contact Form 7** (new
+  `[hum_signup group:slug "Label"]` form tag) and **WooCommerce**
+  (auto-enrol customers via T&C-accepted checkout, plus per-group
+  opt-in checkboxes on classic checkout).
+- **In-plugin GitHub auto-updater**: GitHub releases land as
+  standard WordPress plugin updates. Built by a `v*.*.*` tag
+  workflow that publishes `heads-up-mailer.zip` and a versioned
+  copy.
+- **Privacy-positive throughout**: no open tracking, no click
+  tracking, no link rewriting. Mailbox credentials encrypted at
+  rest with libsodium.
+- **Private groups**: a new `is_private` column on `hum_groups`
+  (DB_VERSION bumped to 2 with an idempotent dbDelta migration).
+  Private groups never appear on `/manage-comms/` for non-members
+  — useful for test groups and one-off targeted lists. Existing
+  members still see them (so they can leave). The preferences-save
+  handler validates posted group IDs against the visible-for-this-
+  subscriber set computed from pre-save memberships, so a
+  tampered POST can't enrol the subscriber in a private group
+  they weren't shown.
+- **UI polish**: scrubbed internal-milestone references (e.g. "M5",
+  "M6") from user-facing copy. Dashboard reduced to a minimal
+  welcome card with a "stats arriving in a future release" line —
+  real analytics are tracked as a follow-up.
+
+### Out of scope for 1.0.0 (deferred)
+
+- WooCommerce Block checkout (classic checkout works fully).
+- Bounce processing (schema reserves `bounced` status).
+- Re-queue button for individual failed sent-log rows.
+- Subscriber list search / filter (CSV import is the bulk
+  operation; the list view stays usable into the low thousands).
+- WP-CLI commands.
+
+See `dev-notes/00-project-tracker.md` for the full deferred list.
+
 ## [0.10.1] — 2026-05-27
 
 ### Fixed

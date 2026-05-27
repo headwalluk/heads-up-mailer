@@ -81,9 +81,10 @@ if ( empty( $groups ) ) {
 } else {
 	printf( '<table class="wp-list-table widefat striped">' );
 	printf(
-		'<thead><tr><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th></tr></thead>',
+		'<thead><tr><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th></tr></thead>',
 		esc_html__( 'Name', 'heads-up-mailer' ),
 		esc_html__( 'Slug', 'heads-up-mailer' ),
+		esc_html__( 'Visibility', 'heads-up-mailer' ),
 		esc_html__( 'Description', 'heads-up-mailer' ),
 		esc_html__( 'Actions', 'heads-up-mailer' )
 	);
@@ -113,10 +114,15 @@ if ( empty( $groups ) ) {
 		/* translators: %s: Group name. */
 		$confirm = sprintf( __( 'Delete the group "%s"?', 'heads-up-mailer' ), $group->name );
 
+		$visibility = ! empty( $group->is_private )
+			? __( 'Private', 'heads-up-mailer' )
+			: __( 'Public', 'heads-up-mailer' );
+
 		printf(
-			'<tr><td><strong>%s</strong></td><td><code>%s</code></td><td>%s</td><td><a href="%s">%s</a> | <a href="%s" class="hum-delete-link" data-hum-confirm="%s">%s</a></td></tr>',
+			'<tr><td><strong>%s</strong></td><td><code>%s</code></td><td>%s</td><td>%s</td><td><a href="%s">%s</a> | <a href="%s" class="hum-delete-link" data-hum-confirm="%s">%s</a></td></tr>',
 			esc_html( $group->name ),
 			esc_html( $group->slug ),
+			esc_html( $visibility ),
 			esc_html( $group->description ),
 			esc_url( $edit_url ),
 			esc_html__( 'Edit', 'heads-up-mailer' ),

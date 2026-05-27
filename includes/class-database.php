@@ -62,6 +62,7 @@ class Database {
 				slug varchar(100) NOT NULL,
 				name varchar(255) NOT NULL,
 				description text NOT NULL,
+				is_private tinyint(1) unsigned NOT NULL DEFAULT 0,
 				PRIMARY KEY  (id),
 				UNIQUE KEY slug (slug)
 			) {$charset_collate}",

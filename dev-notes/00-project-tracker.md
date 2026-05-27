@@ -1,10 +1,10 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** v1 shipped; M10 + M11 complete; v1.1 candidate
-**Current Version:** 0.9.0
-**Current Phase:** Polish + post-launch (next deliberate work TBD)
+**Status:** 1.0.0 release candidate — repo on GitHub, auto-updater shipped, integrations live, classic-checkout WC verified
+**Current Version:** 1.0.0
+**Current Phase:** Final tag + first release publication
 **Last Updated:** 27 May 2026
-**Progress:** 11 of 11 milestones complete (3 deferred for v1.1.0+)
+**Progress:** 12 of 12 milestones complete (5 items deferred to post-1.0.0)
 
 ---
 
@@ -644,6 +644,54 @@ into the existing groups system. Released as 0.9.0 on 2026-05-27.
 
 ---
 
+## Milestone 12: GitHub auto-updater + release pipeline
+
+**Goal:** Repo on GitHub with a one-command release flow:
+`git tag v1.2.3 && git push origin v1.2.3` builds the zip and
+publishes a release; live sites pick it up via the standard
+WordPress plugin update UI.
+
+**Status:** ✅ Complete
+**Dependencies:** Repo on GitHub.
+
+### Tasks
+
+- [x] Repo moved to `git@github.com:headwalluk/heads-up-mailer.git`
+      and CLAUDE.md / tracker updated to match.
+- [x] `.github/workflows/release.yml` — triggers on `v*.*.*`
+      tag pushes. Uses `rsync --exclude-from=.distignore` to
+      build a clean plugin folder, packages it as both
+      `heads-up-mailer-<version>.zip` (versioned, for humans)
+      and `heads-up-mailer.zip` (byte-identical, stable name
+      for the in-plugin updater), and attaches both to a GitHub
+      Release via `softprops/action-gh-release@v1`.
+- [x] `.distignore` — keeps repo-internal files (`.git`,
+      `.github`, `dev-notes/`, `phpcs.xml`, `CLAUDE.md`, IDE
+      noise) out of the release zip.
+- [x] `includes/class-github-updater.php` — pattern lifted from
+      quick-2fa. Hooks `pre_set_site_transient_update_plugins`,
+      `plugins_api`, and `upgrader_process_complete`. Caches the
+      latest-release payload in transient `hum_updater_release`
+      (12-hour TTL). Filter `hum_updater_enabled` lets site
+      owners pin / disable. Wired only on admin / cron contexts
+      (`is_admin() || wp_doing_cron()`) to skip the init on
+      front-end requests.
+- [x] `Plugin::check_first_run()` extended to backfill new
+      `get_default_settings()` entries on every version bump —
+      idempotent, so admin-edited values are preserved.
+- [x] Subscribers_Controller::update() partial-update bug fix
+      (0.10.1): omitted fields now keep their existing values
+      instead of being wiped to defaults. Caught by the M10
+      smoke test damaging row 143's consent fields.
+
+**Deliverable:** First release publishes via
+`git tag v1.0.0 && git push origin v1.0.0`. Updater verified
+live (404 on no-release-tagged-yet is the steady state and
+falls through cleanly). Released as 0.10.0 / 0.10.1 on
+2026-05-27.
+
+---
+
 ## Deferred (post-v1)
 
 ### Subscriber list search and filters
@@ -681,6 +729,35 @@ Candidate commands once admin flows are stable:
 Schema reserves `bounced` status. A future cron / VERP
 integration on `nexus.headwall.co.uk` flips rows. Out of scope for
 v1.
+
+### WooCommerce Block checkout support
+
+The M11 WC integration uses `woocommerce_after_checkout_billing_form`
+to render per-group opt-in checkboxes — a classic-checkout hook
+that doesn't fire under the React-based Block checkout introduced
+in WC 8.x. Block support is a separate code path:
+
+- Register opt-in fields via `woocommerce_register_additional_checkout_field()`
+  OR implement an Integration via `Automattic\WooCommerce\Blocks\Package::container()`.
+- Separate field-types — the classic markup is plain HTML; Block
+  fields are React/JSON-described.
+- Separate read path for submitted values (the order meta capture
+  hook may still work, but the field declarations and rendering
+  are independent).
+
+Roughly half a day on its own. The classic-checkout path
+continues to work fully; admins on Block checkout will see only
+the auto-add-to-customers-group flow (which is order-processed
+hook driven and Blocks-compatible) until this lands.
+
+### Re-queue failed recipient
+
+M8 deferred — the sent log is read-only. To retry a single failed
+recipient today, an admin can re-send the parent draft to a
+one-person group as the manual workaround. A proper "Re-queue
+this row" button writes a fresh `send_id` with just that
+recipient, keeping the `UNIQUE(send_id, subscriber_id)` story
+clean.
 
 ### Other v1 exclusions
 

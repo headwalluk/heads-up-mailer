@@ -78,6 +78,35 @@ class Groups_Controller {
 	}
 
 	/**
+	 * Visible-to-this-subscriber groups for the public
+	 * `/manage-comms/` page.
+	 *
+	 * Returns every public group, plus any private group the
+	 * subscriber is already a member of (so they can leave it).
+	 * Private groups they're not in are hidden — no sign-up
+	 * checkbox, no information leak about the group's existence.
+	 *
+	 * @since 1.0.0
+	 * @param array<int, int> $member_group_ids Group IDs the subscriber currently belongs to.
+	 * @return array<int, object>
+	 */
+	public function get_visible_for( array $member_group_ids ): array {
+		$result     = array();
+		$member_set = array_flip( array_map( 'intval', $member_group_ids ) );
+
+		foreach ( $this->get_all() as $group ) {
+			$is_private = ! empty( $group->is_private );
+			$is_member  = isset( $member_set[ (int) $group->id ] );
+
+			if ( ! $is_private || $is_member ) {
+				$result[] = $group;
+			}
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Create a group.
 	 *
 	 * @since 0.1.0
@@ -103,7 +132,7 @@ class Groups_Controller {
 		$inserted = $wpdb->insert(
 			$this->table(),
 			$validated,
-			array( '%s', '%s', '%s' )
+			array( '%s', '%s', '%s', '%d' )
 		);
 
 		$result = ( false === $inserted )
@@ -155,7 +184,7 @@ class Groups_Controller {
 			$this->table(),
 			$validated,
 			array( 'id' => $id ),
-			array( '%s', '%s', '%s' ),
+			array( '%s', '%s', '%s', '%d' ),
 			array( '%d' )
 		);
 
@@ -244,6 +273,7 @@ class Groups_Controller {
 		$slug        = isset( $data['slug'] ) ? sanitize_title( wp_unslash( $data['slug'] ) ) : '';
 		$name        = isset( $data['name'] ) ? sanitize_text_field( wp_unslash( $data['name'] ) ) : '';
 		$description = isset( $data['description'] ) ? sanitize_textarea_field( wp_unslash( $data['description'] ) ) : '';
+		$is_private  = ! empty( $data['is_private'] ) ? 1 : 0;
 
 		if ( '' === $slug ) {
 			return new \WP_Error(
@@ -263,6 +293,7 @@ class Groups_Controller {
 			'slug'        => $slug,
 			'name'        => $name,
 			'description' => $description,
+			'is_private'  => $is_private,
 		);
 	}
 }

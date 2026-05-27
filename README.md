@@ -1,6 +1,6 @@
 # Heads Up Mailer
 
-![Status](https://img.shields.io/badge/status-pre--release-orange)
+![Status](https://img.shields.io/badge/status-1.0.0-brightgreen)
 ![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b?logo=wordpress&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-8.0%2B-777bb4?logo=php&logoColor=white)
 ![License](https://img.shields.io/badge/license-GPLv2%2B-blue)
@@ -28,37 +28,65 @@ form that the plugin harvests by polling an IMAP mailbox.
 This plugin is **not** a hosted service, a multi-site mailer, or a
 marketing-automation suite.
 
+## What's in 1.0.0
+
+- **Drafts pipeline** — REST endpoint, sandboxed admin preview,
+  configurable footer + sender identity.
+- **Send queue + worker** — async drain on a configurable WP-Cron
+  interval, per-recipient optimistic claim against
+  `UNIQUE(send_id, subscriber_id)`, wall-clock budget per tick.
+- **RFC 8058 unsubscribe** — `List-Unsubscribe` (mailto + https),
+  `List-Unsubscribe-Post: One-Click`, `List-ID`, `Precedence:
+  bulk`. Plain-text alternative auto-generated.
+- **Public `/manage-comms/` page** — per-group preferences with
+  resubscribe-via-tick, plus a distinct "Unsubscribe me from
+  everything" button that flips the subscriber to a sticky
+  `never_contact` status.
+- **IMAP poller** — harvests `mailto:` unsubscribe replies on a
+  separate cron tick. Failed messages move to an `Errors`
+  folder; processed messages move to `Processed`. Master enable
+  switch on the settings tab.
+- **Sent log** — list view of every send with live status
+  counters, per-send recipient drill-down with status filter.
+- **Subscribers + groups admin** — full CRUD, MailerLite-export
+  CSV import (idempotent, refuses to overwrite never-contact
+  rows), row + bulk actions.
+- **Integrations framework** — pluggable `Integration` base
+  class + `hum_integrations` filter. Built-ins:
+  - **Contact Form 7** — new `[hum_signup group:slug "Label"]`
+    form tag, droppable into any CF7 form.
+  - **WooCommerce** — auto-enrol customers into a configurable
+    group on checkout (classic checkout); per-group opt-in
+    checkboxes with admin-defined labels.
+- **In-plugin GitHub auto-updater** — releases land via the
+  standard WordPress plugin update flow.
+- **Encryption** — IMAP password encrypted at rest with
+  libsodium (`AUTH_KEY`-derived key).
+
 ## Documentation
 
-In-depth guides live in [`docs/`](docs/):
+End-user docs live under [`docs/`](docs/):
 
-- [Installation and configuration](docs/installation.md)
-- [Subscriber management and CSV import](docs/subscribers.md)
-- [Composing and sending newsletters](docs/sending.md)
-- [Self-service preferences and unsubscribe](docs/manage-comms.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [Developer reference: REST API and hooks](docs/developer.md)
+- [REST API for AI agents](docs/ai-agent-rest-guide.md) — how
+  to POST drafts and read them back.
 
-## Status
-
-Pre-release (`0.4.0`). Milestones 1–5 of 9 are complete: schema,
-subscribers + groups (with CSV import), settings (with encrypted
-IMAP credentials), draft authoring (REST + admin UI with sandboxed
-preview), and the send pipeline (WP-Cron worker with RFC 8058
-one-click unsubscribe headers, sandboxed footer injection,
-plain-text alternative, optimistic per-row claim). The public
-preference endpoint, IMAP poller, and sent-log UI are still to
-come. See
-[`CHANGELOG.md`](CHANGELOG.md) for what has landed and
-[`dev-notes/00-project-tracker.md`](dev-notes/00-project-tracker.md)
-for the milestone roadmap.
+Additional admin / editor / host guides are tracked as a
+follow-up; the in-admin tab descriptions cover day-to-day use.
 
 ## REST API
 
-AI agents post drafts via the `heads-up-mailer/v1` namespace with
-WordPress application-password auth. See
+AI agents post drafts via the `heads-up-mailer/v1` namespace
+with WordPress application-password auth. See
 [`docs/ai-agent-rest-guide.md`](docs/ai-agent-rest-guide.md) for
 endpoints, request / response shapes, and `curl` examples.
+
+## Updates
+
+`includes/class-github-updater.php` checks the
+[GitHub releases page](https://github.com/headwalluk/heads-up-mailer/releases)
+and surfaces new versions through the standard WordPress
+"Plugins → Updates" UI. Site owners can pin / disable updates
+via the `hum_updater_enabled` filter.
 
 ## License
 

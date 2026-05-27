@@ -14,11 +14,12 @@ namespace Heads_Up_Mailer;
 
 defined( 'ABSPATH' ) || die();
 
-$is_edit  = ( null !== $group );
-$group_id = $is_edit ? (int) $group->id : 0;
-$slug     = $is_edit ? (string) $group->slug : '';
-$name     = $is_edit ? (string) $group->name : '';
-$desc     = $is_edit ? (string) $group->description : '';
+$is_edit    = ( null !== $group );
+$group_id   = $is_edit ? (int) $group->id : 0;
+$slug       = $is_edit ? (string) $group->slug : '';
+$name       = $is_edit ? (string) $group->name : '';
+$desc       = $is_edit ? (string) $group->description : '';
+$is_private = $is_edit && ! empty( $group->is_private );
 
 $page_title = $is_edit
 	? __( 'Edit group', 'heads-up-mailer' )
@@ -87,6 +88,16 @@ printf(
 	'<tr><th scope="row"><label for="hum-group-description">%s</label></th><td><textarea name="description" id="hum-group-description" class="large-text" rows="4">%s</textarea></td></tr>',
 	esc_html__( 'Description', 'heads-up-mailer' ),
 	esc_textarea( $desc )
+);
+
+// Hidden value="0" sibling before the checkbox so an unchecked
+// box still posts a value the handler can read.
+printf(
+	'<tr><th scope="row"><label for="hum-group-private">%s</label></th><td><input type="hidden" name="is_private" value="0" /><label><input name="is_private" id="hum-group-private" type="checkbox" value="1"%s /> %s</label><p class="description">%s</p></td></tr>',
+	esc_html__( 'Private', 'heads-up-mailer' ),
+	checked( $is_private, true, false ),
+	esc_html__( 'Hide this group from the public preferences page for non-members.', 'heads-up-mailer' ),
+	esc_html__( 'Private groups never appear as a sign-up option on /manage-comms/. Existing members still see it (so they can unsubscribe), but anyone else does not. Useful for internal / test groups and one-off targeted lists.', 'heads-up-mailer' )
 );
 
 printf( '</tbody></table>' );

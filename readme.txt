@@ -2,13 +2,13 @@
 Contributors: paulfaulkner
 Tags: newsletter, email, subscribers, mailer, unsubscribe
 Requires at least: 6.0
-Tested up to: 6.7
+Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 0.4.0
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-In-house newsletter plugin: async send queue, RFC 8058 one-click unsubscribe, IMAP poll for mailto unsubscribes.
+In-house newsletter plugin: async send queue, RFC 8058 one-click unsubscribe, IMAP poll for mailto unsubscribes, GDPR-flavoured never-contact, CF7 + WooCommerce integrations.
 
 == Description ==
 
@@ -21,6 +21,14 @@ Privacy-positive by design:
 * No open tracking pixels.
 * No click tracking, no link rewriting.
 * Unsubscribes work via RFC 8058 one-click POST and via a `mailto:` form that the plugin harvests by polling an IMAP mailbox.
+* "Never contact" is a sticky terminal state that future CSV re-imports refuse to overwrite — belt-and-braces for GDPR erasure requests.
+
+Built-in plugin integrations (each only loads when its parent plugin is active):
+
+* **Contact Form 7** — drop `[hum_signup group:slug "Sign me up"]` into any CF7 form to add a sign-up checkbox.
+* **WooCommerce** — auto-enrol customers into a configurable group on checkout, plus per-group opt-in checkboxes with admin-defined labels. Classic checkout only in 1.0.0; Block checkout support is on the roadmap.
+
+The repository ships with a GitHub Actions release workflow and an in-plugin auto-updater so site owners receive new versions through the standard WordPress plugin update UI.
 
 Out of scope for v1: open / click tracking, drip campaigns, A / B testing, scheduled sends, multi-site, built-in SMTP. This plugin sends via `wp_mail()` — combine it with whatever SMTP plugin you already use.
 
@@ -28,7 +36,7 @@ Out of scope for v1: open / click tracking, drip campaigns, A / B testing, sched
 
 1. Drop the plugin folder into `wp-content/plugins/heads-up-mailer/`.
 2. Activate it via the WordPress admin.
-3. Visit *Heads Up Mailer → Settings* and configure the IMAP mailbox and queue.
+3. Visit *Heads Up Mailer → Settings* and configure the IMAP mailbox, sending identity, and (optionally) the integrations tab.
 
 == Frequently Asked Questions ==
 
@@ -40,36 +48,26 @@ No, by design. The plugin does not insert tracking pixels or rewrite links.
 
 Yes. Heads Up Mailer sends via `wp_mail()`, so whatever you configure as the WordPress mail transport — for example via WP Mail SMTP — is what it will use.
 
+= Does the WooCommerce integration work with Block checkout? =
+
+Not in 1.0.0. The integration hooks `woocommerce_after_checkout_billing_form`, which only fires under classic / shortcode checkout. Block checkout support is tracked as a follow-up. The auto-enrol-customers-to-a-group flow IS Block-compatible (it hooks `woocommerce_checkout_order_processed`); only the per-group opt-in checkboxes need the additional Blocks code path.
+
+= How do I disable auto-updates? =
+
+Add `add_filter( 'hum_updater_enabled', '__return_false' );` to your site's `functions.php` or an mu-plugin. Useful for staging environments or pinning to a known-good version during a release window.
+
 = Where can I read more? =
 
-See the `docs/` directory in the plugin folder.
+* `README.md` in the plugin folder — feature overview and pointers.
+* `docs/ai-agent-rest-guide.md` — REST API reference for AI-agent integrations.
+* `CHANGELOG.md` — full per-version release notes.
 
 == Changelog ==
 
-= 0.4.0 =
-* Send pipeline (M5). Admins can click Send on a draft and the cron worker drains the queue in the background. End-to-end verified against a live Gmail inbox.
-* `Sends_Controller::queue()` writes a `hum_sends` row plus N `hum_send_recipients` rows in a single transaction, dedupes recipients across the selected groups, filters to `status = subscribed`, and flips the draft to `sending`.
-* WP-Cron worker (`hum_tick` interval, configurable) processes recipients in batches with an optimistic `pending → processing` claim that prevents double-sends, a wall-clock budget per tick, and a finalisation pass that stamps `finished_at` + flips the draft to `sent` once every row reaches a terminal status.
-* RFC 8058-compliant headers on every outgoing message: `List-Unsubscribe` (mailto + https), `List-Unsubscribe-Post: List-Unsubscribe=One-Click`, `List-ID`, `Precedence: bulk`. Plain-text alternative auto-generated from the HTML body via `phpmailer_init`. Sender identity (`OPTION_FROM_NAME` / `OPTION_FROM_EMAIL`) scoped to the send via `wp_mail_from` filters that attach and detach per call.
-* New "Sending" settings tab: from name, from email, footer HTML template with `{{unsubscribe_url}}` placeholder, and the public unsubscribe slug. Slug changes flush the WordPress rewrite-rules cache.
-* `includes/class-tokens.php` — bearer-token primitive shared by M5 (emit) and M6 (verify). `{subscriber_id}.{hmac_hex}` format with constant-time comparison and a `regenerate_token_salt()` helper on `Subscribers_Controller`.
-* Footer injected before the last `</body>` (appended for fragment HTML), with the per-recipient unsubscribe URL substituted into the template.
-* Save guard: admins can no longer edit a draft while it is sending (`hum_draft_locked_while_sending`). Form inputs and Save button disable in the UI as well.
-* Resends from a `sent` draft write a fresh `send_id` so the `UNIQUE(send_id, subscriber_id)` constraint stays clean.
+= 1.0.0 =
+First stable release. Replaces MailerLite at headwall-hosting.com. Stack covers: drafts via REST → admin review → async send queue → RFC 8058 unsubscribe → public `/manage-comms/` page → IMAP poll for mailto unsubscribes → sent log → never-contact status → Contact Form 7 + WooCommerce integrations → in-plugin GitHub auto-updater. See `CHANGELOG.md` in the plugin folder for the detailed per-feature history (0.1.0 through 0.10.1).
 
-= 0.3.0 =
-* Settings page (Queue + Mailbox tabs) with per-field sanitize callbacks. Numeric ranges clamped, booleans normalised, mailbox password encrypted at rest via libsodium `crypto_secretbox` keyed off `AUTH_KEY` (HKDF-SHA256).
-* "Test connection" button for the IMAP mailbox tab: single-retry connect from the submitted form values, surfacing the last `imap_errors()` entry on failure. Blank password falls back to the stored encrypted value, decrypted in place.
-* `OPTION_MAILBOX_VALIDATE_CERT` — opt-out of TLS chain validation for hosts whose c-client CA bundle disagrees with their cert chain (common with Let's Encrypt on Dovecot). TLS encryption stays on; only chain validation is skipped.
-* Drafts: `heads-up-mailer/v1` REST namespace with `POST /drafts` and `GET /drafts/{id}`, authenticated with WordPress application passwords. AI agents post drafts; admins review, edit, and (in a future release) send.
-* Drafts admin: list table, add/edit form with HTML body textarea and group multi-select, sandboxed iframe preview that renders MJML-style full-document HTML faithfully.
-* `docs/ai-agent-rest-guide.md` — guide for the AI agent operator.
+== Upgrade Notice ==
 
-= 0.2.0 =
-* Groups: full CRUD admin (list / add / edit / delete) with `hosting-customers` and `web-designers` seeded on activation.
-* Subscribers: full CRUD admin with status chips, group chips, and per-row token salt generation.
-* CSV import: MailerLite export shape supported (`Subscriber, ..., Subscribed, Name, Last name, ..., Groups`); update-or-create by lowercased email; existing consent timestamps preserved; unknown group names warned per-row without stopping the import.
-* Top-level "Heads Up Mailer" admin menu with Dashboard, Subscribers, and Groups submenus.
-
-= 0.1.0 =
-* Initial pre-release scaffold. See `CHANGELOG.md` in the repository for details.
+= 1.0.0 =
+First stable release. Existing 0.x deployments upgrade in place via the in-plugin GitHub updater. No schema migration required.

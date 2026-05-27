@@ -286,15 +286,30 @@ class Public_Controller {
 		$subs_controller   = new Subscribers_Controller();
 		$groups_controller = new Groups_Controller();
 
-		// Intersect posted IDs with known groups so a tampered form
-		// can't attach the subscriber to non-existent rows.
+		// Intersect posted IDs with the groups the subscriber was
+		// actually allowed to SEE on render. Computed against the
+		// EXISTING memberships (pre-save) so a tampered POST can't
+		// add the subscriber to a private group by pretending to
+		// already be a member.
+		$existing_ids   = $subs_controller->get_groups( (int) $subscriber->id );
+		$visible_groups = $groups_controller->get_visible_for( $existing_ids );
+
 		$valid_ids = array();
 
-		foreach ( $groups_controller->get_all() as $group ) {
+		foreach ( $visible_groups as $group ) {
 			$valid_ids[] = (int) $group->id;
 		}
 
-		$selected_ids = array_values( array_intersect( $posted_groups, $valid_ids ) );
+		$kept_ids = array_values( array_intersect( $posted_groups, $valid_ids ) );
+
+		// Preserve any private-group memberships the subscriber
+		// already had that weren't visible on the form. If
+		// `get_visible_for` is working correctly this is a no-op
+		// — every existing membership IS visible — but the
+		// belt-and-braces merge keeps us safe against future
+		// visibility-rule changes.
+		$hidden_existing_ids = array_diff( $existing_ids, $valid_ids );
+		$selected_ids        = array_values( array_unique( array_merge( $kept_ids, $hidden_existing_ids ) ) );
 
 		$subs_controller->set_groups( (int) $subscriber->id, $selected_ids );
 
@@ -383,8 +398,11 @@ class Public_Controller {
 		$groups_controller = new Groups_Controller();
 		$subs_controller   = new Subscribers_Controller();
 
-		$all_groups   = $groups_controller->get_all();
 		$attached_ids = $subs_controller->get_groups( (int) $subscriber->id );
+		// Private groups they're not in are hidden — no sign-up
+		// checkbox, no information leak. Member-of-private rows
+		// stay visible so they can leave.
+		$all_groups = $groups_controller->get_visible_for( $attached_ids );
 
 		$is_never_contact        = ( STATUS_NEVER_CONTACT === (string) $subscriber->status );
 		$is_already_unsubscribed = ( STATUS_UNSUBSCRIBED === (string) $subscriber->status );

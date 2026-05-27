@@ -41,7 +41,7 @@ printf(
 	esc_html__( 'Tick interval (minutes)', 'heads-up-mailer' ),
 	esc_attr( OPTION_TICK_MINUTES ),
 	(int) $tick_minutes,
-	esc_html__( 'How often the queue drains. Default every 5 minutes, range 1–60. Rescheduling happens once the send pipeline (M5) lands.', 'heads-up-mailer' )
+	esc_html__( 'How often the queue drains. Default every 5 minutes, range 1–60. The cron event re-schedules itself automatically when this value changes.', 'heads-up-mailer' )
 );
 
 printf( '</tbody></table>' );
