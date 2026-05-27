@@ -45,6 +45,10 @@ printf(
 	'<a href="#mailbox" class="nav-tab" data-tab="mailbox">%s</a>',
 	esc_html__( 'Mailbox', 'heads-up-mailer' )
 );
+printf(
+	'<a href="#integrations" class="nav-tab" data-tab="integrations">%s</a>',
+	esc_html__( 'Integrations', 'heads-up-mailer' )
+);
 printf( '</nav>' );
 
 printf( '<div class="tab-content">' );
@@ -59,6 +63,10 @@ printf( '</div>' );
 
 printf( '<div id="mailbox-panel" class="tab-panel" style="display:none;">' );
 require __DIR__ . '/tab-mailbox.php';
+printf( '</div>' );
+
+printf( '<div id="integrations-panel" class="tab-panel" style="display:none;">' );
+require __DIR__ . '/tab-integrations.php';
 printf( '</div>' );
 
 printf( '</div>' );

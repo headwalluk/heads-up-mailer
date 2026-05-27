@@ -200,6 +200,36 @@ class Settings {
 				'default'           => DEF_MAILBOX_INTERVAL,
 			)
 		);
+
+		register_setting(
+			self::GROUP,
+			OPTION_WC_CUSTOMERS_GROUP_SLUG,
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => array( $this, 'sanitize_optional_slug' ),
+				'default'           => '',
+			)
+		);
+
+		register_setting(
+			self::GROUP,
+			OPTION_WC_CHECKOUT_INTRO,
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_textarea_field',
+				'default'           => '',
+			)
+		);
+
+		register_setting(
+			self::GROUP,
+			OPTION_WC_CHECKOUT_GROUPS_JSON,
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => array( $this, 'sanitize_wc_checkout_groups_json' ),
+				'default'           => '{}',
+			)
+		);
 	}
 
 	/**
@@ -351,6 +381,67 @@ class Settings {
 		$clean = sanitize_title( (string) $value );
 
 		return ( '' === $clean ) ? DEF_MANAGE_SLUG : $clean;
+	}
+
+	/**
+	 * Sanitize a slug, allowing empty (= "not set / disabled").
+	 *
+	 * Used by the WC integration's customers-group dropdown,
+	 * where "leave blank to disable customer auto-tracking" is a
+	 * valid choice.
+	 *
+	 * @since 0.9.0
+	 * @param mixed $value Raw form value.
+	 * @return string
+	 */
+	public function sanitize_optional_slug( $value ): string {
+		return sanitize_title( (string) $value );
+	}
+
+	/**
+	 * Sanitize the WC checkout-groups JSON map.
+	 *
+	 * Expected shape: `{ "<slug>": { "at_checkout": bool, "label": string }, ... }`.
+	 *
+	 * Anything that doesn't decode to a JSON object is replaced
+	 * with `{}`; entries that don't match the expected shape are
+	 * dropped silently so a tampered POST can't poison the
+	 * option.
+	 *
+	 * @since 0.9.0
+	 * @param mixed $value Raw form value (may be a string or already an array).
+	 * @return string Canonical JSON-encoded map (no pretty-printing).
+	 */
+	public function sanitize_wc_checkout_groups_json( $value ): string {
+		$decoded = is_string( $value ) ? json_decode( (string) $value, true ) : $value;
+
+		if ( ! is_array( $decoded ) ) {
+			return '{}';
+		}
+
+		$clean = array();
+
+		foreach ( $decoded as $slug => $entry ) {
+			if ( ! is_string( $slug ) || ! is_array( $entry ) ) {
+				continue;
+			}
+
+			$clean_slug = sanitize_title( $slug );
+
+			if ( '' === $clean_slug ) {
+				continue;
+			}
+
+			$at_checkout = ! empty( $entry['at_checkout'] );
+			$label       = isset( $entry['label'] ) ? sanitize_text_field( (string) $entry['label'] ) : '';
+
+			$clean[ $clean_slug ] = array(
+				'at_checkout' => $at_checkout,
+				'label'       => $label,
+			);
+		}
+
+		return (string) wp_json_encode( $clean );
 	}
 
 	/**

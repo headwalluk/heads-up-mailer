@@ -50,6 +50,49 @@ document.addEventListener('change', (event) => {
 	});
 });
 
+// WooCommerce integration: per-group checkout-opt-in repeater.
+// Rebuilds the hidden JSON whenever any row's checkbox or label
+// changes so the saved option matches what the admin sees.
+function humWcRebuildJson() {
+	const hidden = document.getElementById('hum-wc-checkout-groups-json');
+
+	if (!hidden) {
+		return;
+	}
+
+	const rows = document.querySelectorAll('tr[data-slug]');
+	const map = {};
+
+	rows.forEach((row) => {
+		const slug = row.dataset.slug;
+		const cb = row.querySelector('.hum-wc-cb');
+		const lbl = row.querySelector('.hum-wc-lbl');
+
+		if (!slug || !cb) {
+			return;
+		}
+
+		map[slug] = {
+			at_checkout: !!cb.checked,
+			label: lbl ? lbl.value : '',
+		};
+	});
+
+	hidden.value = JSON.stringify(map);
+}
+
+document.addEventListener('change', (event) => {
+	if (event.target.closest('.hum-wc-cb')) {
+		humWcRebuildJson();
+	}
+});
+
+document.addEventListener('input', (event) => {
+	if (event.target.closest('.hum-wc-lbl')) {
+		humWcRebuildJson();
+	}
+});
+
 function humActivateTab(name) {
 	if (!name) {
 		return;

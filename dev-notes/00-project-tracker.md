@@ -1,10 +1,10 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** v1 shipped (M9 soak completed in production); M10 complete; M11 next
-**Current Version:** 0.8.0
-**Current Phase:** M11 — Plugin integrations framework (CF7, WooCommerce)
+**Status:** v1 shipped; M10 + M11 complete; v1.1 candidate
+**Current Version:** 0.9.0
+**Current Phase:** Polish + post-launch (next deliberate work TBD)
 **Last Updated:** 27 May 2026
-**Progress:** 10 of 11 milestones complete (3 deferred for v1.0.0+); v1 successor track underway
+**Progress:** 11 of 11 milestones complete (3 deferred for v1.1.0+)
 
 ---
 
@@ -597,34 +597,50 @@ splits "save group memberships" from "stop everything".
 can feed subscribers into Heads Up Mailer. Ship with Contact Form
 7 and WooCommerce as the built-in integrations.
 
-**Status:** 📋 Not started
+**Status:** ✅ Complete
 **Dependencies:** M1, M2
 
 ### Tasks
 
-- [ ] Integration registry — `apply_filters( 'hum_integrations', $list )`
-      so built-ins and third-parties register the same way.
-- [ ] `integrations/<slug>/class-<slug>.php` always
+- [x] Integration registry — `apply_filters( 'hum_integrations', $registry )`
+      on `plugins_loaded` priority 20. Built-ins and third-parties
+      register the same way. `Plugin::get_integrations()` exposes
+      the populated registry to the admin layer.
+- [x] Abstract `Integration` base class with six abstract methods
+      (`slug`, `label`, `parent_label`, `is_active`,
+      `register_hooks`, `render_settings_section`). Concrete
+      subclasses live in `integrations/<slug>/class-<slug>.php`.
+- [x] `integrations/<slug>/class-<slug>.php` always
       `require_once`'d from the bootstrap; each runs its own
       `class_exists()` / `function_exists()` parent-check before
-      binding hooks.
-- [ ] New "Integrations" settings tab with a section per active
-      integration; "no integrations available, install one of:
-      ..." card listing every registered integration when none
-      are active.
-- [ ] Contact Form 7: register a new tag `[hum_signup group:slug]`
-      so editors can drop a sign-up checkbox onto any CF7 form.
-      Captured email comes from the form's email field; consent
-      = checkbox tick + submit.
-- [ ] WooCommerce: checkout integration auto-creates a `customers`
-      group on activation if missing. Per-group "show at checkout"
-      config stored in a single wp_option JSON map
-      (`hum_wc_checkout_groups`) — no schema migration. Intro
-      text + per-group label text configurable from the
-      integration's settings section.
+      binding hooks. Inactive integrations cost ~nothing.
+- [x] New "Integrations" settings tab with a section per active
+      integration; "Other available integrations" footer card
+      lists every registered-but-inactive integration; standalone
+      "No integrations available — install one of: …" message
+      when nothing is active.
+- [x] **Contact Form 7**: new tag `[hum_signup group:slug "Label"]`
+      registered via `wpcf7_add_form_tag`. Submit hook scans the
+      form for ticked sign-up checkboxes and enrols the email
+      field's address into the target group (consent source
+      `cf7-form:<form_id>`).
+- [x] **WooCommerce**: dropdown for "Customers group" (admin maps
+      to an existing group; empty = disabled). Per-group
+      checkout-opt-in repeater with intro text, "show at checkout"
+      toggle, and label text per group. Config stored in
+      `OPTION_WC_CHECKOUT_GROUPS_JSON` (single wp_option JSON
+      map). Checkout hook captures ticked slugs via order meta;
+      processed hook enrols the customer in every applicable
+      group.
+- [x] `Subscribers_Controller::ensure_in_group()` — shared helper
+      for integration callers. Creates or unions group
+      memberships; refuses on never-contact rows.
+- [x] `Plugin::check_first_run()` backfill: on version bump,
+      walks `get_default_settings()` and `add_option()`s any new
+      keys. Idempotent so admin-edited values are preserved.
 
 **Deliverable:** End-to-end signup flow from CF7 + WooCommerce
-into the existing groups system. Bumps version to 0.9.0.
+into the existing groups system. Released as 0.9.0 on 2026-05-27.
 
 ---
 

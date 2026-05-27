@@ -420,6 +420,74 @@ class Subscribers_Controller {
 	}
 
 	/**
+	 * Ensure a subscriber exists for the given email and is a
+	 * member of the given group.
+	 *
+	 * - Existing row: union the requested group with the current
+	 *   memberships. Other fields (status, consent_at, name)
+	 *   left untouched. Status changes are the integration's
+	 *   responsibility — call `resubscribe()` separately if the
+	 *   signup should overwrite an `unsubscribed` state.
+	 * - Missing row: create with `status = subscribed`,
+	 *   `consent_at = now`, the provided `consent_source`, and
+	 *   the single-group membership.
+	 * - Never-contact: refused with `hum_subscriber_never_contact`.
+	 *   Integration callers should handle this silently — a stale
+	 *   form submission shouldn't surface as a fatal error.
+	 *
+	 * Helper for the M11 integrations (CF7, WooCommerce). Returns
+	 * the subscriber ID on success, or a `WP_Error` on validation
+	 * / DB failure.
+	 *
+	 * @since 0.9.0
+	 * @param string $email          Subscriber email.
+	 * @param string $name           Subscriber name (empty for unknown).
+	 * @param int    $group_id       Target group ID.
+	 * @param string $consent_source Free-text consent provenance (`cf7-form`, `woocommerce-checkout`, …).
+	 * @return int|\WP_Error
+	 */
+	public function ensure_in_group( string $email, string $name, int $group_id, string $consent_source ): int|\WP_Error {
+		$email = strtolower( trim( $email ) );
+
+		if ( '' === $email || ! is_email( $email ) ) {
+			return new \WP_Error(
+				'hum_subscriber_invalid_email',
+				__( 'A valid email address is required.', 'heads-up-mailer' )
+			);
+		}
+
+		$existing = $this->get_by_email( $email );
+
+		if ( null !== $existing && STATUS_NEVER_CONTACT === (string) $existing->status ) {
+			return new \WP_Error(
+				'hum_subscriber_never_contact',
+				__( 'Subscriber is flagged never-contact.', 'heads-up-mailer' )
+			);
+		}
+
+		if ( null === $existing ) {
+			$result = $this->create(
+				array(
+					'email'          => $email,
+					'name'           => $name,
+					'consent_source' => $consent_source,
+					'consent_at'     => now_utc(),
+					'groups'         => array( $group_id ),
+				)
+			);
+
+			return $result;
+		}
+
+		$existing_groups = $this->get_groups( (int) $existing->id );
+		$new_groups      = array_values( array_unique( array_merge( $existing_groups, array( $group_id ) ) ) );
+
+		$this->set_groups( (int) $existing->id, $new_groups );
+
+		return (int) $existing->id;
+	}
+
+	/**
 	 * Flip a subscriber to `never_contact` and stamp `unsubscribed_at`.
 	 *
 	 * The harder cousin of `unsubscribe()`. Recorded as a deliberate

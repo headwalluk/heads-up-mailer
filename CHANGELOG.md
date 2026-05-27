@@ -7,6 +7,77 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] — 2026-05-27
+
+### Added
+
+- Pluggable integrations framework:
+  - `includes/class-integration.php` — abstract base class. Six
+    abstract methods (`slug`, `label`, `parent_label`,
+    `is_active`, `register_hooks`, `render_settings_section`)
+    define the integration surface.
+  - `includes/class-integrations.php` — registry that applies
+    the new `hum_integrations` filter on `plugins_loaded` (prio
+    20). Active integrations get their hooks bound automatically.
+  - `Plugin` gains `get_integrations()` accessor so admin pages
+    can read the registry.
+  - New "Integrations" Settings tab. Renders each active
+    integration's `render_settings_section()` inline, plus an
+    "Other available integrations" footer card when at least
+    one registered integration is inactive. When no integrations
+    are active, the tab shows a list of all registered ones with
+    "install X to enable" copy.
+- Built-in Contact Form 7 integration
+  (`integrations/contact-form-7/class-contact-form-7.php`):
+  - Registers a new `[hum_signup group:slug "Label"]` form tag.
+    Editors drop it into any CF7 form to add a sign-up checkbox.
+    The tag's `group:` attribute names the target Heads Up group.
+  - On `wpcf7_before_send_mail`, ticked sign-up checkboxes
+    enrol the form's email address into the target group via
+    `Subscribers_Controller::ensure_in_group()`. Consent source
+    stamped as `cf7-form:<form_id>`.
+  - Falls back to the form's `your-name` / `name` field for the
+    subscriber name; empty if absent.
+  - Unknown group slugs, missing email fields, never-contact
+    rows are skipped silently — a form submission should never
+    surface a Heads Up error to the visitor.
+- Built-in WooCommerce integration
+  (`integrations/woocommerce/class-woocommerce.php`):
+  - Two checkout-driven sign-up flows:
+    1. **Customers group** — admin selects an existing group in
+       the integration's settings. Every order's billing
+       customer is auto-added on
+       `woocommerce_checkout_order_processed`. T&C acceptance is
+       the consent record. Empty slug = disabled.
+    2. **Per-group opt-in checkboxes** — admin marks individual
+       groups as "show at checkout" and supplies the label text.
+       Renders below the billing form on the checkout page; on
+       submit, ticked boxes enrol the customer in the
+       corresponding groups. Configured groups are stored in a
+       single `OPTION_WC_CHECKOUT_GROUPS_JSON` map — no schema
+       migration needed.
+  - Hidden order-meta `_hum_opt_in_slugs` captures the ticked
+    set on `woocommerce_checkout_create_order` so the data
+    survives WC's checkout-form sanitisation.
+  - Admin JS rebuilds the JSON map on every repeater
+    checkbox / label change so a Save settings click persists
+    the live state.
+- `Subscribers_Controller::ensure_in_group( email, name, group_id,
+  consent_source )` helper — used by both built-in integrations
+  and any third-party. Creates the subscriber if missing, unions
+  group memberships if existing, refuses with
+  `hum_subscriber_never_contact` for flagged rows.
+- New constants: `OPTION_WC_CUSTOMERS_GROUP_SLUG`,
+  `OPTION_WC_CHECKOUT_INTRO`, `OPTION_WC_CHECKOUT_GROUPS_JSON`.
+
+### Changed
+
+- `Plugin::check_first_run()` now backfills any new-version
+  option defaults on upgrade — walks `get_default_settings()`
+  and `add_option()`'s missing keys. Idempotent (`add_option()`
+  no-ops on existing rows), so admin-edited values are never
+  clobbered.
+
 ## [0.8.0] — 2026-05-27
 
 ### Added

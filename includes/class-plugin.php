@@ -21,6 +21,31 @@ defined( 'ABSPATH' ) || die();
 class Plugin {
 
 	/**
+	 * Plugin integrations registry, populated during `run()` so
+	 * the Settings tab + admin pages can read it back via
+	 * `get_integrations()`.
+	 *
+	 * @since 0.9.0
+	 * @var ?Integrations
+	 */
+	private ?Integrations $integrations = null;
+
+	/**
+	 * Integrations registry accessor — used by the Integrations
+	 * settings tab template and any admin page that needs to
+	 * surface integration state.
+	 *
+	 * @since 0.9.0
+	 */
+	public function get_integrations(): Integrations {
+		if ( null === $this->integrations ) {
+			$this->integrations = new Integrations();
+		}
+
+		return $this->integrations;
+	}
+
+	/**
 	 * Register hooks.
 	 *
 	 * @since 0.1.0
@@ -41,6 +66,11 @@ class Plugin {
 		$public = new Public_Controller();
 		$public->run();
 
+		// Run integrations on `plugins_loaded` priority 20 so
+		// parent plugins (CF7, WooCommerce) have finished loading
+		// and `is_active()` checks return reliable answers.
+		add_action( 'plugins_loaded', array( $this, 'run_integrations' ), 20 );
+
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_init', array( $this, 'check_first_run' ), 1 );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
@@ -59,6 +89,18 @@ class Plugin {
 		add_action( 'admin_post_hum_send_draft', array( $this, 'handle_send_draft' ) );
 		add_action( 'wp_ajax_hum_test_mailbox', array( $this, 'ajax_test_mailbox' ) );
 		add_action( 'wp_ajax_hum_poll_mailbox', array( $this, 'ajax_poll_mailbox' ) );
+	}
+
+	/**
+	 * `plugins_loaded` (priority 20) — apply the
+	 * `hum_integrations` filter and bind hooks for active
+	 * integrations. Priority 20 leaves room for parent plugins
+	 * loading at priority 10 / 15.
+	 *
+	 * @since 0.9.0
+	 */
+	public function run_integrations(): void {
+		$this->get_integrations()->run();
 	}
 
 	/**
@@ -104,7 +146,16 @@ class Plugin {
 			add_option( OPTION_VERSION, HUM_VERSION, '', 'yes' );
 			add_option( OPTION_DB_VERSION, DB_VERSION, '', 'yes' );
 		} elseif ( HUM_VERSION !== $stored_version ) {
-			// no action: version-bump migration handler will be added when needed.
+			// Backfill any new-in-this-version option defaults
+			// that don't exist yet. `add_option()` is a no-op for
+			// existing keys, so this is safe to run on every
+			// upgrade without clobbering admin-edited values.
+			foreach ( get_default_settings() as $key => $value ) {
+				if ( false === get_option( $key ) ) {
+					add_option( $key, $value, '', 'yes' );
+				}
+			}
+
 			update_option( OPTION_VERSION, HUM_VERSION );
 		}
 

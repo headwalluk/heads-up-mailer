@@ -75,6 +75,24 @@ const OPTION_MAILBOX_LAST_ERROR    = 'hum_mailbox_last_error';
 const OPTION_MAILBOX_LAST_ERROR_AT = 'hum_mailbox_last_error_at';
 
 /**
+ * WooCommerce integration settings.
+ *
+ *   - `OPTION_WC_CUSTOMERS_GROUP_SLUG` — group new checkout
+ *     customers land in. Empty = the integration's
+ *     auto-tracking is disabled.
+ *   - `OPTION_WC_CHECKOUT_INTRO` — intro paragraph rendered
+ *     above the per-group opt-in checkboxes on the checkout
+ *     page.
+ *   - `OPTION_WC_CHECKOUT_GROUPS_JSON` — JSON map keyed by group
+ *     slug; each value is `{ "at_checkout": bool, "label": string }`.
+ *
+ * @since 0.9.0
+ */
+const OPTION_WC_CUSTOMERS_GROUP_SLUG = 'hum_wc_customers_group_slug';
+const OPTION_WC_CHECKOUT_INTRO       = 'hum_wc_checkout_intro';
+const OPTION_WC_CHECKOUT_GROUPS_JSON = 'hum_wc_checkout_groups_json';
+
+/**
  * Subscriber statuses.
  *
  * @since 0.1.0
