@@ -59,8 +59,8 @@ Add `add_filter( 'hum_updater_enabled', '__return_false' );` to your site's `fun
 = Where can I read more? =
 
 * `README.md` in the plugin folder — feature overview and pointers.
-* `docs/ai-agent-rest-guide.md` — REST API reference for AI-agent integrations.
 * `CHANGELOG.md` — full per-version release notes.
+* [REST API reference for AI agents](https://github.com/headwalluk/heads-up-mailer/blob/master/docs/ai-agent-rest-guide.md) — lives in the GitHub repo, not in the installed zip.
 
 == Changelog ==
 

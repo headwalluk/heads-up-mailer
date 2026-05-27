@@ -65,10 +65,13 @@ marketing-automation suite.
 
 ## Documentation
 
-End-user docs live under [`docs/`](docs/):
+End-user docs live under the [`docs/` directory in the GitHub
+repo](https://github.com/headwalluk/heads-up-mailer/tree/master/docs)
+(not shipped in the installable zip — clone the repo or browse
+on GitHub):
 
-- [REST API for AI agents](docs/ai-agent-rest-guide.md) — how
-  to POST drafts and read them back.
+- [REST API for AI agents](https://github.com/headwalluk/heads-up-mailer/blob/master/docs/ai-agent-rest-guide.md) —
+  how to POST drafts and read them back.
 
 Additional admin / editor / host guides are tracked as a
 follow-up; the in-admin tab descriptions cover day-to-day use.
@@ -76,9 +79,9 @@ follow-up; the in-admin tab descriptions cover day-to-day use.
 ## REST API
 
 AI agents post drafts via the `heads-up-mailer/v1` namespace
-with WordPress application-password auth. See
-[`docs/ai-agent-rest-guide.md`](docs/ai-agent-rest-guide.md) for
-endpoints, request / response shapes, and `curl` examples.
+with WordPress application-password auth. See the
+[REST API reference](https://github.com/headwalluk/heads-up-mailer/blob/master/docs/ai-agent-rest-guide.md)
+for endpoints, request / response shapes, and `curl` examples.
 
 ## Updates
 

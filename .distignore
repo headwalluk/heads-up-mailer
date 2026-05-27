@@ -18,6 +18,7 @@ vendor
 # Project-internal docs that don't ship to end users
 CLAUDE.md
 dev-notes
+docs
 
 # Linting config — phpcs runs locally / in CI, not on installed sites
 phpcs.xml
