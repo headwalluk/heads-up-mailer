@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.1] — 2026-05-27
+
+### Fixed
+
+- Subscribers list: clicking Edit (or the email link) on a row
+  fired the bulk-action confirm dialog because `data-hum-confirm`
+  was on the form wrapper, and the JS handler's
+  `closest('[data-hum-confirm]')` walked up to it from any link
+  inside the table. Moved the attribute onto the Apply button
+  itself so only that button triggers the prompt. Row actions
+  with their own `data-hum-confirm` (Mark never-contact, Delete)
+  still work — `closest()` finds the link before walking past it.
+
 ## [0.9.0] — 2026-05-27
 
 ### Added

@@ -127,10 +127,13 @@ if ( empty( $subscribers ) ) {
 
 	$bulk_confirm = __( 'Apply this bulk action to the selected subscribers? Marking as "never contact" is sticky — future imports will skip these rows.', 'heads-up-mailer' );
 
+	// Confirm lives on the Apply BUTTON, not the form. Otherwise
+	// every click inside the table (Edit, email link) bubbles up
+	// to the form and triggers the bulk-action confirm via
+	// `closest('[data-hum-confirm]')`.
 	printf(
-		'<form method="post" action="%s" data-hum-confirm="%s">',
-		esc_url( admin_url( 'admin-post.php' ) ),
-		esc_attr( $bulk_confirm )
+		'<form method="post" action="%s">',
+		esc_url( admin_url( 'admin-post.php' ) )
 	);
 
 	printf( '<input type="hidden" name="action" value="hum_bulk_subscribers" />' );
@@ -141,10 +144,11 @@ if ( empty( $subscribers ) ) {
 
 	printf( '<div class="tablenav top">' );
 	printf(
-		'<label for="hum-bulk-action" class="screen-reader-text">%s</label><select name="bulk_action" id="hum-bulk-action"><option value="">%s</option><option value="never_contact">%s</option></select> <button type="submit" class="button action">%s</button>',
+		'<label for="hum-bulk-action" class="screen-reader-text">%s</label><select name="bulk_action" id="hum-bulk-action"><option value="">%s</option><option value="never_contact">%s</option></select> <button type="submit" class="button action" data-hum-confirm="%s">%s</button>',
 		esc_html__( 'Bulk actions', 'heads-up-mailer' ),
 		esc_html__( 'Bulk actions', 'heads-up-mailer' ),
 		esc_html__( 'Mark as never contact', 'heads-up-mailer' ),
+		esc_attr( $bulk_confirm ),
 		esc_html__( 'Apply', 'heads-up-mailer' )
 	);
 	printf( '</div>' );
