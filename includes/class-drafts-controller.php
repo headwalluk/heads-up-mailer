@@ -213,9 +213,10 @@ class Drafts_Controller {
 		$subject = isset( $data['subject'] ) ? sanitize_text_field( wp_unslash( $data['subject'] ) ) : '';
 		// Email HTML is a full document (<html>, <head>, <style>, conditional
 		// comments). wp_kses_post strips those and breaks MJML output. Stored
-		// raw — the sender is authenticated `manage_options`, the preview
-		// iframe is sandboxed against script execution, and the email client
-		// is the final renderer at send time.
+		// raw — the sender is authenticated via the `hum_create_drafts` cap
+		// (Administrator/Editor only), the preview iframe is sandboxed against
+		// script execution, and the email client is the final renderer at
+		// send time.
 		$html_body = isset( $data['html_body'] ) ? (string) wp_unslash( $data['html_body'] ) : '';
 		$raw_slugs = isset( $data['suggested_groups'] ) && is_array( $data['suggested_groups'] )
 			? array_map( 'sanitize_title', wp_unslash( $data['suggested_groups'] ) )

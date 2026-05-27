@@ -152,6 +152,8 @@ class Plugin {
 			$groups = new Groups_Controller();
 			$groups->seed_defaults();
 
+			hum_ensure_caps();
+
 			add_option( OPTION_VERSION, HUM_VERSION, '', 'yes' );
 			add_option( OPTION_DB_VERSION, DB_VERSION, '', 'yes' );
 		} elseif ( HUM_VERSION !== $stored_version ) {
@@ -164,6 +166,8 @@ class Plugin {
 					add_option( $key, $value, '', 'yes' );
 				}
 			}
+
+			hum_ensure_caps();
 
 			update_option( OPTION_VERSION, HUM_VERSION );
 		}

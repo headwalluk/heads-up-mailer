@@ -14,8 +14,10 @@ defined( 'ABSPATH' ) || die();
  * Registers the `heads-up-mailer/v1` REST namespace.
  *
  * Routes are authenticated via WordPress application passwords —
- * `permission_callback` checks `manage_options`, which the AI agent's
- * dedicated user is granted.
+ * `permission_callback` checks the custom `hum_create_drafts`
+ * capability, granted to Administrator and Editor on activation
+ * (see `hum_ensure_caps()`). This lets an AI-agent user post drafts
+ * with the Editor role rather than needing Administrator.
  *
  * @since 0.3.0
  */
@@ -78,7 +80,7 @@ class REST_Controller {
 	 * @since 0.3.0
 	 */
 	public function check_permission(): bool {
-		return current_user_can( 'manage_options' );
+		return current_user_can( CAP_CREATE_DRAFTS );
 	}
 
 	/**

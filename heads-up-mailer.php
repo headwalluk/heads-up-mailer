@@ -3,7 +3,7 @@
  * Plugin Name: Heads Up Mailer
  * Plugin URI: https://headgit.net/headwall/heads-up-mailer
  * Description: In-house newsletter sender for headwall-hosting.com. Async send queue, RFC-8058 one-click unsubscribe, IMAP poll for mailto unsubscribes.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: Paul Faulkner
@@ -18,7 +18,7 @@
 
 defined( 'ABSPATH' ) || die();
 
-define( 'HUM_VERSION', '1.0.0' );
+define( 'HUM_VERSION', '1.1.0' );
 define( 'HUM_FILE', __FILE__ );
 define( 'HUM_PATH', plugin_dir_path( __FILE__ ) );
 define( 'HUM_URL', plugin_dir_url( __FILE__ ) );
@@ -71,6 +71,8 @@ function hum_activate(): void {
 	$groups = new Heads_Up_Mailer\Groups_Controller();
 	$groups->seed_defaults();
 
+	hum_ensure_caps();
+
 	add_option( Heads_Up_Mailer\OPTION_VERSION, HUM_VERSION, '', 'yes' );
 	add_option( Heads_Up_Mailer\OPTION_DB_VERSION, Heads_Up_Mailer\DB_VERSION, '', 'yes' );
 
@@ -84,6 +86,30 @@ function hum_activate(): void {
 	flush_rewrite_rules( false );
 }
 register_activation_hook( __FILE__, 'hum_activate' );
+
+/**
+ * Grant the plugin's custom capabilities to the roles that need
+ * them. Idempotent — `WP_Role::add_cap()` no-ops if the role
+ * already has the cap.
+ *
+ * Granted to Administrator (so existing admin workflows keep
+ * working when we move the REST gate off `manage_options`) and to
+ * Editor (so a dedicated AI-agent user can operate at Editor level
+ * without Administrator role inflation).
+ *
+ * @since 1.1.0
+ */
+function hum_ensure_caps(): void {
+	$role_slugs = array( 'administrator', 'editor' );
+
+	foreach ( $role_slugs as $role_slug ) {
+		$role = get_role( $role_slug );
+
+		if ( null !== $role && ! $role->has_cap( Heads_Up_Mailer\CAP_CREATE_DRAFTS ) ) {
+			$role->add_cap( Heads_Up_Mailer\CAP_CREATE_DRAFTS );
+		}
+	}
+}
 
 /**
  * Deactivation hook. Clear the recurring drain event so a removed

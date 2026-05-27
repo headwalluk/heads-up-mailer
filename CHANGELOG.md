@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-05-27
+
+### Added
+
+- New custom capability `hum_create_drafts`, granted to the
+  Administrator and Editor roles on activation / first-run /
+  version-bump. The REST permission callback now checks this cap
+  instead of `manage_options`, so a dedicated AI-agent user can
+  post drafts via `POST /heads-up-mailer/v1/drafts` while sitting
+  at the Editor role — no Administrator role inflation required.
+- `hum_ensure_caps()` bootstrap helper. Idempotent
+  (`WP_Role::add_cap()` no-ops when the role already has the cap)
+  and called from `hum_activate()` plus both branches of
+  `Plugin::check_first_run()`, so existing 1.0.0 deployments pick
+  up the new cap on the first admin pageload after upgrade — no
+  manual deactivate/reactivate cycle needed.
+- `CAP_CREATE_DRAFTS` constant (`'hum_create_drafts'`) added to
+  the `constants.php` capability group.
+
+### Changed
+
+- `REST_Controller::check_permission()` switched from
+  `current_user_can( 'manage_options' )` to
+  `current_user_can( CAP_CREATE_DRAFTS )`. Existing admin REST
+  callers keep working because Administrator is granted the new
+  cap on the same upgrade.
+- `docs/ai-agent-rest-guide.md` updated: the agent account now
+  needs the `hum_create_drafts` capability (Editor or
+  Administrator role both suffice) rather than `manage_options`.
+
 ## [1.0.0] — 2026-05-27
 
 First stable release. Replaces MailerLite at headwall-hosting.com

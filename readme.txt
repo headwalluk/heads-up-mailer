@@ -4,7 +4,7 @@ Tags: newsletter, email, subscribers, mailer, unsubscribe
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,10 +64,16 @@ Add `add_filter( 'hum_updater_enabled', '__return_false' );` to your site's `fun
 
 == Changelog ==
 
+= 1.1.0 =
+New custom capability `hum_create_drafts`, granted to Administrator and Editor on upgrade. The REST endpoint that the AI agent posts drafts to now gates on this cap instead of `manage_options`, so the agent account can sit at the Editor role rather than Administrator. Existing admin REST callers keep working — Administrator gets the new cap automatically. No schema migration. See `CHANGELOG.md` for the full entry.
+
 = 1.0.0 =
 First stable release. Replaces MailerLite at headwall-hosting.com. Stack covers: drafts via REST → admin review → async send queue → RFC 8058 unsubscribe → public `/manage-comms/` page → IMAP poll for mailto unsubscribes → sent log → never-contact status → Contact Form 7 + WooCommerce integrations → in-plugin GitHub auto-updater. See `CHANGELOG.md` in the plugin folder for the detailed per-feature history (0.1.0 through 0.10.1).
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Adds the `hum_create_drafts` capability and grants it to Administrator + Editor on first admin pageload after upgrade. Lets you demote the AI-agent user from Administrator to Editor.
 
 = 1.0.0 =
 First stable release. Existing 0.x deployments upgrade in place via the in-plugin GitHub updater. No schema migration required.

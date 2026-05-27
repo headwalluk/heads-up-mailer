@@ -19,7 +19,11 @@ Every route uses **HTTP Basic auth** with a WordPress
 [application password](https://make.wordpress.org/core/2020/11/05/application-passwords-integration-guide/).
 
 1. In WP admin, open **Users → Profile** for the dedicated agent
-   account (must have the `manage_options` capability).
+   account. The account must have the `hum_create_drafts`
+   capability — granted by the plugin to the **Administrator** and
+   **Editor** roles on activation, so an Editor-role agent account
+   is sufficient (no Administrator role required). Plugins below
+   1.1.0 instead required `manage_options` (Administrator only).
 2. Scroll to **Application Passwords**, enter a label (e.g.
    "newsletter-agent"), and click **Add new application password**.
 3. WordPress shows a 24-character credential like
@@ -129,7 +133,7 @@ All errors return a JSON envelope shaped like:
 
 | Code                          | HTTP | Meaning                                                                |
 | ----------------------------- | ---- | ---------------------------------------------------------------------- |
-| `rest_forbidden`              | 401  | Missing / wrong / revoked credentials, or user lacks `manage_options`. |
+| `rest_forbidden`              | 401  | Missing / wrong / revoked credentials, or user lacks the `hum_create_drafts` capability (granted to Administrator + Editor). |
 | `hum_draft_invalid_subject`   | 400  | Subject missing or empty after sanitisation.                           |
 | `hum_draft_subject_too_long`  | 400  | Subject longer than 200 characters.                                    |
 | `hum_draft_invalid_html_body` | 400  | `html_body` empty after stripping tags.                                |

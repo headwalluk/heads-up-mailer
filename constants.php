@@ -219,3 +219,13 @@ const DEF_FOOTER_HTML = '<hr style="border:none;border-top:1px solid #ddd;margin
  * @since 0.3.0
  */
 const REST_NAMESPACE = 'heads-up-mailer/v1';
+
+/**
+ * Custom capabilities granted to WordPress roles on activation /
+ * first-run, and checked by the REST permission callback. Granted
+ * to Administrator + Editor so the AI agent can operate without
+ * Administrator role inflation.
+ *
+ * @since 1.1.0
+ */
+const CAP_CREATE_DRAFTS = 'hum_create_drafts';
