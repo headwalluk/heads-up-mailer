@@ -158,8 +158,10 @@ Namespaced constant groups (no extra prefix — namespace handles it):
 - Drip campaigns, automations, A/B testing, scheduling-for-later.
 - Multi-site / multi-tenant.
 - Built-in SMTP — `wp_mail()` is the only sending surface.
-- GitHub auto-updater — deferred to v1.0.0. Repo currently lives on
-  a private Gitea instance.
+- GitHub auto-updater — deferred. Repo now lives at
+  `git@github.com:headwalluk/heads-up-mailer.git`; the updater
+  itself (pattern lifted from quick-2fa, loaded admin + cron
+  only) is still TODO.
 - WP-CLI commands — deferred to a project-tracker milestone.
 - Composer / build step — `phpcs` and `phpcbf` are installed
   globally on the host.

@@ -657,10 +657,10 @@ plugin grows past a few thousand subscribers.
 
 ### GitHub auto-updater
 
-Move repo from private Gitea to a Headwall GitHub repo near
-v1.0.0. Add `class-github-updater.php` (pattern lifted from
-quick-2fa, loaded admin + cron only). Self-update from GitHub
-release tags.
+Repo moved to `git@github.com:headwalluk/heads-up-mailer.git` on
+2026-05-27. Updater itself still TODO — add
+`class-github-updater.php` (pattern lifted from quick-2fa,
+loaded admin + cron only). Self-update from GitHub release tags.
 
 ### WP-CLI commands
 
