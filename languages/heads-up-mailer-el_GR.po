@@ -1,0 +1,1407 @@
+# Copyright (C) 2026 Paul Faulkner
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Language: el_GR\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: Heads Up Mailer 1.2.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/heads-up-mailer\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-06-09T20:12:40+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: heads-up-mailer\n"
+
+#. Plugin Name of the plugin
+#: heads-up-mailer.php
+#: includes/class-plugin.php:259
+#: includes/class-plugin.php:260
+msgid "Heads Up Mailer"
+msgstr "Ενημερωτικό δελτίο Heads Up"
+
+#. Plugin URI of the plugin
+#: heads-up-mailer.php
+msgid "https://headgit.net/headwall/heads-up-mailer"
+msgstr "https://headgit.net/headwall/heads-up-mailer"
+
+#. Description of the plugin
+#: heads-up-mailer.php
+msgid "In-house newsletter sender for headwall-hosting.com. Async send queue, RFC-8058 one-click unsubscribe, IMAP poll for mailto unsubscribes."
+msgstr "Ενσωματωμένη υπηρεσία αποστολής ενημερωτικών δελτίων για το headwall-hosting.com. Ουρά ασύγχρονης αποστολής, διαγραφή με ένα κλικ σύμφωνα με το RFC-8058, έλεγχος IMAP για διαγραφές μέσω mailto."
+
+#. Author of the plugin
+#: heads-up-mailer.php
+msgid "Paul Faulkner"
+msgstr "Πολ Φόλκνερ"
+
+#. Author URI of the plugin
+#: heads-up-mailer.php
+msgid "https://headwall-hosting.com"
+msgstr "https://headwall-hosting.com"
+
+#: admin-templates/dashboard.php:21
+msgid "Use the submenu to manage subscribers, groups, drafts, and the sent log, or to review the send queue and integrations under Settings."
+msgstr "Χρησιμοποιήστε το υπομενού για να διαχειριστείτε τους συνδρομητές, τις ομάδες, τα πρόχειρα και το αρχείο αποστολών ή για να ελέγξετε την ουρά αποστολών και τις ενσωματώσεις στην ενότητα «Ρυθμίσεις»."
+
+#: admin-templates/dashboard.php:29
+msgid "Send statistics and activity analytics will arrive in a future release."
+msgstr "Η αποστολή στατιστικών και αναλυτικών στοιχείων δραστηριότητας θα είναι διαθέσιμη σε μελλοντική έκδοση."
+
+#: admin-templates/draft-edit.php:26
+msgid "Edit draft"
+msgstr "Επεξεργασία πρόχειρου"
+
+#: admin-templates/draft-edit.php:26
+msgid "Add draft"
+msgstr "Προσθήκη πρόχειρου"
+
+#: admin-templates/draft-edit.php:49
+#: admin-templates/drafts-list.php:67
+#: includes/class-drafts-controller.php:228
+msgid "Subject is required."
+msgstr "Το πεδίο «Θέμα» είναι υποχρεωτικό."
+
+#: admin-templates/draft-edit.php:50
+#: admin-templates/drafts-list.php:68
+msgid "Subject is too long."
+msgstr "Το θέμα είναι πολύ μακρύ."
+
+#: admin-templates/draft-edit.php:51
+#: admin-templates/drafts-list.php:69
+#: includes/class-drafts-controller.php:243
+msgid "HTML body cannot be empty."
+msgstr "Το σώμα του HTML δεν μπορεί να είναι κενό."
+
+#: admin-templates/draft-edit.php:52
+#: admin-templates/drafts-list.php:70
+msgid "One or more group slugs are unknown."
+msgstr "Ένα ή περισσότερα ονόματα ομάδων είναι άγνωστα."
+
+#: admin-templates/draft-edit.php:53
+#: admin-templates/draft-edit.php:56
+#: admin-templates/drafts-list.php:71
+#: admin-templates/drafts-list.php:75
+#: includes/class-drafts-controller.php:137
+#: includes/class-drafts-controller.php:182
+#: includes/class-plugin.php:1076
+#: includes/class-rest-controller.php:157
+#: includes/class-sends-controller.php:129
+msgid "Draft not found."
+msgstr "Δεν βρέθηκε το πρόχειρο."
+
+#: admin-templates/draft-edit.php:54
+#: admin-templates/drafts-list.php:72
+#: includes/class-drafts-controller.php:114
+msgid "Failed to insert draft."
+msgstr "Δεν κατέστη δυνατή η εισαγωγή του προσχεδίου."
+
+#: admin-templates/draft-edit.php:55
+#: admin-templates/drafts-list.php:73
+#: includes/class-drafts-controller.php:165
+msgid "Failed to update draft."
+msgstr "Δεν κατέστη δυνατή η ενημέρωση του προσχεδίου."
+
+#: admin-templates/draft-edit.php:57
+#: includes/class-sends-controller.php:133
+msgid "This draft is already sending. Wait for it to finish."
+msgstr "Η αποστολή αυτού του προσχεδίου έχει ήδη ξεκινήσει. Περιμένετε μέχρι να ολοκληρωθεί."
+
+#: admin-templates/draft-edit.php:58
+#: admin-templates/drafts-list.php:77
+#: includes/class-sends-controller.php:139
+msgid "Configure a From: email on Settings → Sending before sending."
+msgstr "Ρυθμίστε το πεδίο «Από:» στις «Ρυθμίσεις» → «Αποστολή» πριν από την αποστολή."
+
+#: admin-templates/draft-edit.php:59
+#: admin-templates/drafts-list.php:78
+#: includes/class-sends-controller.php:145
+msgid "Select at least one group on the draft before sending."
+msgstr "Επιλέξτε τουλάχιστον μία ομάδα στο πρόχειρο πριν από την αποστολή."
+
+#: admin-templates/draft-edit.php:60
+#: admin-templates/draft-edit.php:175
+#: admin-templates/drafts-list.php:79
+#: includes/class-sends-controller.php:166
+msgid "No subscribed recipients in the selected groups."
+msgstr "Δεν υπάρχουν εγγεγραμμένοι παραλήπτες στις επιλεγμένες ομάδες."
+
+#: admin-templates/draft-edit.php:61
+#: admin-templates/drafts-list.php:80
+msgid "Failed to queue send (database write failed)."
+msgstr "Αποτυχία στην ουρά αποστολής (αποτυχία εγγραφής στη βάση δεδομένων)."
+
+#: admin-templates/draft-edit.php:62
+#: admin-templates/drafts-list.php:81
+#: includes/class-sends-controller.php:277
+msgid "Failed to mark draft as sending."
+msgstr "Δεν κατέστη δυνατή η επισήμανση του προσχεδίου ως προς αποστολή."
+
+#: admin-templates/draft-edit.php:63
+#: includes/class-drafts-controller.php:144
+msgid "Cannot edit a draft while it is sending."
+msgstr "Δεν είναι δυνατή η επεξεργασία ενός προσχεδίου κατά τη διάρκεια της αποστολής του."
+
+#: admin-templates/draft-edit.php:66
+#: admin-templates/drafts-list.php:86
+#: admin-templates/group-edit.php:52
+#: admin-templates/groups-list.php:68
+#: admin-templates/subscriber-edit.php:54
+#: admin-templates/subscribers-list.php:106
+msgid "An error occurred."
+msgstr "Παρουσιάστηκε σφάλμα."
+
+#: admin-templates/draft-edit.php:75
+msgid "This draft is currently sending. The cron worker is processing recipients in the background."
+msgstr "Αυτό το πρόχειρο μήνυμα βρίσκεται σε διαδικασία αποστολής. Ο cron worker επεξεργάζεται τους παραλήπτες στο παρασκήνιο."
+
+#: admin-templates/draft-edit.php:92
+#: admin-templates/drafts-list.php:111
+#: admin-templates/sent-log-list.php:32
+msgid "Subject"
+msgstr "Θέμα"
+
+#: admin-templates/draft-edit.php:100
+msgid "HTML body"
+msgstr "Κύριο σώμα HTML"
+
+#: admin-templates/draft-edit.php:103
+msgid "Raw HTML. Footer and unsubscribe link are appended automatically at send time."
+msgstr "Ακατέργαστο HTML. Το υποσέλιδο και ο σύνδεσμος διαγραφής προστίθενται αυτόματα κατά την αποστολή."
+
+#: admin-templates/draft-edit.php:107
+msgid "Suggested groups"
+msgstr "Προτεινόμενες ομάδες"
+
+#: admin-templates/draft-edit.php:110
+msgid "No groups defined. Add one on the Groups page first."
+msgstr "Δεν έχουν οριστεί ομάδες. Προσθέστε πρώτα μία στη σελίδα «Ομάδες»."
+
+#: admin-templates/draft-edit.php:134
+msgid "Save draft"
+msgstr "Αποθήκευση πρόχειρου"
+
+#: admin-templates/draft-edit.php:136
+#: admin-templates/group-edit.php:110
+#: admin-templates/subscriber-edit.php:166
+#: admin-templates/subscriber-import.php:75
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+#: admin-templates/draft-edit.php:152
+msgid "Already sending — wait for the worker to finish."
+msgstr "Η αποστολή έχει ήδη ξεκινήσει — περιμένετε μέχρι να ολοκληρώσει ο εργαζόμενος."
+
+#: admin-templates/draft-edit.php:154
+msgid "Configure a From: email on Settings → Sending first."
+msgstr "Ρυθμίστε πρώτα το πεδίο «Από:» στις Ρυθμίσεις → Αποστολή."
+
+#: admin-templates/draft-edit.php:156
+msgid "Tick at least one group above before sending."
+msgstr "Επιλέξτε τουλάχιστον μία από τις παραπάνω ομάδες πριν από την αποστολή."
+
+#: admin-templates/draft-edit.php:170
+#: includes/class-sends-controller.php:160
+msgid "None of the selected groups exist any more."
+msgstr "Καμία από τις επιλεγμένες ομάδες δεν υπάρχει πλέον."
+
+#: admin-templates/draft-edit.php:180
+#: admin-templates/draft-edit.php:185
+msgid "Send"
+msgstr "Αποστολή"
+
+#. translators: %d: recipient count.
+#: admin-templates/draft-edit.php:191
+#, php-format
+msgid "This draft was already sent. Send AGAIN to %d recipients?"
+msgstr "Αυτό το πρόχειρο έχει ήδη σταλεί. Θέλετε να το στείλετε ξανά στους %d παραλήπτες;"
+
+#. translators: %d: recipient count.
+#: admin-templates/draft-edit.php:193
+#, php-format
+msgid "Send to %d recipients?"
+msgstr "Να το στείλετε σε %d παραλήπτες;"
+
+#. translators: %d: recipient count.
+#: admin-templates/draft-edit.php:197
+#, php-format
+msgid "Re-send to %d recipients"
+msgstr "Επανάληψη αποστολής σε %d παραλήπτες"
+
+#. translators: %d: recipient count.
+#: admin-templates/draft-edit.php:199
+#, php-format
+msgid "Send to %d recipients"
+msgstr "Αποστολή σε %d παραλήπτες"
+
+#: admin-templates/draft-edit.php:201
+msgid "Queues the send. The cron worker drains in the background."
+msgstr "Η αποστολή μπαίνει στην ουρά. Ο χρήστης cron εκτελείται στο παρασκήνιο."
+
+#: admin-templates/draft-edit.php:217
+msgid "Preview"
+msgstr "Προεπισκόπηση"
+
+#: admin-templates/draft-edit.php:226
+msgid "Draft preview"
+msgstr "Προεπισκόπηση του σχεδίου"
+
+#: admin-templates/drafts-list.php:30
+#: includes/class-plugin.php:297
+#: includes/class-plugin.php:298
+msgid "Drafts"
+msgstr "Πρόχειρα"
+
+#: admin-templates/drafts-list.php:32
+#: admin-templates/groups-list.php:30
+#: admin-templates/subscribers-list.php:40
+msgid "Add new"
+msgstr "Προσθήκη νέου"
+
+#: admin-templates/drafts-list.php:47
+msgid "Draft saved."
+msgstr "Το πρόχειρο αποθηκεύτηκε."
+
+#: admin-templates/drafts-list.php:54
+msgid "Draft deleted."
+msgstr "Το προσχέδιο διαγράφηκε."
+
+#: admin-templates/drafts-list.php:61
+msgid "Draft queued for sending. The cron worker will drain the queue in the background."
+msgstr "Το πρόχειρο βρίσκεται στην ουρά για αποστολή. Ο χρήστης cron θα εκκαθαρίσει την ουρά στο παρασκήνιο."
+
+#: admin-templates/drafts-list.php:74
+#: includes/class-drafts-controller.php:195
+msgid "Failed to delete draft."
+msgstr "Δεν κατέστη δυνατή η διαγραφή του προσχεδίου."
+
+#: admin-templates/drafts-list.php:76
+msgid "Already sending. Wait for the worker to finish."
+msgstr "Η αποστολή έχει ήδη ξεκινήσει. Περιμένετε μέχρι να ολοκληρώσει τη διαδικασία ο εργαζόμενος."
+
+#: admin-templates/drafts-list.php:95
+msgid "Draft"
+msgstr "Πρόχειρο"
+
+#: admin-templates/drafts-list.php:96
+#: admin-templates/settings-page.php:42
+msgid "Sending"
+msgstr "Αποστολή"
+
+#: admin-templates/drafts-list.php:97
+msgid "Sent"
+msgstr "Αργά"
+
+#: admin-templates/drafts-list.php:98
+msgid "Cancelled"
+msgstr "Ακυρώθηκε"
+
+#: admin-templates/drafts-list.php:104
+msgid "No drafts yet. Add one or POST to the REST endpoint."
+msgstr "Δεν υπάρχουν ακόμη πρόχειρα. Προσθέστε ένα ή στείλτε αίτημα POST στο σημείο τερματισμού REST."
+
+#: admin-templates/drafts-list.php:110
+#: admin-templates/sent-log-detail.php:134
+#: admin-templates/sent-log-list.php:31
+msgid "ID"
+msgstr "Αριθμός ταυτοποίησης"
+
+#: admin-templates/drafts-list.php:112
+#: admin-templates/sent-log-detail.php:136
+#: admin-templates/sent-log-list.php:33
+#: admin-templates/subscriber-edit.php:112
+#: admin-templates/subscribers-list.php:162
+msgid "Status"
+msgstr "Κατάσταση"
+
+#: admin-templates/drafts-list.php:113
+#: admin-templates/groups-list.php:28
+#: admin-templates/subscriber-edit.php:140
+#: admin-templates/subscribers-list.php:163
+#: includes/class-plugin.php:288
+#: includes/class-plugin.php:289
+msgid "Groups"
+msgstr "Ομάδες"
+
+#: admin-templates/drafts-list.php:114
+msgid "Created"
+msgstr "Δημιουργήθηκε"
+
+#: admin-templates/drafts-list.php:115
+#: admin-templates/groups-list.php:89
+#: admin-templates/subscribers-list.php:165
+msgid "Actions"
+msgstr "Δράσεις"
+
+#: admin-templates/drafts-list.php:146
+msgid "—"
+msgstr "—"
+
+#. translators: %s: Draft subject.
+#: admin-templates/drafts-list.php:160
+#, php-format
+msgid "Delete the draft \"%s\"?"
+msgstr "Να διαγραφεί το πρόχειρο «%s»;"
+
+#: admin-templates/drafts-list.php:173
+#: admin-templates/groups-list.php:128
+#: admin-templates/subscribers-list.php:226
+msgid "Edit"
+msgstr "Επεξεργασία"
+
+#: admin-templates/drafts-list.php:176
+#: admin-templates/groups-list.php:131
+#: admin-templates/subscribers-list.php:242
+msgid "Delete"
+msgstr "Διαγραφή"
+
+#: admin-templates/group-edit.php:25
+msgid "Edit group"
+msgstr "Επεξεργασία ομάδας"
+
+#: admin-templates/group-edit.php:26
+msgid "Add group"
+msgstr "Προσθήκη ομάδας"
+
+#: admin-templates/group-edit.php:42
+#: admin-templates/groups-list.php:57
+#: includes/class-groups-controller.php:126
+#: includes/class-groups-controller.php:177
+msgid "A group with that slug already exists."
+msgstr "Υπάρχει ήδη μια ομάδα με αυτό το όνομα."
+
+#: admin-templates/group-edit.php:43
+#: admin-templates/groups-list.php:58
+#: includes/class-groups-controller.php:281
+msgid "A valid slug is required."
+msgstr "Απαιτείται έγκυρο slug."
+
+#: admin-templates/group-edit.php:44
+#: admin-templates/groups-list.php:59
+#: includes/class-groups-controller.php:288
+msgid "Group name is required."
+msgstr "Το όνομα της ομάδας είναι υποχρεωτικό."
+
+#: admin-templates/group-edit.php:45
+#: admin-templates/groups-list.php:60
+#: includes/class-groups-controller.php:159
+#: includes/class-groups-controller.php:209
+msgid "Group not found."
+msgstr "Δεν βρέθηκε ομάδα."
+
+#: admin-templates/group-edit.php:46
+#: admin-templates/groups-list.php:61
+#: includes/class-groups-controller.php:139
+msgid "Failed to insert group."
+msgstr "Δεν κατέστη δυνατή η εισαγωγή της ομάδας."
+
+#: admin-templates/group-edit.php:47
+#: admin-templates/groups-list.php:62
+#: includes/class-groups-controller.php:192
+msgid "Failed to update group."
+msgstr "Δεν κατέστη δυνατή η ενημέρωση της ομάδας."
+
+#: admin-templates/group-edit.php:76
+#: admin-templates/groups-list.php:86
+#: admin-templates/tab-sending.php:90
+msgid "Slug"
+msgstr "Slug"
+
+#: admin-templates/group-edit.php:78
+msgid "Lowercase letters, numbers, and hyphens. Used in REST and the database."
+msgstr "Μικρά γράμματα, αριθμοί και παύλες. Χρησιμοποιείται στο REST και στη βάση δεδομένων."
+
+#: admin-templates/group-edit.php:83
+#: admin-templates/groups-list.php:85
+#: admin-templates/subscriber-edit.php:87
+#: admin-templates/subscribers-list.php:161
+msgid "Name"
+msgstr "Όνομα"
+
+#: admin-templates/group-edit.php:89
+#: admin-templates/groups-list.php:88
+msgid "Description"
+msgstr "Περιγραφή"
+
+#: admin-templates/group-edit.php:97
+#: admin-templates/groups-list.php:118
+msgid "Private"
+msgstr "Ιδιωτικό"
+
+#: admin-templates/group-edit.php:99
+msgid "Hide this group from the public preferences page for non-members."
+msgstr "Απόκρυψη αυτής της ομάδας από τη σελίδα προτιμήσεων για το κοινό που δεν είναι μέλη."
+
+#: admin-templates/group-edit.php:100
+msgid "Private groups never appear as a sign-up option on /manage-comms/. Existing members still see it (so they can unsubscribe), but anyone else does not. Useful for internal / test groups and one-off targeted lists."
+msgstr "Οι ιδιωτικές ομάδες δεν εμφανίζονται ποτέ ως επιλογή εγγραφής στη σελίδα /manage-comms/. Τα υπάρχοντα μέλη εξακολουθούν να τη βλέπουν (ώστε να μπορούν να διαγραφούν), αλλά κανένας άλλος δεν τη βλέπει. Χρήσιμο για εσωτερικές ή δοκιμαστικές ομάδες και για εφάπαξ στοχευμένες λίστες."
+
+#: admin-templates/group-edit.php:108
+msgid "Save group"
+msgstr "Αποθήκευση ομάδας"
+
+#: admin-templates/groups-list.php:44
+msgid "Group saved."
+msgstr "Η ομάδα αποθηκεύτηκε."
+
+#: admin-templates/groups-list.php:51
+msgid "Group deleted."
+msgstr "Η ομάδα διαγράφηκε."
+
+#: admin-templates/groups-list.php:63
+#: includes/class-groups-controller.php:229
+msgid "Failed to delete group."
+msgstr "Δεν κατέστη δυνατή η διαγραφή της ομάδας."
+
+#: admin-templates/groups-list.php:79
+msgid "No groups yet. Add one to get started."
+msgstr "Δεν υπάρχουν ακόμη ομάδες. Προσθέστε μία για να ξεκινήσετε."
+
+#: admin-templates/groups-list.php:87
+msgid "Visibility"
+msgstr "Ορατότητα"
+
+#. translators: %s: Group name.
+#: admin-templates/groups-list.php:115
+#, php-format
+msgid "Delete the group \"%s\"?"
+msgstr "Να διαγραφεί η ομάδα «%s»;"
+
+#: admin-templates/groups-list.php:119
+msgid "Public"
+msgstr "Δημόσιο"
+
+#: admin-templates/sent-log-detail.php:30
+#: admin-templates/sent-log-list.php:19
+#: includes/class-plugin.php:306
+#: includes/class-plugin.php:307
+msgid "Sent log"
+msgstr "Καθυστερημένη καταγραφή"
+
+#: admin-templates/sent-log-detail.php:33
+msgid "Back to list"
+msgstr "Επιστροφή στη λίστα"
+
+#: admin-templates/sent-log-detail.php:39
+msgid "Send not found."
+msgstr "Δεν βρέθηκε το μήνυμα."
+
+#: admin-templates/sent-log-detail.php:56
+msgid "Subject:"
+msgstr "Θέμα:"
+
+#: admin-templates/sent-log-detail.php:57
+#: admin-templates/sent-log-list.php:63
+msgid "(draft deleted)"
+msgstr "(σχέδιο διαγραμμένο)"
+
+#: admin-templates/sent-log-detail.php:58
+msgid "Started (UTC):"
+msgstr "Ώρα έναρξης (UTC):"
+
+#: admin-templates/sent-log-detail.php:60
+msgid "Finished (UTC):"
+msgstr "Τέλος (UTC):"
+
+#: admin-templates/sent-log-detail.php:61
+msgid "in progress"
+msgstr "σε εξέλιξη"
+
+#. translators: %d: total recipients across all statuses.
+#: admin-templates/sent-log-detail.php:69
+#, php-format
+msgid "All (%d)"
+msgstr "Όλα (%d)"
+
+#. translators: %d: number of recipients in this status.
+#: admin-templates/sent-log-detail.php:74
+#, php-format
+msgid "Sent (%d)"
+msgstr "Αργά (%d)"
+
+#. translators: %d: number of recipients in this status.
+#: admin-templates/sent-log-detail.php:79
+#, php-format
+msgid "Failed (%d)"
+msgstr "Αποτυχία (%d)"
+
+#. translators: %d: number of recipients in this status.
+#: admin-templates/sent-log-detail.php:84
+#, php-format
+msgid "Pending (%d)"
+msgstr "Σε εκκρεμότητα (%d)"
+
+#. translators: %d: number of recipients in this status.
+#: admin-templates/sent-log-detail.php:89
+#, php-format
+msgid "Processing (%d)"
+msgstr "Επεξεργασία (%d)"
+
+#: admin-templates/sent-log-detail.php:127
+msgid "No recipients match this filter."
+msgstr "Δεν υπάρχουν παραλήπτες που να ανταποκρίνονται σε αυτό το φίλτρο."
+
+#: admin-templates/sent-log-detail.php:135
+#: admin-templates/subscriber-edit.php:81
+#: admin-templates/subscriber-import.php:111
+#: admin-templates/subscribers-list.php:160
+msgid "Email"
+msgstr "Ηλεκτρονικό ταχυδρομείο"
+
+#: admin-templates/sent-log-detail.php:137
+msgid "Attempts"
+msgstr "Προσπάθειες"
+
+#: admin-templates/sent-log-detail.php:138
+msgid "Sent at (UTC)"
+msgstr "Αργά το (UTC)"
+
+#: admin-templates/sent-log-detail.php:139
+msgid "Last error"
+msgstr "Τελευταίο σφάλμα"
+
+#: admin-templates/sent-log-detail.php:151
+msgid "(subscriber removed)"
+msgstr "(ο συνδρομητής διαγράφηκε)"
+
+#: admin-templates/sent-log-list.php:24
+msgid "No sends recorded yet. Once a draft is queued from the Drafts page, it will appear here."
+msgstr "Δεν έχουν καταγραφεί ακόμη αποστολές. Μόλις ένα πρόχειρο μήνυμα μπει στην ουρά από τη σελίδα «Πρόχειρα», θα εμφανιστεί εδώ."
+
+#: admin-templates/sent-log-list.php:34
+msgid "Sent / Total"
+msgstr "Καθυστερημένη / Συνολική"
+
+#: admin-templates/sent-log-list.php:35
+msgid "Failed"
+msgstr "Αποτυχία"
+
+#: admin-templates/sent-log-list.php:36
+msgid "In progress"
+msgstr "Σε εξέλιξη"
+
+#: admin-templates/sent-log-list.php:37
+msgid "Started (UTC)"
+msgstr "Ξεκίνησε (UTC)"
+
+#: admin-templates/sent-log-list.php:38
+msgid "Finished (UTC)"
+msgstr "Τέλος (UTC)"
+
+#: admin-templates/settings-page.php:38
+msgid "Queue"
+msgstr "Ουρά"
+
+#: admin-templates/settings-page.php:46
+msgid "Mailbox"
+msgstr "Θυρίδα αλληλογραφίας"
+
+#: admin-templates/settings-page.php:50
+#: admin-templates/tab-integrations.php:22
+msgid "Integrations"
+msgstr "Ενσωματώσεις"
+
+#: admin-templates/settings-page.php:75
+msgid "Save settings"
+msgstr "Αποθήκευση ρυθμίσεων"
+
+#: admin-templates/subscriber-edit.php:28
+msgid "Edit subscriber"
+msgstr "Επεξεργασία συνδρομητή"
+
+#: admin-templates/subscriber-edit.php:29
+msgid "Add subscriber"
+msgstr "Προσθήκη συνδρομητή"
+
+#: admin-templates/subscriber-edit.php:44
+#: admin-templates/subscribers-list.php:93
+#: includes/class-subscribers-controller.php:167
+#: includes/class-subscribers-controller.php:253
+msgid "A subscriber with that email already exists."
+msgstr "Υπάρχει ήδη συνδρομητής με αυτό το email."
+
+#: admin-templates/subscriber-edit.php:45
+#: admin-templates/subscribers-list.php:94
+#: includes/class-subscribers-controller.php:471
+#: includes/class-subscribers-controller.php:624
+#: includes/class-subscribers-controller.php:688
+msgid "A valid email address is required."
+msgstr "Απαιτείται έγκυρη διεύθυνση ηλεκτρονικού ταχυδρομείου."
+
+#: admin-templates/subscriber-edit.php:46
+#: admin-templates/subscribers-list.php:95
+#: includes/class-subscribers-controller.php:649
+#: includes/class-subscribers-controller.php:703
+msgid "Invalid subscriber status."
+msgstr "Μη έγκυρη κατάσταση συνδρομητή."
+
+#: admin-templates/subscriber-edit.php:47
+#: admin-templates/subscribers-list.php:96
+#: includes/class-subscribers-controller.php:236
+#: includes/class-subscribers-controller.php:320
+#: includes/class-subscribers-controller.php:363
+#: includes/class-subscribers-controller.php:410
+#: includes/class-subscribers-controller.php:532
+#: includes/class-subscribers-controller.php:576
+msgid "Subscriber not found."
+msgstr "Δεν βρέθηκε ο συνδρομητής."
+
+#: admin-templates/subscriber-edit.php:48
+#: admin-templates/subscribers-list.php:97
+#: includes/class-subscribers-controller.php:193
+msgid "Failed to insert subscriber."
+msgstr "Δεν κατέστη δυνατή η εγγραφή του συνδρομητή."
+
+#: admin-templates/subscriber-edit.php:49
+#: admin-templates/subscribers-list.php:98
+#: includes/class-subscribers-controller.php:298
+#: includes/class-subscribers-controller.php:385
+#: includes/class-subscribers-controller.php:432
+#: includes/class-subscribers-controller.php:554
+#: includes/class-subscribers-controller.php:591
+msgid "Failed to update subscriber."
+msgstr "Δεν κατέστη δυνατή η ενημέρωση του συνδρομητή."
+
+#: admin-templates/subscriber-edit.php:64
+msgid "This subscriber is flagged \"never contact\"."
+msgstr "Αυτός ο συνδρομητής έχει επισημανθεί ως «να μην επικοινωνήσουμε ποτέ»."
+
+#: admin-templates/subscriber-edit.php:65
+msgid "They will not receive newsletters, and CSV re-imports will skip them. Only change the status here if you have explicit consent to resume contact."
+msgstr "Δεν θα λαμβάνουν ενημερωτικά δελτία και δεν θα περιλαμβάνονται στις επαναεισαγωγές αρχείων CSV. Αλλάξτε την κατάσταση εδώ μόνο αν έχετε ρητή συγκατάθεση για την επανέναρξη της επικοινωνίας."
+
+#: admin-templates/subscriber-edit.php:93
+#: admin-templates/subscribers-list.php:121
+msgid "Subscribed"
+msgstr "Εγγραφή"
+
+#: admin-templates/subscriber-edit.php:94
+#: admin-templates/subscribers-list.php:122
+msgid "Unsubscribed"
+msgstr "Διαγραφή"
+
+#: admin-templates/subscriber-edit.php:95
+#: admin-templates/subscribers-list.php:123
+msgid "Bounced"
+msgstr "Απορρίφθηκε"
+
+#: admin-templates/subscriber-edit.php:96
+#: admin-templates/subscribers-list.php:124
+msgid "Complained"
+msgstr "Παραπονέθηκε"
+
+#: admin-templates/subscriber-edit.php:97
+#: admin-templates/subscribers-list.php:125
+msgid "Never contact"
+msgstr "Μην επικοινωνείτε ποτέ"
+
+#: admin-templates/subscriber-edit.php:134
+msgid "No groups yet. Add one on the Groups page."
+msgstr "Δεν υπάρχουν ακόμη ομάδες. Προσθέστε μία στη σελίδα «Ομάδες»."
+
+#: admin-templates/subscriber-edit.php:147
+msgid "Consent source"
+msgstr "Πηγή συγκατάθεσης"
+
+#: admin-templates/subscriber-edit.php:149
+msgid "Free-text label for where consent was captured (e.g. \"checkout\", \"imported-from-mailerlite\")."
+msgstr "Πεδίο ελεύθερου κειμένου για την καταγραφή του σημείου όπου ελήφθη η συγκατάθεση (π.χ. «ολοκλήρωση αγοράς», «εισαγωγή από το MailerLite»)."
+
+#: admin-templates/subscriber-edit.php:154
+#: admin-templates/subscribers-list.php:164
+msgid "Consent at"
+msgstr "Συγκατάθεση στο"
+
+#: admin-templates/subscriber-edit.php:156
+msgid "Format: Y-m-d H:i:s UTC. Leave blank to use the current time."
+msgstr "Μορφή: Η-μ-η UTC. Αφήστε το πεδίο κενό για να χρησιμοποιηθεί η τρέχουσα ώρα."
+
+#: admin-templates/subscriber-edit.php:164
+msgid "Save subscriber"
+msgstr "Αποθήκευση συνδρομητή"
+
+#: admin-templates/subscriber-import.php:32
+msgid "Import subscribers from CSV"
+msgstr "Εισαγωγή συνδρομητών από αρχείο CSV"
+
+#: admin-templates/subscriber-import.php:37
+msgid "Upload a CSV exported from MailerLite. Existing subscribers are matched by email (case-insensitive) and their fields updated; new emails are added. Existing consent timestamps are preserved."
+msgstr "Ανεβάστε ένα αρχείο CSV που έχετε εξαγάγει από το MailerLite. Οι υπάρχοντες συνδρομητές αντιστοιχίζονται με βάση τη διεύθυνση email (χωρίς διάκριση κεφαλαίων-μικρών) και τα πεδία τους ενημερώνονται· προστίθενται νέες διευθύνσεις email. Οι υπάρχουσες χρονικές σημάνσεις συγκατάθεσης διατηρούνται."
+
+#: admin-templates/subscriber-import.php:43
+msgid "Recognised columns:"
+msgstr "Αναγνωρισμένες στήλες:"
+
+#: admin-templates/subscriber-import.php:47
+msgid "(required)"
+msgstr "(υποχρεωτικό)"
+
+#: admin-templates/subscriber-import.php:48
+msgid "— timestamps without a timezone are treated as UTC"
+msgstr "— οι χρονικές σημάνσεις χωρίς ζώνη ώρας θεωρούνται ως UTC"
+
+#: admin-templates/subscriber-import.php:49
+msgid "— semicolon- or comma-separated; names are matched to group slugs"
+msgstr "— διαχωρισμένα με ερωτηματικό ή κόμμα· τα ονόματα αντιστοιχίζονται με τα slugs των ομάδων"
+
+#: admin-templates/subscriber-import.php:66
+msgid "CSV file"
+msgstr "Αρχείο CSV"
+
+#: admin-templates/subscriber-import.php:73
+msgid "Upload and import"
+msgstr "Ανεβάστε και εισαγάγετε"
+
+#: admin-templates/subscriber-import.php:93
+msgid "Import complete."
+msgstr "Η εισαγωγή ολοκληρώθηκε."
+
+#: admin-templates/subscriber-import.php:94
+#: admin-templates/subscriber-import.php:118
+msgid "Inserted"
+msgstr "Εισήχθη"
+
+#: admin-templates/subscriber-import.php:96
+#: admin-templates/subscriber-import.php:119
+msgid "Updated"
+msgstr "Ενημερώθηκε"
+
+#: admin-templates/subscriber-import.php:98
+#: admin-templates/subscriber-import.php:120
+msgid "Skipped"
+msgstr "Παραλείφθηκε"
+
+#: admin-templates/subscriber-import.php:100
+msgid "Errors"
+msgstr "Λάθη"
+
+#: admin-templates/subscriber-import.php:110
+msgid "Line"
+msgstr "Γραμμή"
+
+#: admin-templates/subscriber-import.php:112
+msgid "Result"
+msgstr "Αποτέλεσμα"
+
+#: admin-templates/subscriber-import.php:113
+msgid "Notes"
+msgstr "Σημειώσεις"
+
+#: admin-templates/subscriber-import.php:121
+msgid "Error"
+msgstr "Σφάλμα"
+
+#: admin-templates/subscriber-import.php:148
+msgid "Back to subscribers"
+msgstr "Επιστροφή στους συνδρομητές"
+
+#: admin-templates/subscriber-import.php:150
+msgid "Import another file"
+msgstr "Εισαγωγή άλλου αρχείου"
+
+#: admin-templates/subscribers-list.php:38
+#: includes/class-plugin.php:279
+#: includes/class-plugin.php:280
+msgid "Subscribers"
+msgstr "Συνδρομητές"
+
+#: admin-templates/subscribers-list.php:42
+msgid "Import CSV"
+msgstr "Εισαγωγή CSV"
+
+#: admin-templates/subscribers-list.php:60
+msgid "Subscriber saved."
+msgstr "Ο συνδρομητής αποθηκεύτηκε."
+
+#: admin-templates/subscribers-list.php:67
+msgid "Subscriber deleted."
+msgstr "Ο συνδρομητής διαγράφηκε."
+
+#: admin-templates/subscribers-list.php:74
+msgid "Subscriber flagged as \"never contact\"."
+msgstr "Ο συνδρομητής έχει επισημανθεί ως «να μην επικοινωνήσουμε ποτέ»."
+
+#. translators: %d: number of subscribers flipped to never-contact.
+#: admin-templates/subscribers-list.php:84
+#, php-format
+msgid "%d subscriber flagged as \"never contact\"."
+msgid_plural "%d subscribers flagged as \"never contact\"."
+msgstr[0] "%d συνδρομητής επισημάνθηκε ως \"Μην επικοινωνείτε ποτέ\"."
+msgstr[1] "%d συνδρομητές επισημάνθηκαν ως \"Μην επικοινωνείτε ποτέ\"."
+
+#: admin-templates/subscribers-list.php:99
+#: includes/class-subscribers-controller.php:340
+msgid "Failed to delete subscriber."
+msgstr "Δεν κατέστη δυνατή η διαγραφή του συνδρομητή."
+
+#: admin-templates/subscribers-list.php:100
+msgid "Select an action and at least one subscriber before clicking Apply."
+msgstr "Επιλέξτε μια ενέργεια και τουλάχιστον έναν συνδρομητή πριν κάνετε κλικ στο «Εφαρμογή»."
+
+#: admin-templates/subscribers-list.php:101
+msgid "That bulk action is not recognised."
+msgstr "Αυτή η μαζική ενέργεια δεν αναγνωρίζεται."
+
+#: admin-templates/subscribers-list.php:117
+msgid "No subscribers yet. Add one or import from CSV."
+msgstr "Δεν υπάρχουν ακόμη συνδρομητές. Προσθέστε έναν ή εισαγάγετε από αρχείο CSV."
+
+#: admin-templates/subscribers-list.php:128
+msgid "Apply this bulk action to the selected subscribers? Marking as \"never contact\" is sticky — future imports will skip these rows."
+msgstr "Θέλετε να εφαρμόσετε αυτή τη μαζική ενέργεια στους επιλεγμένους συνδρομητές; Η επισήμανση ως «μην επικοινωνήσετε ποτέ» είναι μόνιμη — οι μελλοντικές εισαγωγές θα παραλείψουν αυτές τις σειρές."
+
+#: admin-templates/subscribers-list.php:148
+#: admin-templates/subscribers-list.php:149
+msgid "Bulk actions"
+msgstr "Μαζικές ενέργειες"
+
+#: admin-templates/subscribers-list.php:150
+msgid "Mark as never contact"
+msgstr "Επιλογή «Ποτέ μην επικοινωνείς»"
+
+#: admin-templates/subscribers-list.php:152
+msgid "Apply"
+msgstr "Υποβολή αίτησης"
+
+#: admin-templates/subscribers-list.php:159
+msgid "Select all"
+msgstr "Επιλογή όλων"
+
+#. translators: %s: Subscriber email.
+#: admin-templates/subscribers-list.php:215
+#, php-format
+msgid "Delete the subscriber \"%s\"?"
+msgstr "Να διαγραφεί ο συνδρομητής «%s»;"
+
+#. translators: %s: Subscriber email.
+#: admin-templates/subscribers-list.php:217
+#, php-format
+msgid "Flag %s as \"never contact\"? This is sticky — future imports will skip them, and the only way back is to edit the status manually."
+msgstr "Να επισημάνετε το %s ως «μην επικοινωνήσετε ποτέ»; Αυτή η επιλογή είναι μόνιμη — οι μελλοντικές εισαγωγές θα το παραλείπουν, και ο μόνος τρόπος να το επαναφέρετε είναι να επεξεργαστείτε την κατάσταση χειροκίνητα."
+
+#: admin-templates/subscribers-list.php:234
+msgid "Mark never-contact"
+msgstr "Σημείωση: μην επικοινωνήσετε ποτέ"
+
+#. translators: %s: Subscriber email used as accessible checkbox label.
+#: admin-templates/subscribers-list.php:251
+#, php-format
+msgid "Select %s"
+msgstr "Επιλογή %s"
+
+#: admin-templates/tab-integrations.php:31
+msgid "No integrations are registered yet."
+msgstr "Δεν έχουν καταχωρηθεί ακόμη ενσωματώσεις."
+
+#. translators: %s: comma-separated list of supported parent plugins / themes.
+#: admin-templates/tab-integrations.php:34
+#, php-format
+msgid "No integrations available. Heads Up Mailer has integrations for %s — install one to enable."
+msgstr "Δεν υπάρχουν διαθέσιμες ενσωματώσεις. Το Heads Up Mailer διαθέτει ενσωματώσεις για το %s — εγκαταστήστε μία για να ενεργοποιήσετε τη λειτουργία."
+
+#. translators: %s: comma-separated list of inactive integrations' parent plugins.
+#: admin-templates/tab-integrations.php:61
+#, php-format
+msgid "Other available integrations: %s. Install one of these to unlock additional sign-up paths."
+msgstr "Άλλες διαθέσιμες ενσωματώσεις: %s. Εγκαταστήστε μία από αυτές για να αποκτήσετε πρόσβαση σε επιπλέον τρόπους εγγραφής."
+
+#: admin-templates/tab-mailbox.php:32
+msgid "Unsubscribe mailbox (IMAP)"
+msgstr "Διαγραφή από τη λίστα παραληπτών (IMAP)"
+
+#: admin-templates/tab-mailbox.php:35
+msgid "Credentials for the mailbox that receives mailto: unsubscribe replies. The password is encrypted with libsodium on save and only decrypted by the poller."
+msgstr "Διαπιστευτήρια για το γραμματοκιβώτιο που λαμβάνει απαντήσεις στο mailto: unsubscribe. Ο κωδικός πρόσβασης κρυπτογραφείται με τη βιβλιοθήκη libsodium κατά την αποθήκευση και αποκρυπτογραφείται μόνο από το πρόγραμμα συλλογής δεδομένων."
+
+#: admin-templates/tab-mailbox.php:44
+msgid "The PHP imap extension is not loaded on this host. You can still save credentials, but the mailbox poller and the test-connection button will not work until php-imap is installed."
+msgstr "Η επέκταση PHP imap δεν έχει φορτωθεί σε αυτόν τον διακομιστή. Μπορείτε να αποθηκεύσετε τα διαπιστευτήριά σας, αλλά η λειτουργία ελέγχου του γραμματοκιβωτίου και το κουμπί δοκιμής σύνδεσης δεν θα λειτουργούν έως ότου εγκατασταθεί το php-imap."
+
+#: admin-templates/tab-mailbox.php:59
+msgid "Enable polling"
+msgstr "Ενεργοποίηση ελέγχου κατά διαστήματα"
+
+#: admin-templates/tab-mailbox.php:63
+msgid "Poll the unsubscribe mailbox on the configured interval."
+msgstr "Ελέγξτε το γραμματοκιβώτιο διαγραφής κατά το καθορισμένο χρονικό διάστημα."
+
+#: admin-templates/tab-mailbox.php:64
+msgid "Untick to stop the scheduled poll without removing credentials. The \"Poll now\" button below still works."
+msgstr "Αποεπιλέξτε το πλαίσιο για να διακόψετε την προγραμματισμένη ανάκτηση δεδομένων χωρίς να διαγράψετε τα διαπιστευτήρια. Το κουμπί «Άμεση ανάκτηση» παρακάτω εξακολουθεί να λειτουργεί."
+
+#: admin-templates/tab-mailbox.php:69
+msgid "Host"
+msgstr "Διοργανωτής"
+
+#: admin-templates/tab-mailbox.php:76
+msgid "Port"
+msgstr "Λιμάνι"
+
+#: admin-templates/tab-mailbox.php:79
+msgid "Default 993 for IMAPS."
+msgstr "Προεπιλεγμένη τιμή 993 για το IMAPS."
+
+#: admin-templates/tab-mailbox.php:84
+msgid "Username"
+msgstr "Όνομα χρήστη"
+
+#: admin-templates/tab-mailbox.php:91
+msgid "A password is currently stored. Leave this field blank to keep it. Type a new value to replace it."
+msgstr "Αυτή τη στιγμή υπάρχει αποθηκευμένος ένας κωδικός πρόσβασης. Αφήστε αυτό το πεδίο κενό για να τον διατηρήσετε. Πληκτρολογήστε μια νέα τιμή για να τον αντικαταστήσετε."
+
+#: admin-templates/tab-mailbox.php:92
+msgid "New values are encrypted with libsodium and an AUTH_KEY-derived key on save."
+msgstr "Οι νέες τιμές κρυπτογραφούνται με τη βιβλιοθήκη libsodium και ένα κλειδί που προέρχεται από το AUTH_KEY κατά την αποθήκευση."
+
+#: admin-templates/tab-mailbox.php:96
+msgid "Password"
+msgstr "Κωδικός πρόσβασης"
+
+#: admin-templates/tab-mailbox.php:104
+msgid "Folder"
+msgstr "Φυλλάδιο"
+
+#: admin-templates/tab-mailbox.php:114
+msgid "TLS"
+msgstr "Τα πιο πρόσφατα πρότυπα ασφαλείας"
+
+#: admin-templates/tab-mailbox.php:118
+msgid "Connect over SSL / TLS (recommended)."
+msgstr "Σύνδεση μέσω SSL / TLS (συνιστάται)."
+
+#: admin-templates/tab-mailbox.php:123
+msgid "Validate certificate"
+msgstr "Επικύρωση πιστοποιητικού"
+
+#: admin-templates/tab-mailbox.php:127
+msgid "Verify the IMAP server's TLS certificate against the system CA bundle."
+msgstr "Ελέγξτε το πιστοποιητικό TLS του διακομιστή IMAP σε σχέση με τη δέσμη πιστοποιητικών CA του συστήματος."
+
+#: admin-templates/tab-mailbox.php:128
+msgid "Untick when PHP rejects a known-good certificate (common with Let's Encrypt and older c-client CA bundles — the error reads \"unable to get local issuer certificate\"). The connection still uses TLS encryption; only chain validation is skipped."
+msgstr "Αποεπιλέξτε αυτό το πλαίσιο όταν το PHP απορρίπτει ένα πιστοποιητικό που είναι γνωστό ότι είναι έγκυρο (συχνό φαινόμενο με το Let's Encrypt και παλαιότερα πακέτα CA του c-client — το σφάλμα αναφέρει «αδυναμία λήψης τοπικού πιστοποιητικού εκδότη»). Η σύνδεση εξακολουθεί να χρησιμοποιεί κρυπτογράφηση TLS· απλώς παραλείπεται ο έλεγχος της αλυσίδας πιστοποιητικών."
+
+#: admin-templates/tab-mailbox.php:133
+msgid "Polling interval (minutes)"
+msgstr "Διάστημα ενημέρωσης (λεπτά)"
+
+#: admin-templates/tab-mailbox.php:136
+msgid "How often the plugin polls the mailbox for inbound unsubscribe mails."
+msgstr "Πόσο συχνά το πρόσθετο ελέγχει το γραμματοκιβώτιο για εισερχόμενα μηνύματα διαγραφής."
+
+#: admin-templates/tab-mailbox.php:145
+msgid "Test connection"
+msgstr "Δοκιμή σύνδεσης"
+
+#: admin-templates/tab-mailbox.php:154
+msgid "Poll now"
+msgstr "Ψηφίστε τώρα"
+
+#: admin-templates/tab-mailbox.php:155
+msgid "Uses the saved credentials. Save changes before polling to apply edits."
+msgstr "Χρησιμοποιεί τα αποθηκευμένα διαπιστευτήρια. Αποθηκεύστε τις αλλαγές πριν από την αναζήτηση, για να εφαρμοστούν οι τροποποιήσεις."
+
+#: admin-templates/tab-queue.php:20
+msgid "Send queue"
+msgstr "Ουρά αποστολής"
+
+#: admin-templates/tab-queue.php:23
+msgid "How often the WP-Cron worker drains pending sends, and how many recipients it processes per tick."
+msgstr "Πόσο συχνά ο χειριστής WP-Cron εκκαθαρίζει τις εκκρεμείς αποστολές και πόσους παραλήπτες επεξεργάζεται ανά κύκλο."
+
+#: admin-templates/tab-queue.php:33
+msgid "Batch size"
+msgstr "Μέγεθος παρτίδας"
+
+#: admin-templates/tab-queue.php:36
+msgid "Recipients processed per cron tick. Default 10, range 1–100."
+msgstr "Αριθμός παραληπτών που επεξεργάζονται ανά κύκλο cron. Προεπιλογή: 10, εύρος: 1–100."
+
+#: admin-templates/tab-queue.php:41
+msgid "Tick interval (minutes)"
+msgstr "Διάστημα ενημέρωσης (λεπτά)"
+
+#: admin-templates/tab-queue.php:44
+msgid "How often the queue drains. Default every 5 minutes, range 1–60. The cron event re-schedules itself automatically when this value changes."
+msgstr "Πόσο συχνά εκκαθαρίζεται η ουρά. Προεπιλογή: κάθε 5 λεπτά, εύρος τιμών 1–60. Το συμβάν cron επαναπρογραμματίζεται αυτόματα όταν αλλάζει αυτή η τιμή."
+
+#: admin-templates/tab-sending.php:24
+msgid "Sender identity"
+msgstr "Ταυτότητα αποστολέα"
+
+#: admin-templates/tab-sending.php:27
+msgid "Every send uses this From: identity. Leave blank and the worker will refuse to queue."
+msgstr "Κάθε αποστολή χρησιμοποιεί αυτή την ταυτότητα «Από:». Αν το αφήσετε κενό, ο εργαζόμενος θα αρνηθεί να το βάλει στην ουρά."
+
+#: admin-templates/tab-sending.php:37
+msgid "From name"
+msgstr "Από το όνομα"
+
+#: admin-templates/tab-sending.php:44
+msgid "From email"
+msgstr "Από email"
+
+#: admin-templates/tab-sending.php:47
+msgid "Must be an address your outbound mail provider is authorised to send as (SPF / DKIM aligned)."
+msgstr "Πρέπει να είναι μια διεύθυνση από την οποία ο πάροχος εξερχόμενης αλληλογραφίας σας έχει εξουσιοδοτηθεί να στέλνει μηνύματα (σύμφωνα με τα πρότυπα SPF / DKIM)."
+
+#: admin-templates/tab-sending.php:52
+msgid "Footer"
+msgstr "Υποσέλιδο"
+
+#. translators: %s: literal placeholder token shown inline.
+#: admin-templates/tab-sending.php:58
+#, php-format
+msgid "HTML appended to every outgoing newsletter immediately before the closing %1$s tag (or at the end of the body for fragment HTML). The %2$s token is replaced with the recipient's personalised unsubscribe URL at send time."
+msgstr "HTML που προστίθεται σε κάθε εξερχόμενο ενημερωτικό δελτίο αμέσως πριν από την τελική ετικέτα %1$s (ή στο τέλος του κυρίως κειμένου για αποσπάσματα HTML). Το σύμβολο %2$s αντικαθίσταται με την εξατομικευμένη διεύθυνση URL διαγραφής του παραλήπτη κατά τη στιγμή της αποστολής."
+
+#: admin-templates/tab-sending.php:70
+msgid "Footer HTML"
+msgstr "Υποσέλιδο HTML"
+
+#: admin-templates/tab-sending.php:77
+msgid "Public preferences page"
+msgstr "Σελίδα προτιμήσεων κοινού"
+
+#: admin-templates/tab-sending.php:80
+msgid "The URL slug where recipients land to manage preferences or one-click unsubscribe. Changing this flushes the WordPress rewrite rules."
+msgstr "Ο σύντομος σύνδεσμος URL στον οποίο μεταφέρονται οι παραλήπτες για να διαχειριστούν τις προτιμήσεις τους ή να διαγραφούν με ένα κλικ. Η αλλαγή αυτού του συνδέσμου ανανεώνει τους κανόνες αναδιαμόρφωσης του WordPress."
+
+#: admin-templates/tab-sending.php:94
+msgid "Recipients will visit:"
+msgstr "Οι δικαιούχοι θα επισκεφθούν:"
+
+#: includes/class-csv-importer.php:73
+msgid "CSV file is not readable."
+msgstr "Το αρχείο CSV δεν είναι αναγνώσιμο."
+
+#: includes/class-csv-importer.php:80
+msgid "Failed to open the CSV file."
+msgstr "Δεν ήταν δυνατό να ανοίξει το αρχείο CSV."
+
+#: includes/class-csv-importer.php:88
+msgid "CSV header row is empty."
+msgstr "Η γραμμή κεφαλίδας του CSV είναι κενή."
+
+#: includes/class-csv-importer.php:96
+msgid "No \"Subscriber\" or \"email\" column found in CSV."
+msgstr "Δεν εντοπίστηκε στήλη με την ένδειξη «Συνδρομητής» ή «email» στο αρχείο CSV."
+
+#: includes/class-csv-importer.php:143
+msgid "Invalid or missing email."
+msgstr "Το email είναι άκυρο ή λείπει."
+
+#: includes/class-csv-importer.php:182
+msgid "Subscriber is flagged \"never contact\" — row skipped."
+msgstr "Ο συνδρομητής έχει επισημανθεί ως «μην επικοινωνήσετε ποτέ» — η σειρά παραλείπεται."
+
+#. translators: %s: comma-separated list of unknown group names.
+#: includes/class-csv-importer.php:203
+#, php-format
+msgid "Unknown groups ignored: %s."
+msgstr "Αγνοήθηκαν άγνωστες ομάδες: %s."
+
+#. translators: %d: maximum subject length.
+#: includes/class-drafts-controller.php:236
+#, php-format
+msgid "Subject must be %d characters or fewer."
+msgstr "Το θέμα πρέπει να έχει %d χαρακτήρες ή λιγότερους."
+
+#. translators: %s: comma-separated list of unknown slugs.
+#: includes/class-drafts-controller.php:270
+#, php-format
+msgid "Unknown group slugs: %s."
+msgstr "Άγνωστες ομάδες: %s."
+
+#: includes/class-groups-controller.php:248
+msgid "Hosting customers"
+msgstr "Πελάτες φιλοξενίας"
+
+#: includes/class-groups-controller.php:249
+msgid "Active hosting customers."
+msgstr "Ενεργοί πελάτες φιλοξενίας."
+
+#: includes/class-groups-controller.php:253
+msgid "Web designers"
+msgstr "Σχεδιαστές ιστοσελίδων"
+
+#: includes/class-groups-controller.php:254
+msgid "Web designers and agencies who refer hosting customers."
+msgstr "Σχεδιαστές ιστοσελίδων και εταιρείες που μας προωθούν πελάτες φιλοξενίας."
+
+#: includes/class-mailbox-poller.php:96
+msgid "Heads Up Mailer mailbox poll"
+msgstr "Δημοσκόπηση του Heads Up Mailer"
+
+#: includes/class-mailbox-poller.php:183
+#: includes/class-plugin.php:777
+msgid "The PHP imap extension is not loaded on this host."
+msgstr "Η επέκταση IMAP της PHP δεν έχει φορτωθεί σε αυτόν τον διακομιστή."
+
+#: includes/class-mailbox-poller.php:184
+msgid "Mailbox credentials are not fully configured."
+msgstr "Τα διαπιστευτήρια του γραμματοκιβωτίου δεν έχουν ρυθμιστεί πλήρως."
+
+#: includes/class-mailbox-poller.php:195
+msgid "Another poll is already in progress. Try again in a moment."
+msgstr "Μια άλλη ψηφοφορία βρίσκεται ήδη σε εξέλιξη. Δοκιμάστε ξανά σε λίγο."
+
+#: includes/class-mailbox-poller.php:270
+#: includes/class-plugin.php:822
+msgid "Failed to open IMAP connection."
+msgstr "Δεν κατέστη δυνατό το άνοιγμα της σύνδεσης IMAP."
+
+#. translators: 1: number of processed unsubscribes, 2: number of unparseable messages moved to Errors.
+#: includes/class-mailbox-poller.php:312
+#, php-format
+msgid "Poll OK — %1$d processed, %2$d errored."
+msgstr "Η ψηφοφορία ολοκληρώθηκε — %1$d ψηφοφορίες επεξεργάστηκαν, %2$d παρουσίασαν σφάλμα."
+
+#: includes/class-plugin.php:201
+msgid "Heads Up Mailer: PHP imap extension missing."
+msgstr "Ειδοποίηση: Λείπει η επέκταση PHP imap."
+
+#: includes/class-plugin.php:202
+msgid "The mailbox poller used for mailto-form unsubscribes requires the PHP imap extension. Sending still works without it."
+msgstr "Το πρόγραμμα παρακολούθησης του γραμματοκιβωτίου που χρησιμοποιείται για τη διαγραφή μέσω της φόρμας «mailto» απαιτεί την επέκταση IMAP της PHP. Η αποστολή μηνυμάτων εξακολουθεί να λειτουργεί και χωρίς αυτήν."
+
+#. translators: 1: error message from imap_errors(), 2: relative time since the error.
+#: includes/class-plugin.php:239
+#, php-format
+msgid "Last attempt failed: %1$s (%2$s)."
+msgstr "Η τελευταία προσπάθεια απέτυχε: %1$s (%2$s)."
+
+#: includes/class-plugin.php:243
+msgid "No successful poll on record yet. Check IMAP credentials and the cron schedule."
+msgstr "Δεν έχει καταγραφεί ακόμη καμία επιτυχημένη ψηφοφορία. Ελέγξτε τα διαπιστευτήρια IMAP και το πρόγραμμα cron."
+
+#: includes/class-plugin.php:247
+msgid "Heads Up Mailer: mailbox poller is stale."
+msgstr "Σημαντική ειδοποίηση για το Mailer: το πρόγραμμα παρακολούθησης του γραμματοκιβωτίου είναι παλιό."
+
+#: includes/class-plugin.php:270
+#: includes/class-plugin.php:271
+msgid "Dashboard"
+msgstr "Πίνακας ελέγχου"
+
+#: includes/class-plugin.php:315
+#: includes/class-plugin.php:316
+msgid "Settings"
+msgstr "Ρυθμίσεις"
+
+#: includes/class-plugin.php:378
+#: includes/class-plugin.php:391
+#: includes/class-plugin.php:405
+#: includes/class-plugin.php:477
+#: includes/class-plugin.php:871
+#: includes/class-plugin.php:910
+msgid "You do not have permission to access this page."
+msgstr "Δεν έχετε δικαίωμα πρόσβασης σε αυτή τη σελίδα."
+
+#: includes/class-plugin.php:432
+#: includes/class-plugin.php:534
+#: includes/class-plugin.php:584
+#: includes/class-plugin.php:615
+#: includes/class-plugin.php:650
+#: includes/class-plugin.php:703
+#: includes/class-plugin.php:949
+#: includes/class-plugin.php:1000
+#: includes/class-plugin.php:1033
+#: includes/class-plugin.php:1066
+#: includes/class-plugin.php:1090
+msgid "You do not have permission."
+msgstr "Δεν έχετε δικαιώματα πρόσβασης."
+
+#: includes/class-plugin.php:720
+msgid "No file was uploaded."
+msgstr "Δεν μεταφορτώθηκε κανένα αρχείο."
+
+#: includes/class-plugin.php:725
+msgid "File upload failed."
+msgstr "Η αποστολή του αρχείου απέτυχε."
+
+#: includes/class-plugin.php:727
+msgid "Uploaded file is not a valid upload."
+msgstr "Το αρχείο που ανεβάσατε δεν είναι έγκυρο."
+
+#: includes/class-plugin.php:773
+#: includes/class-plugin.php:851
+msgid "Insufficient permissions."
+msgstr "Ανεπαρκή δικαιώματα."
+
+#: includes/class-plugin.php:796
+msgid "Host, port, username, and password are all required."
+msgstr "Απαιτούνται ο διακομιστής, η θύρα, το όνομα χρήστη και ο κωδικός πρόσβασης."
+
+#. translators: %s: folder name on the IMAP server.
+#: includes/class-plugin.php:832
+#, php-format
+msgid "Connection successful — folder \"%s\" is reachable."
+msgstr "Η σύνδεση ολοκληρώθηκε με επιτυχία — ο φάκελος \"%s\" είναι προσβάσιμος."
+
+#: includes/class-public-controller.php:190
+msgid "Bad request."
+msgstr "Λανθασμένο αίτημα."
+
+#: includes/class-public-controller.php:214
+#: includes/class-public-controller.php:277
+msgid "Security check failed. Please reload the page and try again."
+msgstr "Ο έλεγχος ασφαλείας απέτυχε. Ανανεώστε τη σελίδα και δοκιμάστε ξανά."
+
+#: includes/class-public-controller.php:255
+msgid "Thanks. You have been unsubscribed."
+msgstr "Ευχαριστούμε. Η εγγραφή σας ακυρώθηκε."
+
+#: includes/class-public-controller.php:428
+msgid "This unsubscribe link is invalid or has expired. Please contact the sender for a fresh link."
+msgstr "Αυτός ο σύνδεσμος διαγραφής δεν είναι έγκυρος ή έχει λήξει. Παρακαλούμε επικοινωνήστε με τον αποστολέα για να λάβετε έναν νέο σύνδεσμο."
+
+#: includes/class-public-controller.php:440
+msgid "Too many requests. Please try again later."
+msgstr "Υπάρχουν πάρα πολλά αιτήματα. Παρακαλώ δοκιμάστε ξανά αργότερα."
+
+#: includes/class-sends-controller.php:234
+msgid "Failed to create send."
+msgstr "Δεν κατέστη δυνατή η δημιουργία του μηνύματος."
+
+#: includes/class-sends-controller.php:264
+msgid "Failed to insert recipients."
+msgstr "Δεν κατέστη δυνατή η εισαγωγή παραληπτών."
+
+#: includes/class-settings.php:339
+msgid "From email address is not valid. The previous value was kept."
+msgstr "Η διεύθυνση ηλεκτρονικού ταχυδρομείου δεν είναι έγκυρη. Διατηρήθηκε η προηγούμενη τιμή."
+
+#: includes/class-subscribers-controller.php:480
+msgid "Subscriber is flagged never-contact."
+msgstr "Ο συνδρομητής έχει επισημανθεί ως «μην επικοινωνήσετε ποτέ»."
+
+#: includes/class-worker.php:82
+msgid "Heads Up Mailer tick"
+msgstr "Επιλογή Heads Up Mailer"
+
+#: integrations/contact-form-7/class-contact-form-7.php:45
+#: integrations/contact-form-7/class-contact-form-7.php:54
+msgid "Contact Form 7"
+msgstr "Φόρμα επικοινωνίας 7"
+
+#: integrations/contact-form-7/class-contact-form-7.php:112
+msgid "Sign up for our newsletter"
+msgstr "Εγγραφείτε στο ενημερωτικό μας δελτίο"
+
+#: integrations/contact-form-7/class-contact-form-7.php:291
+msgid "Add a sign-up checkbox to any Contact Form 7 form by inserting the following tag in the form editor:"
+msgstr "Προσθέστε ένα πλαίσιο επιλογής εγγραφής σε οποιαδήποτε φόρμα του Contact Form 7, εισάγοντας την ακόλουθη ετικέτα στον επεξεργαστή φορμών:"
+
+#: integrations/contact-form-7/class-contact-form-7.php:297
+msgid "Sign me up for the newsletter"
+msgstr "Εγγραφείτε στο ενημερωτικό δελτίο"
+
+#: integrations/contact-form-7/class-contact-form-7.php:302
+msgid "Replace the `group:` attribute with the slug of the group you want sign-ups to land in. The quoted text becomes the visible checkbox label. The form must include an email field — that's where the subscriber's address comes from."
+msgstr "Αντικαταστήστε το χαρακτηριστικό `group:` με το slug της ομάδας στην οποία θέλετε να καταχωρίζονται οι εγγραφές. Το κείμενο που βρίσκεται μέσα σε εισαγωγικά θα γίνει η ετικέτα του πλαισίου επιλογής που θα εμφανίζεται. Η φόρμα πρέπει να περιλαμβάνει ένα πεδίο email — από εκεί προέρχεται η διεύθυνση του συνδρομητή."
+
+#: integrations/woocommerce/class-woocommerce.php:64
+#: integrations/woocommerce/class-woocommerce.php:73
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: integrations/woocommerce/class-woocommerce.php:298
+msgid "Customers group"
+msgstr "Ομάδα πελατών"
+
+#: integrations/woocommerce/class-woocommerce.php:301
+msgid "Every checkout adds the customer to this group. T&C acceptance at checkout is the consent record. Leave unset to disable."
+msgstr "Κάθε ολοκλήρωση αγοράς προσθέτει τον πελάτη σε αυτήν την ομάδα. Η αποδοχή των Όρων και Προϋποθέσεων κατά την ολοκλήρωση της αγοράς αποτελεί την καταγραφή της συγκατάθεσης. Αφήστε το πεδίο κενό για να απενεργοποιήσετε τη λειτουργία."
+
+#: integrations/woocommerce/class-woocommerce.php:307
+msgid "— Disabled —"
+msgstr "— Αναπήρος —"
+
+#: integrations/woocommerce/class-woocommerce.php:327
+msgid "Checkout opt-in checkboxes"
+msgstr "Πλαίσια επιλογής για την αποδοχή των όρων κατά την ολοκλήρωση της παραγγελίας"
+
+#: integrations/woocommerce/class-woocommerce.php:330
+msgid "Tick groups you want to offer at checkout as optional sign-ups, and provide the label text customers will see. The intro paragraph is rendered above all checkboxes."
+msgstr "Επιλέξτε τις ομάδες που θέλετε να προσφέρετε κατά την ολοκλήρωση της παραγγελίας ως προαιρετικές εγγραφές και καθορίστε το κείμενο της ετικέτας που θα βλέπουν οι πελάτες. Η εισαγωγική παράγραφος εμφανίζεται πάνω από όλα τα πλαίσια επιλογής."
+
+#: integrations/woocommerce/class-woocommerce.php:335
+msgid "Intro paragraph (1–2 sentences)"
+msgstr "Εισαγωγική παράγραφος (1–2 προτάσεις)"
+
+#: integrations/woocommerce/class-woocommerce.php:348
+msgid "Group"
+msgstr "Ομάδα"
+
+#: integrations/woocommerce/class-woocommerce.php:348
+msgid "Show at checkout"
+msgstr "Εμφάνιση κατά την ολοκλήρωση της παραγγελίας"
+
+#: integrations/woocommerce/class-woocommerce.php:348
+msgid "Label text"
+msgstr "Κείμενο ετικέτας"
+
+#: integrations/woocommerce/class-woocommerce.php:353
+msgid "No groups defined yet. Create groups under Heads Up Mailer → Groups, then return here."
+msgstr "Δεν έχουν οριστεί ακόμη ομάδες. Δημιουργήστε ομάδες στην ενότητα Heads Up Mailer → Ομάδες και, στη συνέχεια, επιστρέψτε εδώ."
+
+#: public-templates/manage-comms.php:41
+#: public-templates/manage-comms.php:109
+msgid "Email preferences"
+msgstr "Προτιμήσεις ηλεκτρονικού ταχυδρομείου"
+
+#: public-templates/manage-comms.php:81
+msgid "You're unsubscribed"
+msgstr "Η εγγραφή σας ακυρώθηκε"
+
+#. translators: 1: site name, 2: subscriber email.
+#: public-templates/manage-comms.php:88
+#, php-format
+msgid "We have you on record as no longer wishing to receive newsletters from %1$s at %2$s."
+msgstr "Σύμφωνα με τα στοιχεία που διαθέτουμε, δεν επιθυμείτε πλέον να λαμβάνετε ενημερωτικά δελτία από το %1$s στη διεύθυνση %2$s."
+
+#: public-templates/manage-comms.php:96
+msgid "If you believe this is a mistake, please contact us — we'll need to update your record manually."
+msgstr "Αν πιστεύετε ότι πρόκειται για λάθος, παρακαλούμε επικοινωνήστε μαζί μας — θα χρειαστεί να ενημερώσουμε τα στοιχεία σας χειροκίνητα."
+
+#. translators: 1: site name, 2: subscriber email.
+#: public-templates/manage-comms.php:116
+#, php-format
+msgid "Manage your subscription to %1$s newsletters sent to %2$s."
+msgstr "Διαχειριστείτε τη συνδρομή σας στα ενημερωτικά δελτία του %1$s που αποστέλλονται στο %2$s."
+
+#: public-templates/manage-comms.php:129
+msgid "Your preferences have been saved."
+msgstr "Οι προτιμήσεις σας έχουν αποθηκευτεί."
+
+#: public-templates/manage-comms.php:136
+msgid "You're currently unsubscribed from all newsletters. Tick a group below and save to resubscribe."
+msgstr "Αυτή τη στιγμή δεν λαμβάνετε κανένα ενημερωτικό δελτίο. Επιλέξτε μια κατηγορία παρακάτω και αποθηκεύστε για να εγγραφείτε ξανά."
+
+#: public-templates/manage-comms.php:155
+msgid "Which newsletters?"
+msgstr "Ποια ενημερωτικά δελτία;"
+
+#: public-templates/manage-comms.php:161
+msgid "No mailing groups are defined yet."
+msgstr "Δεν έχουν οριστεί ακόμη ομάδες αλληλογραφίας."
+
+#: public-templates/manage-comms.php:187
+msgid "Save preferences"
+msgstr "Αποθήκευση προτιμήσεων"
+
+#: public-templates/manage-comms.php:201
+msgid "Unsubscribe from everything"
+msgstr "Διαγραφή από όλες τις λίστες"
+
+#: public-templates/manage-comms.php:205
+msgid "One click removes you from every group and flags your record so future imports can't resubscribe you by mistake. Use this if you want our newsletters to stop completely."
+msgstr "Με ένα κλικ θα διαγραφείτε από όλες τις ομάδες και θα επισημανθεί ο λογαριασμός σας, ώστε να μην είναι δυνατή η κατά λάθος επανεγγραφή σας σε μελλοντικές εισαγωγές. Χρησιμοποιήστε αυτή την επιλογή αν θέλετε να σταματήσετε εντελώς τη λήψη των ενημερωτικών δελτίων μας."
+
+#: public-templates/manage-comms.php:221
+msgid "Unsubscribe me from everything"
+msgstr "Διαγράψτε με από όλες τις λίστες"

@@ -1,0 +1,1407 @@
+# Copyright (C) 2026 Paul Faulkner
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Language: fr_FR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Project-Id-Version: Heads Up Mailer 1.2.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/heads-up-mailer\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-06-09T20:12:40+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: heads-up-mailer\n"
+
+#. Plugin Name of the plugin
+#: heads-up-mailer.php
+#: includes/class-plugin.php:259
+#: includes/class-plugin.php:260
+msgid "Heads Up Mailer"
+msgstr "Avis de mise à jour"
+
+#. Plugin URI of the plugin
+#: heads-up-mailer.php
+msgid "https://headgit.net/headwall/heads-up-mailer"
+msgstr "https://headgit.net/headwall/heads-up-mailer"
+
+#. Description of the plugin
+#: heads-up-mailer.php
+msgid "In-house newsletter sender for headwall-hosting.com. Async send queue, RFC-8058 one-click unsubscribe, IMAP poll for mailto unsubscribes."
+msgstr "Outil d'envoi de newsletters interne pour headwall-hosting.com. File d'attente d'envoi asynchrone, désabonnement en un clic conforme à la norme RFC-8058, interrogation IMAP pour les désabonnements via « mailto »."
+
+#. Author of the plugin
+#: heads-up-mailer.php
+msgid "Paul Faulkner"
+msgstr "Paul Faulkner"
+
+#. Author URI of the plugin
+#: heads-up-mailer.php
+msgid "https://headwall-hosting.com"
+msgstr "https://headwall-hosting.com"
+
+#: admin-templates/dashboard.php:21
+msgid "Use the submenu to manage subscribers, groups, drafts, and the sent log, or to review the send queue and integrations under Settings."
+msgstr "Utilisez le sous-menu pour gérer les abonnés, les groupes, les brouillons et l'historique des envois, ou pour consulter la file d'attente des envois et les intégrations dans la section « Paramètres »."
+
+#: admin-templates/dashboard.php:29
+msgid "Send statistics and activity analytics will arrive in a future release."
+msgstr "Les statistiques et les analyses d'activité seront disponibles dans une prochaine version."
+
+#: admin-templates/draft-edit.php:26
+msgid "Edit draft"
+msgstr "Modifier le brouillon"
+
+#: admin-templates/draft-edit.php:26
+msgid "Add draft"
+msgstr "Ajouter un brouillon"
+
+#: admin-templates/draft-edit.php:49
+#: admin-templates/drafts-list.php:67
+#: includes/class-drafts-controller.php:228
+msgid "Subject is required."
+msgstr "Le champ « Objet » est obligatoire."
+
+#: admin-templates/draft-edit.php:50
+#: admin-templates/drafts-list.php:68
+msgid "Subject is too long."
+msgstr "L'objet est trop long."
+
+#: admin-templates/draft-edit.php:51
+#: admin-templates/drafts-list.php:69
+#: includes/class-drafts-controller.php:243
+msgid "HTML body cannot be empty."
+msgstr "Le corps HTML ne peut pas être vide."
+
+#: admin-templates/draft-edit.php:52
+#: admin-templates/drafts-list.php:70
+msgid "One or more group slugs are unknown."
+msgstr "Un ou plusieurs identifiants de groupe sont inconnus."
+
+#: admin-templates/draft-edit.php:53
+#: admin-templates/draft-edit.php:56
+#: admin-templates/drafts-list.php:71
+#: admin-templates/drafts-list.php:75
+#: includes/class-drafts-controller.php:137
+#: includes/class-drafts-controller.php:182
+#: includes/class-plugin.php:1076
+#: includes/class-rest-controller.php:157
+#: includes/class-sends-controller.php:129
+msgid "Draft not found."
+msgstr "Le brouillon est introuvable."
+
+#: admin-templates/draft-edit.php:54
+#: admin-templates/drafts-list.php:72
+#: includes/class-drafts-controller.php:114
+msgid "Failed to insert draft."
+msgstr "Échec de l'insertion du brouillon."
+
+#: admin-templates/draft-edit.php:55
+#: admin-templates/drafts-list.php:73
+#: includes/class-drafts-controller.php:165
+msgid "Failed to update draft."
+msgstr "Échec de la mise à jour du brouillon."
+
+#: admin-templates/draft-edit.php:57
+#: includes/class-sends-controller.php:133
+msgid "This draft is already sending. Wait for it to finish."
+msgstr "L'envoi de ce brouillon est déjà en cours. Patientez jusqu'à ce qu'il soit terminé."
+
+#: admin-templates/draft-edit.php:58
+#: admin-templates/drafts-list.php:77
+#: includes/class-sends-controller.php:139
+msgid "Configure a From: email on Settings → Sending before sending."
+msgstr "Configurez l'adresse e-mail de l'expéditeur dans Paramètres → Envoi avant d'envoyer."
+
+#: admin-templates/draft-edit.php:59
+#: admin-templates/drafts-list.php:78
+#: includes/class-sends-controller.php:145
+msgid "Select at least one group on the draft before sending."
+msgstr "Sélectionnez au moins un groupe dans le brouillon avant de l'envoyer."
+
+#: admin-templates/draft-edit.php:60
+#: admin-templates/draft-edit.php:175
+#: admin-templates/drafts-list.php:79
+#: includes/class-sends-controller.php:166
+msgid "No subscribed recipients in the selected groups."
+msgstr "Aucun destinataire abonné dans les groupes sélectionnés."
+
+#: admin-templates/draft-edit.php:61
+#: admin-templates/drafts-list.php:80
+msgid "Failed to queue send (database write failed)."
+msgstr "Échec de la mise en file d'attente de l'envoi (échec de l'écriture dans la base de données)."
+
+#: admin-templates/draft-edit.php:62
+#: admin-templates/drafts-list.php:81
+#: includes/class-sends-controller.php:277
+msgid "Failed to mark draft as sending."
+msgstr "Impossible de marquer le brouillon comme envoyé."
+
+#: admin-templates/draft-edit.php:63
+#: includes/class-drafts-controller.php:144
+msgid "Cannot edit a draft while it is sending."
+msgstr "Il n'est pas possible de modifier un brouillon pendant son envoi."
+
+#: admin-templates/draft-edit.php:66
+#: admin-templates/drafts-list.php:86
+#: admin-templates/group-edit.php:52
+#: admin-templates/groups-list.php:68
+#: admin-templates/subscriber-edit.php:54
+#: admin-templates/subscribers-list.php:106
+msgid "An error occurred."
+msgstr "Une erreur s'est produite."
+
+#: admin-templates/draft-edit.php:75
+msgid "This draft is currently sending. The cron worker is processing recipients in the background."
+msgstr "Cet brouillon est en cours d'envoi. Le processus cron traite les destinataires en arrière-plan."
+
+#: admin-templates/draft-edit.php:92
+#: admin-templates/drafts-list.php:111
+#: admin-templates/sent-log-list.php:32
+msgid "Subject"
+msgstr "Objet"
+
+#: admin-templates/draft-edit.php:100
+msgid "HTML body"
+msgstr "Corps du code HTML"
+
+#: admin-templates/draft-edit.php:103
+msgid "Raw HTML. Footer and unsubscribe link are appended automatically at send time."
+msgstr "Code HTML brut. Le pied de page et le lien de désabonnement sont ajoutés automatiquement au moment de l'envoi."
+
+#: admin-templates/draft-edit.php:107
+msgid "Suggested groups"
+msgstr "Groupes suggérés"
+
+#: admin-templates/draft-edit.php:110
+msgid "No groups defined. Add one on the Groups page first."
+msgstr "Aucun groupe n'a été défini. Veuillez d'abord en ajouter un sur la page « Groupes »."
+
+#: admin-templates/draft-edit.php:134
+msgid "Save draft"
+msgstr "Enregistrer le brouillon"
+
+#: admin-templates/draft-edit.php:136
+#: admin-templates/group-edit.php:110
+#: admin-templates/subscriber-edit.php:166
+#: admin-templates/subscriber-import.php:75
+msgid "Cancel"
+msgstr "Annuler"
+
+#: admin-templates/draft-edit.php:152
+msgid "Already sending — wait for the worker to finish."
+msgstr "Envoi en cours — veuillez patienter jusqu'à ce que le processus soit terminé."
+
+#: admin-templates/draft-edit.php:154
+msgid "Configure a From: email on Settings → Sending first."
+msgstr "Commencez par configurer l'adresse e-mail de l'expéditeur dans Paramètres → Envoi."
+
+#: admin-templates/draft-edit.php:156
+msgid "Tick at least one group above before sending."
+msgstr "Cochez au moins une des options ci-dessus avant d'envoyer."
+
+#: admin-templates/draft-edit.php:170
+#: includes/class-sends-controller.php:160
+msgid "None of the selected groups exist any more."
+msgstr "Aucun des groupes sélectionnés n'existe plus."
+
+#: admin-templates/draft-edit.php:180
+#: admin-templates/draft-edit.php:185
+msgid "Send"
+msgstr "Envoyer"
+
+#. translators: %d: recipient count.
+#: admin-templates/draft-edit.php:191
+#, php-format
+msgid "This draft was already sent. Send AGAIN to %d recipients?"
+msgstr "Ce brouillon a déjà été envoyé. Voulez-vous l'envoyer à nouveau à %d destinataires ?"
+
+#. translators: %d: recipient count.
+#: admin-templates/draft-edit.php:193
+#, php-format
+msgid "Send to %d recipients?"
+msgstr "Envoyer à %d destinataires ?"
+
+#. translators: %d: recipient count.
+#: admin-templates/draft-edit.php:197
+#, php-format
+msgid "Re-send to %d recipients"
+msgstr "Renvoyer à %d destinataires"
+
+#. translators: %d: recipient count.
+#: admin-templates/draft-edit.php:199
+#, php-format
+msgid "Send to %d recipients"
+msgstr "Envoyer à %d destinataires"
+
+#: admin-templates/draft-edit.php:201
+msgid "Queues the send. The cron worker drains in the background."
+msgstr "Met l'envoi en file d'attente. Le processeur cron traite les tâches en arrière-plan."
+
+#: admin-templates/draft-edit.php:217
+msgid "Preview"
+msgstr "Aperçu"
+
+#: admin-templates/draft-edit.php:226
+msgid "Draft preview"
+msgstr "Aperçu du projet"
+
+#: admin-templates/drafts-list.php:30
+#: includes/class-plugin.php:297
+#: includes/class-plugin.php:298
+msgid "Drafts"
+msgstr "Brouillons"
+
+#: admin-templates/drafts-list.php:32
+#: admin-templates/groups-list.php:30
+#: admin-templates/subscribers-list.php:40
+msgid "Add new"
+msgstr "Ajouter un nouvel élément"
+
+#: admin-templates/drafts-list.php:47
+msgid "Draft saved."
+msgstr "Brouillon enregistré."
+
+#: admin-templates/drafts-list.php:54
+msgid "Draft deleted."
+msgstr "Brouillon supprimé."
+
+#: admin-templates/drafts-list.php:61
+msgid "Draft queued for sending. The cron worker will drain the queue in the background."
+msgstr "Brouillon en attente d'envoi. Le processus cron traitera la file d'attente en arrière-plan."
+
+#: admin-templates/drafts-list.php:74
+#: includes/class-drafts-controller.php:195
+msgid "Failed to delete draft."
+msgstr "Échec de la suppression du brouillon."
+
+#: admin-templates/drafts-list.php:76
+msgid "Already sending. Wait for the worker to finish."
+msgstr "L'envoi est en cours. Veuillez patienter jusqu'à ce que le processus soit terminé."
+
+#: admin-templates/drafts-list.php:95
+msgid "Draft"
+msgstr "Brouillon"
+
+#: admin-templates/drafts-list.php:96
+#: admin-templates/settings-page.php:42
+msgid "Sending"
+msgstr "Envoi"
+
+#: admin-templates/drafts-list.php:97
+msgid "Sent"
+msgstr "Tard"
+
+#: admin-templates/drafts-list.php:98
+msgid "Cancelled"
+msgstr "Annulé"
+
+#: admin-templates/drafts-list.php:104
+msgid "No drafts yet. Add one or POST to the REST endpoint."
+msgstr "Il n'y a pas encore de brouillon. Ajoutez-en un ou envoyez une requête POST vers le point de terminaison REST."
+
+#: admin-templates/drafts-list.php:110
+#: admin-templates/sent-log-detail.php:134
+#: admin-templates/sent-log-list.php:31
+msgid "ID"
+msgstr "Numéro d'identification"
+
+#: admin-templates/drafts-list.php:112
+#: admin-templates/sent-log-detail.php:136
+#: admin-templates/sent-log-list.php:33
+#: admin-templates/subscriber-edit.php:112
+#: admin-templates/subscribers-list.php:162
+msgid "Status"
+msgstr "Statut"
+
+#: admin-templates/drafts-list.php:113
+#: admin-templates/groups-list.php:28
+#: admin-templates/subscriber-edit.php:140
+#: admin-templates/subscribers-list.php:163
+#: includes/class-plugin.php:288
+#: includes/class-plugin.php:289
+msgid "Groups"
+msgstr "Groupes"
+
+#: admin-templates/drafts-list.php:114
+msgid "Created"
+msgstr "Créé"
+
+#: admin-templates/drafts-list.php:115
+#: admin-templates/groups-list.php:89
+#: admin-templates/subscribers-list.php:165
+msgid "Actions"
+msgstr "Actions"
+
+#: admin-templates/drafts-list.php:146
+msgid "—"
+msgstr "—"
+
+#. translators: %s: Draft subject.
+#: admin-templates/drafts-list.php:160
+#, php-format
+msgid "Delete the draft \"%s\"?"
+msgstr "Supprimer le brouillon « %s » ?"
+
+#: admin-templates/drafts-list.php:173
+#: admin-templates/groups-list.php:128
+#: admin-templates/subscribers-list.php:226
+msgid "Edit"
+msgstr "Modifier"
+
+#: admin-templates/drafts-list.php:176
+#: admin-templates/groups-list.php:131
+#: admin-templates/subscribers-list.php:242
+msgid "Delete"
+msgstr "Supprimer"
+
+#: admin-templates/group-edit.php:25
+msgid "Edit group"
+msgstr "Modifier le groupe"
+
+#: admin-templates/group-edit.php:26
+msgid "Add group"
+msgstr "Ajouter un groupe"
+
+#: admin-templates/group-edit.php:42
+#: admin-templates/groups-list.php:57
+#: includes/class-groups-controller.php:126
+#: includes/class-groups-controller.php:177
+msgid "A group with that slug already exists."
+msgstr "Un groupe portant déjà ce nom existe déjà."
+
+#: admin-templates/group-edit.php:43
+#: admin-templates/groups-list.php:58
+#: includes/class-groups-controller.php:281
+msgid "A valid slug is required."
+msgstr "Un slug valide est requis."
+
+#: admin-templates/group-edit.php:44
+#: admin-templates/groups-list.php:59
+#: includes/class-groups-controller.php:288
+msgid "Group name is required."
+msgstr "Le nom du groupe est obligatoire."
+
+#: admin-templates/group-edit.php:45
+#: admin-templates/groups-list.php:60
+#: includes/class-groups-controller.php:159
+#: includes/class-groups-controller.php:209
+msgid "Group not found."
+msgstr "Groupe introuvable."
+
+#: admin-templates/group-edit.php:46
+#: admin-templates/groups-list.php:61
+#: includes/class-groups-controller.php:139
+msgid "Failed to insert group."
+msgstr "Échec de l'insertion du groupe."
+
+#: admin-templates/group-edit.php:47
+#: admin-templates/groups-list.php:62
+#: includes/class-groups-controller.php:192
+msgid "Failed to update group."
+msgstr "Échec de la mise à jour du groupe."
+
+#: admin-templates/group-edit.php:76
+#: admin-templates/groups-list.php:86
+#: admin-templates/tab-sending.php:90
+msgid "Slug"
+msgstr "Slug"
+
+#: admin-templates/group-edit.php:78
+msgid "Lowercase letters, numbers, and hyphens. Used in REST and the database."
+msgstr "Lettres minuscules, chiffres et tirets. Utilisé dans REST et la base de données."
+
+#: admin-templates/group-edit.php:83
+#: admin-templates/groups-list.php:85
+#: admin-templates/subscriber-edit.php:87
+#: admin-templates/subscribers-list.php:161
+msgid "Name"
+msgstr "Nom"
+
+#: admin-templates/group-edit.php:89
+#: admin-templates/groups-list.php:88
+msgid "Description"
+msgstr "Description"
+
+#: admin-templates/group-edit.php:97
+#: admin-templates/groups-list.php:118
+msgid "Private"
+msgstr "Privé"
+
+#: admin-templates/group-edit.php:99
+msgid "Hide this group from the public preferences page for non-members."
+msgstr "Masquer ce groupe sur la page des préférences publiques pour les non-membres."
+
+#: admin-templates/group-edit.php:100
+msgid "Private groups never appear as a sign-up option on /manage-comms/. Existing members still see it (so they can unsubscribe), but anyone else does not. Useful for internal / test groups and one-off targeted lists."
+msgstr "Les groupes privés n'apparaissent jamais parmi les options d'inscription sur /manage-comms/. Les membres actuels peuvent toujours les voir (afin de pouvoir se désabonner), mais ce n'est pas le cas des autres utilisateurs. Cette fonctionnalité est utile pour les groupes internes ou de test, ainsi que pour les listes ciblées ponctuelles."
+
+#: admin-templates/group-edit.php:108
+msgid "Save group"
+msgstr "Enregistrer le groupe"
+
+#: admin-templates/groups-list.php:44
+msgid "Group saved."
+msgstr "Groupe enregistré."
+
+#: admin-templates/groups-list.php:51
+msgid "Group deleted."
+msgstr "Groupe supprimé."
+
+#: admin-templates/groups-list.php:63
+#: includes/class-groups-controller.php:229
+msgid "Failed to delete group."
+msgstr "Échec de la suppression du groupe."
+
+#: admin-templates/groups-list.php:79
+msgid "No groups yet. Add one to get started."
+msgstr "Il n'y a pas encore de groupes. Ajoutez-en un pour commencer."
+
+#: admin-templates/groups-list.php:87
+msgid "Visibility"
+msgstr "Visibilité"
+
+#. translators: %s: Group name.
+#: admin-templates/groups-list.php:115
+#, php-format
+msgid "Delete the group \"%s\"?"
+msgstr "Supprimer le groupe « %s » ?"
+
+#: admin-templates/groups-list.php:119
+msgid "Public"
+msgstr "Public"
+
+#: admin-templates/sent-log-detail.php:30
+#: admin-templates/sent-log-list.php:19
+#: includes/class-plugin.php:306
+#: includes/class-plugin.php:307
+msgid "Sent log"
+msgstr "Journal des événements"
+
+#: admin-templates/sent-log-detail.php:33
+msgid "Back to list"
+msgstr "Retour à la liste"
+
+#: admin-templates/sent-log-detail.php:39
+msgid "Send not found."
+msgstr "L'élément demandé n'a pas été trouvé."
+
+#: admin-templates/sent-log-detail.php:56
+msgid "Subject:"
+msgstr "Objet :"
+
+#: admin-templates/sent-log-detail.php:57
+#: admin-templates/sent-log-list.php:63
+msgid "(draft deleted)"
+msgstr "(brouillon supprimé)"
+
+#: admin-templates/sent-log-detail.php:58
+msgid "Started (UTC):"
+msgstr "Heure de début (UTC) :"
+
+#: admin-templates/sent-log-detail.php:60
+msgid "Finished (UTC):"
+msgstr "Heure de fin (UTC) :"
+
+#: admin-templates/sent-log-detail.php:61
+msgid "in progress"
+msgstr "en cours"
+
+#. translators: %d: total recipients across all statuses.
+#: admin-templates/sent-log-detail.php:69
+#, php-format
+msgid "All (%d)"
+msgstr "Tout (%d)"
+
+#. translators: %d: number of recipients in this status.
+#: admin-templates/sent-log-detail.php:74
+#, php-format
+msgid "Sent (%d)"
+msgstr "En retard (%d)"
+
+#. translators: %d: number of recipients in this status.
+#: admin-templates/sent-log-detail.php:79
+#, php-format
+msgid "Failed (%d)"
+msgstr "Échec (%d)"
+
+#. translators: %d: number of recipients in this status.
+#: admin-templates/sent-log-detail.php:84
+#, php-format
+msgid "Pending (%d)"
+msgstr "En attente (%d)"
+
+#. translators: %d: number of recipients in this status.
+#: admin-templates/sent-log-detail.php:89
+#, php-format
+msgid "Processing (%d)"
+msgstr "Traitement (%d)"
+
+#: admin-templates/sent-log-detail.php:127
+msgid "No recipients match this filter."
+msgstr "Aucun destinataire ne correspond à ce filtre."
+
+#: admin-templates/sent-log-detail.php:135
+#: admin-templates/subscriber-edit.php:81
+#: admin-templates/subscriber-import.php:111
+#: admin-templates/subscribers-list.php:160
+msgid "Email"
+msgstr "E-mail"
+
+#: admin-templates/sent-log-detail.php:137
+msgid "Attempts"
+msgstr "Tentatives"
+
+#: admin-templates/sent-log-detail.php:138
+msgid "Sent at (UTC)"
+msgstr "Envoyé le (UTC)"
+
+#: admin-templates/sent-log-detail.php:139
+msgid "Last error"
+msgstr "Dernière erreur"
+
+#: admin-templates/sent-log-detail.php:151
+msgid "(subscriber removed)"
+msgstr "(abonné supprimé)"
+
+#: admin-templates/sent-log-list.php:24
+msgid "No sends recorded yet. Once a draft is queued from the Drafts page, it will appear here."
+msgstr "Aucun envoi n'a encore été enregistré. Dès qu'un brouillon sera mis en file d'attente depuis la page « Brouillons », il apparaîtra ici."
+
+#: admin-templates/sent-log-list.php:34
+msgid "Sent / Total"
+msgstr "En retard / Total"
+
+#: admin-templates/sent-log-list.php:35
+msgid "Failed"
+msgstr "Échec"
+
+#: admin-templates/sent-log-list.php:36
+msgid "In progress"
+msgstr "En cours"
+
+#: admin-templates/sent-log-list.php:37
+msgid "Started (UTC)"
+msgstr "Début (UTC)"
+
+#: admin-templates/sent-log-list.php:38
+msgid "Finished (UTC)"
+msgstr "Terminé (UTC)"
+
+#: admin-templates/settings-page.php:38
+msgid "Queue"
+msgstr "Queue"
+
+#: admin-templates/settings-page.php:46
+msgid "Mailbox"
+msgstr "Boîte aux lettres"
+
+#: admin-templates/settings-page.php:50
+#: admin-templates/tab-integrations.php:22
+msgid "Integrations"
+msgstr "Intégrations"
+
+#: admin-templates/settings-page.php:75
+msgid "Save settings"
+msgstr "Enregistrer les paramètres"
+
+#: admin-templates/subscriber-edit.php:28
+msgid "Edit subscriber"
+msgstr "Modifier l'abonné"
+
+#: admin-templates/subscriber-edit.php:29
+msgid "Add subscriber"
+msgstr "Ajouter un abonné"
+
+#: admin-templates/subscriber-edit.php:44
+#: admin-templates/subscribers-list.php:93
+#: includes/class-subscribers-controller.php:167
+#: includes/class-subscribers-controller.php:253
+msgid "A subscriber with that email already exists."
+msgstr "Un abonné portant cette adresse e-mail existe déjà."
+
+#: admin-templates/subscriber-edit.php:45
+#: admin-templates/subscribers-list.php:94
+#: includes/class-subscribers-controller.php:471
+#: includes/class-subscribers-controller.php:624
+#: includes/class-subscribers-controller.php:688
+msgid "A valid email address is required."
+msgstr "Une adresse e-mail valide est requise."
+
+#: admin-templates/subscriber-edit.php:46
+#: admin-templates/subscribers-list.php:95
+#: includes/class-subscribers-controller.php:649
+#: includes/class-subscribers-controller.php:703
+msgid "Invalid subscriber status."
+msgstr "Statut d'abonné non valide."
+
+#: admin-templates/subscriber-edit.php:47
+#: admin-templates/subscribers-list.php:96
+#: includes/class-subscribers-controller.php:236
+#: includes/class-subscribers-controller.php:320
+#: includes/class-subscribers-controller.php:363
+#: includes/class-subscribers-controller.php:410
+#: includes/class-subscribers-controller.php:532
+#: includes/class-subscribers-controller.php:576
+msgid "Subscriber not found."
+msgstr "Abonné introuvable."
+
+#: admin-templates/subscriber-edit.php:48
+#: admin-templates/subscribers-list.php:97
+#: includes/class-subscribers-controller.php:193
+msgid "Failed to insert subscriber."
+msgstr "Échec de l'ajout de l'abonné."
+
+#: admin-templates/subscriber-edit.php:49
+#: admin-templates/subscribers-list.php:98
+#: includes/class-subscribers-controller.php:298
+#: includes/class-subscribers-controller.php:385
+#: includes/class-subscribers-controller.php:432
+#: includes/class-subscribers-controller.php:554
+#: includes/class-subscribers-controller.php:591
+msgid "Failed to update subscriber."
+msgstr "Échec de la mise à jour de l'abonné."
+
+#: admin-templates/subscriber-edit.php:64
+msgid "This subscriber is flagged \"never contact\"."
+msgstr "Cet abonné est marqué comme « ne jamais contacter »."
+
+#: admin-templates/subscriber-edit.php:65
+msgid "They will not receive newsletters, and CSV re-imports will skip them. Only change the status here if you have explicit consent to resume contact."
+msgstr "Ils ne recevront pas de newsletters et ne seront pas pris en compte lors des réimportations CSV. Ne modifiez ce statut que si vous disposez d'un consentement explicite pour reprendre le contact."
+
+#: admin-templates/subscriber-edit.php:93
+#: admin-templates/subscribers-list.php:121
+msgid "Subscribed"
+msgstr "Abonné"
+
+#: admin-templates/subscriber-edit.php:94
+#: admin-templates/subscribers-list.php:122
+msgid "Unsubscribed"
+msgstr "Se désabonner"
+
+#: admin-templates/subscriber-edit.php:95
+#: admin-templates/subscribers-list.php:123
+msgid "Bounced"
+msgstr "Rejeté"
+
+#: admin-templates/subscriber-edit.php:96
+#: admin-templates/subscribers-list.php:124
+msgid "Complained"
+msgstr "S'est plaint"
+
+#: admin-templates/subscriber-edit.php:97
+#: admin-templates/subscribers-list.php:125
+msgid "Never contact"
+msgstr "Ne contactez jamais"
+
+#: admin-templates/subscriber-edit.php:134
+msgid "No groups yet. Add one on the Groups page."
+msgstr "Il n'y a pas encore de groupes. Ajoutez-en un sur la page « Groupes »."
+
+#: admin-templates/subscriber-edit.php:147
+msgid "Consent source"
+msgstr "Source du consentement"
+
+#: admin-templates/subscriber-edit.php:149
+msgid "Free-text label for where consent was captured (e.g. \"checkout\", \"imported-from-mailerlite\")."
+msgstr "Champ libre indiquant où le consentement a été recueilli (par exemple, « lors du paiement », « importé depuis MailerLite »)."
+
+#: admin-templates/subscriber-edit.php:154
+#: admin-templates/subscribers-list.php:164
+msgid "Consent at"
+msgstr "Consentement à"
+
+#: admin-templates/subscriber-edit.php:156
+msgid "Format: Y-m-d H:i:s UTC. Leave blank to use the current time."
+msgstr "Format : a-m-j h:i:s (UTC). Laisser vide pour utiliser l'heure actuelle."
+
+#: admin-templates/subscriber-edit.php:164
+msgid "Save subscriber"
+msgstr "Enregistrer l'abonné"
+
+#: admin-templates/subscriber-import.php:32
+msgid "Import subscribers from CSV"
+msgstr "Importer des abonnés depuis un fichier CSV"
+
+#: admin-templates/subscriber-import.php:37
+msgid "Upload a CSV exported from MailerLite. Existing subscribers are matched by email (case-insensitive) and their fields updated; new emails are added. Existing consent timestamps are preserved."
+msgstr "Importez un fichier CSV exporté depuis MailerLite. Les abonnés existants sont mis en correspondance par adresse e-mail (sans distinction de majuscules/minuscules) et leurs champs sont mis à jour ; les nouvelles adresses e-mail sont ajoutées. Les horodatages des consentements existants sont conservés."
+
+#: admin-templates/subscriber-import.php:43
+msgid "Recognised columns:"
+msgstr "Rubriques reconnues :"
+
+#: admin-templates/subscriber-import.php:47
+msgid "(required)"
+msgstr "(obligatoire)"
+
+#: admin-templates/subscriber-import.php:48
+msgid "— timestamps without a timezone are treated as UTC"
+msgstr "— Les horodatages sans fuseau horaire sont considérés comme étant en UTC"
+
+#: admin-templates/subscriber-import.php:49
+msgid "— semicolon- or comma-separated; names are matched to group slugs"
+msgstr "— séparés par des points-virgules ou des virgules ; les noms sont mis en correspondance avec les identifiants de groupe"
+
+#: admin-templates/subscriber-import.php:66
+msgid "CSV file"
+msgstr "Fichier CSV"
+
+#: admin-templates/subscriber-import.php:73
+msgid "Upload and import"
+msgstr "Télécharger et importer"
+
+#: admin-templates/subscriber-import.php:93
+msgid "Import complete."
+msgstr "Importation terminée."
+
+#: admin-templates/subscriber-import.php:94
+#: admin-templates/subscriber-import.php:118
+msgid "Inserted"
+msgstr "Inséré"
+
+#: admin-templates/subscriber-import.php:96
+#: admin-templates/subscriber-import.php:119
+msgid "Updated"
+msgstr "Mise à jour"
+
+#: admin-templates/subscriber-import.php:98
+#: admin-templates/subscriber-import.php:120
+msgid "Skipped"
+msgstr "Ignoré"
+
+#: admin-templates/subscriber-import.php:100
+msgid "Errors"
+msgstr "Erreurs"
+
+#: admin-templates/subscriber-import.php:110
+msgid "Line"
+msgstr "Ligne"
+
+#: admin-templates/subscriber-import.php:112
+msgid "Result"
+msgstr "Résultat"
+
+#: admin-templates/subscriber-import.php:113
+msgid "Notes"
+msgstr "Remarques"
+
+#: admin-templates/subscriber-import.php:121
+msgid "Error"
+msgstr "Erreur"
+
+#: admin-templates/subscriber-import.php:148
+msgid "Back to subscribers"
+msgstr "Retour à la liste des abonnés"
+
+#: admin-templates/subscriber-import.php:150
+msgid "Import another file"
+msgstr "Importer un autre fichier"
+
+#: admin-templates/subscribers-list.php:38
+#: includes/class-plugin.php:279
+#: includes/class-plugin.php:280
+msgid "Subscribers"
+msgstr "Abonnés"
+
+#: admin-templates/subscribers-list.php:42
+msgid "Import CSV"
+msgstr "Importer un fichier CSV"
+
+#: admin-templates/subscribers-list.php:60
+msgid "Subscriber saved."
+msgstr "Abonné enregistré."
+
+#: admin-templates/subscribers-list.php:67
+msgid "Subscriber deleted."
+msgstr "L'abonné a été supprimé."
+
+#: admin-templates/subscribers-list.php:74
+msgid "Subscriber flagged as \"never contact\"."
+msgstr "Abonné marqué comme « ne jamais contacter »."
+
+#. translators: %d: number of subscribers flipped to never-contact.
+#: admin-templates/subscribers-list.php:84
+#, php-format
+msgid "%d subscriber flagged as \"never contact\"."
+msgid_plural "%d subscribers flagged as \"never contact\"."
+msgstr[0] "%d abonné marqué comme \"Ne contactez jamais\"."
+msgstr[1] "%d abonnés marqués comme \"Ne contactez jamais\"."
+
+#: admin-templates/subscribers-list.php:99
+#: includes/class-subscribers-controller.php:340
+msgid "Failed to delete subscriber."
+msgstr "Échec de la suppression de l'abonné."
+
+#: admin-templates/subscribers-list.php:100
+msgid "Select an action and at least one subscriber before clicking Apply."
+msgstr "Sélectionnez une action et au moins un abonné avant de cliquer sur « Appliquer »."
+
+#: admin-templates/subscribers-list.php:101
+msgid "That bulk action is not recognised."
+msgstr "Cette action groupée n'est pas prise en compte."
+
+#: admin-templates/subscribers-list.php:117
+msgid "No subscribers yet. Add one or import from CSV."
+msgstr "Il n'y a pas encore d'abonnés. Ajoutez-en un ou importez-les depuis un fichier CSV."
+
+#: admin-templates/subscribers-list.php:128
+msgid "Apply this bulk action to the selected subscribers? Marking as \"never contact\" is sticky — future imports will skip these rows."
+msgstr "Appliquer cette action groupée aux abonnés sélectionnés ? Le marquage « Ne jamais contacter » est permanent : les importations futures ignoreront ces lignes."
+
+#: admin-templates/subscribers-list.php:148
+#: admin-templates/subscribers-list.php:149
+msgid "Bulk actions"
+msgstr "Actions groupées"
+
+#: admin-templates/subscribers-list.php:150
+msgid "Mark as never contact"
+msgstr "Marquer comme « Ne plus jamais contacter »"
+
+#: admin-templates/subscribers-list.php:152
+msgid "Apply"
+msgstr "Postuler"
+
+#: admin-templates/subscribers-list.php:159
+msgid "Select all"
+msgstr "Tout sélectionner"
+
+#. translators: %s: Subscriber email.
+#: admin-templates/subscribers-list.php:215
+#, php-format
+msgid "Delete the subscriber \"%s\"?"
+msgstr "Supprimer l'abonné « %s » ?"
+
+#. translators: %s: Subscriber email.
+#: admin-templates/subscribers-list.php:217
+#, php-format
+msgid "Flag %s as \"never contact\"? This is sticky — future imports will skip them, and the only way back is to edit the status manually."
+msgstr "Marquer %s comme « ne jamais contacter » ? Cette option est permanente : les importations futures l'ignoreront, et la seule façon de revenir en arrière est de modifier le statut manuellement."
+
+#: admin-templates/subscribers-list.php:234
+msgid "Mark never-contact"
+msgstr "Ne jamais contacter Mark"
+
+#. translators: %s: Subscriber email used as accessible checkbox label.
+#: admin-templates/subscribers-list.php:251
+#, php-format
+msgid "Select %s"
+msgstr "Sélectionnez %s"
+
+#: admin-templates/tab-integrations.php:31
+msgid "No integrations are registered yet."
+msgstr "Aucune intégration n'est encore enregistrée."
+
+#. translators: %s: comma-separated list of supported parent plugins / themes.
+#: admin-templates/tab-integrations.php:34
+#, php-format
+msgid "No integrations available. Heads Up Mailer has integrations for %s — install one to enable."
+msgstr "Aucune intégration disponible. Heads Up Mailer propose des intégrations pour %s — installez-en une pour l'activer."
+
+#. translators: %s: comma-separated list of inactive integrations' parent plugins.
+#: admin-templates/tab-integrations.php:61
+#, php-format
+msgid "Other available integrations: %s. Install one of these to unlock additional sign-up paths."
+msgstr "Autres intégrations disponibles : %s. Installez l'une d'entre elles pour débloquer des parcours d'inscription supplémentaires."
+
+#: admin-templates/tab-mailbox.php:32
+msgid "Unsubscribe mailbox (IMAP)"
+msgstr "Boîte de réception « Se désabonner » (IMAP)"
+
+#: admin-templates/tab-mailbox.php:35
+msgid "Credentials for the mailbox that receives mailto: unsubscribe replies. The password is encrypted with libsodium on save and only decrypted by the poller."
+msgstr "Identifiants de la boîte aux lettres qui reçoit les réponses aux messages « mailto: unsubscribe ». Le mot de passe est chiffré à l'aide de libsodium lors de l'enregistrement et n'est déchiffré que par le programme de collecte."
+
+#: admin-templates/tab-mailbox.php:44
+msgid "The PHP imap extension is not loaded on this host. You can still save credentials, but the mailbox poller and the test-connection button will not work until php-imap is installed."
+msgstr "L'extension PHP IMAP n'est pas chargée sur cet hébergeur. Vous pouvez tout de même enregistrer vos identifiants, mais le programme de vérification de la boîte aux lettres et le bouton de test de connexion ne fonctionneront pas tant que php-imap n'aura pas été installé."
+
+#: admin-templates/tab-mailbox.php:59
+msgid "Enable polling"
+msgstr "Activer l'interrogation"
+
+#: admin-templates/tab-mailbox.php:63
+msgid "Poll the unsubscribe mailbox on the configured interval."
+msgstr "Interrogez la boîte aux lettres de désabonnement à l'intervalle défini."
+
+#: admin-templates/tab-mailbox.php:64
+msgid "Untick to stop the scheduled poll without removing credentials. The \"Poll now\" button below still works."
+msgstr "Décochez cette case pour interrompre la requête planifiée sans supprimer les identifiants. Le bouton « Demander maintenant » situé ci-dessous reste fonctionnel."
+
+#: admin-templates/tab-mailbox.php:69
+msgid "Host"
+msgstr "Hôte"
+
+#: admin-templates/tab-mailbox.php:76
+msgid "Port"
+msgstr "Port"
+
+#: admin-templates/tab-mailbox.php:79
+msgid "Default 993 for IMAPS."
+msgstr "Valeur par défaut : 993 pour IMAPS."
+
+#: admin-templates/tab-mailbox.php:84
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: admin-templates/tab-mailbox.php:91
+msgid "A password is currently stored. Leave this field blank to keep it. Type a new value to replace it."
+msgstr "Un mot de passe est actuellement enregistré. Laissez ce champ vide pour le conserver. Saisissez une nouvelle valeur pour le remplacer."
+
+#: admin-templates/tab-mailbox.php:92
+msgid "New values are encrypted with libsodium and an AUTH_KEY-derived key on save."
+msgstr "Les nouvelles valeurs sont chiffrées à l'aide de libsodium et d'une clé dérivée de AUTH_KEY lors de leur enregistrement."
+
+#: admin-templates/tab-mailbox.php:96
+msgid "Password"
+msgstr "Mot de passe"
+
+#: admin-templates/tab-mailbox.php:104
+msgid "Folder"
+msgstr "Dépliant"
+
+#: admin-templates/tab-mailbox.php:114
+msgid "TLS"
+msgstr "Les dernières normes de sécurité"
+
+#: admin-templates/tab-mailbox.php:118
+msgid "Connect over SSL / TLS (recommended)."
+msgstr "Se connecter via SSL / TLS (recommandé)."
+
+#: admin-templates/tab-mailbox.php:123
+msgid "Validate certificate"
+msgstr "Valider le certificat"
+
+#: admin-templates/tab-mailbox.php:127
+msgid "Verify the IMAP server's TLS certificate against the system CA bundle."
+msgstr "Vérifiez le certificat TLS du serveur IMAP par rapport au faisceau d'autorités de certification du système."
+
+#: admin-templates/tab-mailbox.php:128
+msgid "Untick when PHP rejects a known-good certificate (common with Let's Encrypt and older c-client CA bundles — the error reads \"unable to get local issuer certificate\"). The connection still uses TLS encryption; only chain validation is skipped."
+msgstr "Décochez cette case lorsque PHP rejette un certificat dont la validité est confirmée (ce qui arrive souvent avec Let's Encrypt et les anciens ensembles de certificats CA de c-client — l'erreur indiquée est « impossible d'obtenir le certificat de l'émetteur local »). La connexion utilise toujours le chiffrement TLS ; seule la validation de la chaîne de certificats est ignorée."
+
+#: admin-templates/tab-mailbox.php:133
+msgid "Polling interval (minutes)"
+msgstr "Intervalle de sondage (en minutes)"
+
+#: admin-templates/tab-mailbox.php:136
+msgid "How often the plugin polls the mailbox for inbound unsubscribe mails."
+msgstr "À quelle fréquence le plugin vérifie la boîte de réception pour détecter les e-mails de désabonnement."
+
+#: admin-templates/tab-mailbox.php:145
+msgid "Test connection"
+msgstr "Tester la connexion"
+
+#: admin-templates/tab-mailbox.php:154
+msgid "Poll now"
+msgstr "Votez maintenant"
+
+#: admin-templates/tab-mailbox.php:155
+msgid "Uses the saved credentials. Save changes before polling to apply edits."
+msgstr "Utilise les identifiants enregistrés. Enregistrez les modifications avant d'effectuer l'interrogation pour que les modifications soient prises en compte."
+
+#: admin-templates/tab-queue.php:20
+msgid "Send queue"
+msgstr "Send queue"
+
+#: admin-templates/tab-queue.php:23
+msgid "How often the WP-Cron worker drains pending sends, and how many recipients it processes per tick."
+msgstr "À quelle fréquence le processeur WP-Cron traite les envois en attente, et combien de destinataires il traite à chaque cycle."
+
+#: admin-templates/tab-queue.php:33
+msgid "Batch size"
+msgstr "Taille du lot"
+
+#: admin-templates/tab-queue.php:36
+msgid "Recipients processed per cron tick. Default 10, range 1–100."
+msgstr "Nombre de destinataires traités par cycle cron. Valeur par défaut : 10, plage : 1 à 100."
+
+#: admin-templates/tab-queue.php:41
+msgid "Tick interval (minutes)"
+msgstr "Intervalle entre les lectures (en minutes)"
+
+#: admin-templates/tab-queue.php:44
+msgid "How often the queue drains. Default every 5 minutes, range 1–60. The cron event re-schedules itself automatically when this value changes."
+msgstr "Fréquence de vidage de la file d'attente. Par défaut, toutes les 5 minutes ; plage : 1 à 60. La tâche cron se reprogramme automatiquement lorsque cette valeur change."
+
+#: admin-templates/tab-sending.php:24
+msgid "Sender identity"
+msgstr "Identité de l'expéditeur"
+
+#: admin-templates/tab-sending.php:27
+msgid "Every send uses this From: identity. Leave blank and the worker will refuse to queue."
+msgstr "Chaque envoi utilise cette identité « De: ». Si vous laissez ce champ vide, le processeur refusera de mettre l'envoi en file d'attente."
+
+#: admin-templates/tab-sending.php:37
+msgid "From name"
+msgstr "À partir du nom"
+
+#: admin-templates/tab-sending.php:44
+msgid "From email"
+msgstr "Extrait d'un e-mail"
+
+#: admin-templates/tab-sending.php:47
+msgid "Must be an address your outbound mail provider is authorised to send as (SPF / DKIM aligned)."
+msgstr "Il doit s'agir d'une adresse à partir de laquelle votre fournisseur de messagerie sortante est autorisé à envoyer des e-mails (conforme aux normes SPF et DKIM)."
+
+#: admin-templates/tab-sending.php:52
+msgid "Footer"
+msgstr "Pied de page"
+
+#. translators: %s: literal placeholder token shown inline.
+#: admin-templates/tab-sending.php:58
+#, php-format
+msgid "HTML appended to every outgoing newsletter immediately before the closing %1$s tag (or at the end of the body for fragment HTML). The %2$s token is replaced with the recipient's personalised unsubscribe URL at send time."
+msgstr "Code HTML ajouté à chaque newsletter envoyée, juste avant la balise de fermeture %1$s (ou à la fin du corps du message pour le code HTML fragmenté). Le paramètre %2$s est remplacé par l'URL de désabonnement personnalisée du destinataire au moment de l'envoi."
+
+#: admin-templates/tab-sending.php:70
+msgid "Footer HTML"
+msgstr "Pied de page HTML"
+
+#: admin-templates/tab-sending.php:77
+msgid "Public preferences page"
+msgstr "Page des préférences publiques"
+
+#: admin-templates/tab-sending.php:80
+msgid "The URL slug where recipients land to manage preferences or one-click unsubscribe. Changing this flushes the WordPress rewrite rules."
+msgstr "L'URL raccourcie vers laquelle les destinataires sont redirigés pour gérer leurs préférences ou se désabonner en un clic. La modification de cette URL entraîne l'actualisation des règles de réécriture de WordPress."
+
+#: admin-templates/tab-sending.php:94
+msgid "Recipients will visit:"
+msgstr "Les bénéficiaires se rendront à :"
+
+#: includes/class-csv-importer.php:73
+msgid "CSV file is not readable."
+msgstr "Le fichier CSV n'est pas lisible."
+
+#: includes/class-csv-importer.php:80
+msgid "Failed to open the CSV file."
+msgstr "Impossible d'ouvrir le fichier CSV."
+
+#: includes/class-csv-importer.php:88
+msgid "CSV header row is empty."
+msgstr "La ligne d'en-tête du fichier CSV est vide."
+
+#: includes/class-csv-importer.php:96
+msgid "No \"Subscriber\" or \"email\" column found in CSV."
+msgstr "Aucune colonne « Abonné » ou « E-mail » n'a été trouvée dans le fichier CSV."
+
+#: includes/class-csv-importer.php:143
+msgid "Invalid or missing email."
+msgstr "Adresse e-mail incorrecte ou manquante."
+
+#: includes/class-csv-importer.php:182
+msgid "Subscriber is flagged \"never contact\" — row skipped."
+msgstr "L'abonné est marqué comme « ne jamais contacter » — ligne ignorée."
+
+#. translators: %s: comma-separated list of unknown group names.
+#: includes/class-csv-importer.php:203
+#, php-format
+msgid "Unknown groups ignored: %s."
+msgstr "Groupes inconnus ignorés : %s."
+
+#. translators: %d: maximum subject length.
+#: includes/class-drafts-controller.php:236
+#, php-format
+msgid "Subject must be %d characters or fewer."
+msgstr "L'objet doit comporter %d caractères au maximum."
+
+#. translators: %s: comma-separated list of unknown slugs.
+#: includes/class-drafts-controller.php:270
+#, php-format
+msgid "Unknown group slugs: %s."
+msgstr "Noms de fichiers inconnus : %s."
+
+#: includes/class-groups-controller.php:248
+msgid "Hosting customers"
+msgstr "Clients de l'hébergement"
+
+#: includes/class-groups-controller.php:249
+msgid "Active hosting customers."
+msgstr "Clients disposant d'un hébergement actif."
+
+#: includes/class-groups-controller.php:253
+msgid "Web designers"
+msgstr "Concepteurs de sites web"
+
+#: includes/class-groups-controller.php:254
+msgid "Web designers and agencies who refer hosting customers."
+msgstr "Les concepteurs de sites Web et les agences qui nous recommandent des clients pour l'hébergement."
+
+#: includes/class-mailbox-poller.php:96
+msgid "Heads Up Mailer mailbox poll"
+msgstr "Sondage Heads Up Mailer"
+
+#: includes/class-mailbox-poller.php:183
+#: includes/class-plugin.php:777
+msgid "The PHP imap extension is not loaded on this host."
+msgstr "L'extension IMAP de PHP n'est pas chargée sur cet hébergeur."
+
+#: includes/class-mailbox-poller.php:184
+msgid "Mailbox credentials are not fully configured."
+msgstr "Les identifiants de la boîte aux lettres ne sont pas entièrement configurés."
+
+#: includes/class-mailbox-poller.php:195
+msgid "Another poll is already in progress. Try again in a moment."
+msgstr "Un autre sondage est déjà en cours. Veuillez réessayer dans quelques instants."
+
+#: includes/class-mailbox-poller.php:270
+#: includes/class-plugin.php:822
+msgid "Failed to open IMAP connection."
+msgstr "Impossible d'établir la connexion IMAP."
+
+#. translators: 1: number of processed unsubscribes, 2: number of unparseable messages moved to Errors.
+#: includes/class-mailbox-poller.php:312
+#, php-format
+msgid "Poll OK — %1$d processed, %2$d errored."
+msgstr "Sondage OK — %1$d traités, %2$d ayant généré une erreur."
+
+#: includes/class-plugin.php:201
+msgid "Heads Up Mailer: PHP imap extension missing."
+msgstr "Avertissement : l'extension IMAP de PHP est manquante."
+
+#: includes/class-plugin.php:202
+msgid "The mailbox poller used for mailto-form unsubscribes requires the PHP imap extension. Sending still works without it."
+msgstr "Le module de surveillance des boîtes aux lettres utilisé pour les désabonnements via le formulaire « mailto » nécessite l'extension IMAP de PHP. L'envoi fonctionne toujours sans cette extension."
+
+#. translators: 1: error message from imap_errors(), 2: relative time since the error.
+#: includes/class-plugin.php:239
+#, php-format
+msgid "Last attempt failed: %1$s (%2$s)."
+msgstr "Dernière tentative échouée : %1$s (%2$s)."
+
+#: includes/class-plugin.php:243
+msgid "No successful poll on record yet. Check IMAP credentials and the cron schedule."
+msgstr "Aucune requête n'a encore abouti. Vérifiez les identifiants IMAP et la planification cron."
+
+#: includes/class-plugin.php:247
+msgid "Heads Up Mailer: mailbox poller is stale."
+msgstr "Avis : le programme de surveillance des boîtes aux lettres est obsolète."
+
+#: includes/class-plugin.php:270
+#: includes/class-plugin.php:271
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: includes/class-plugin.php:315
+#: includes/class-plugin.php:316
+msgid "Settings"
+msgstr "Paramètres"
+
+#: includes/class-plugin.php:378
+#: includes/class-plugin.php:391
+#: includes/class-plugin.php:405
+#: includes/class-plugin.php:477
+#: includes/class-plugin.php:871
+#: includes/class-plugin.php:910
+msgid "You do not have permission to access this page."
+msgstr "Vous n'êtes pas autorisé à accéder à cette page."
+
+#: includes/class-plugin.php:432
+#: includes/class-plugin.php:534
+#: includes/class-plugin.php:584
+#: includes/class-plugin.php:615
+#: includes/class-plugin.php:650
+#: includes/class-plugin.php:703
+#: includes/class-plugin.php:949
+#: includes/class-plugin.php:1000
+#: includes/class-plugin.php:1033
+#: includes/class-plugin.php:1066
+#: includes/class-plugin.php:1090
+msgid "You do not have permission."
+msgstr "Vous n'avez pas les droits nécessaires."
+
+#: includes/class-plugin.php:720
+msgid "No file was uploaded."
+msgstr "Aucun fichier n'a été téléchargé."
+
+#: includes/class-plugin.php:725
+msgid "File upload failed."
+msgstr "L'envoi du fichier a échoué."
+
+#: includes/class-plugin.php:727
+msgid "Uploaded file is not a valid upload."
+msgstr "Le fichier téléchargé n'est pas valide."
+
+#: includes/class-plugin.php:773
+#: includes/class-plugin.php:851
+msgid "Insufficient permissions."
+msgstr "Autorisations insuffisantes."
+
+#: includes/class-plugin.php:796
+msgid "Host, port, username, and password are all required."
+msgstr "L'hôte, le port, le nom d'utilisateur et le mot de passe sont tous obligatoires."
+
+#. translators: %s: folder name on the IMAP server.
+#: includes/class-plugin.php:832
+#, php-format
+msgid "Connection successful — folder \"%s\" is reachable."
+msgstr "Connexion établie — le dossier « %s » est accessible."
+
+#: includes/class-public-controller.php:190
+msgid "Bad request."
+msgstr "Erreur de requête."
+
+#: includes/class-public-controller.php:214
+#: includes/class-public-controller.php:277
+msgid "Security check failed. Please reload the page and try again."
+msgstr "Le contrôle de sécurité a échoué. Veuillez actualiser la page et réessayer."
+
+#: includes/class-public-controller.php:255
+msgid "Thanks. You have been unsubscribed."
+msgstr "Merci. Vous n'êtes plus abonné."
+
+#: includes/class-public-controller.php:428
+msgid "This unsubscribe link is invalid or has expired. Please contact the sender for a fresh link."
+msgstr "Ce lien de désabonnement n'est pas valide ou a expiré. Veuillez contacter l'expéditeur pour obtenir un nouveau lien."
+
+#: includes/class-public-controller.php:440
+msgid "Too many requests. Please try again later."
+msgstr "Nombre de requêtes trop élevé. Veuillez réessayer plus tard."
+
+#: includes/class-sends-controller.php:234
+msgid "Failed to create send."
+msgstr "Échec de la création de l'envoi."
+
+#: includes/class-sends-controller.php:264
+msgid "Failed to insert recipients."
+msgstr "Échec de l'insertion des destinataires."
+
+#: includes/class-settings.php:339
+msgid "From email address is not valid. The previous value was kept."
+msgstr "L'adresse e-mail indiquée n'est pas valide. La valeur précédente a été conservée."
+
+#: includes/class-subscribers-controller.php:480
+msgid "Subscriber is flagged never-contact."
+msgstr "L'abonné est marqué comme « ne jamais contacter »."
+
+#: includes/class-worker.php:82
+msgid "Heads Up Mailer tick"
+msgstr "Cochez la case « Heads Up Mailer »"
+
+#: integrations/contact-form-7/class-contact-form-7.php:45
+#: integrations/contact-form-7/class-contact-form-7.php:54
+msgid "Contact Form 7"
+msgstr "Formulaire de contact 7"
+
+#: integrations/contact-form-7/class-contact-form-7.php:112
+msgid "Sign up for our newsletter"
+msgstr "Inscrivez-vous à notre newsletter"
+
+#: integrations/contact-form-7/class-contact-form-7.php:291
+msgid "Add a sign-up checkbox to any Contact Form 7 form by inserting the following tag in the form editor:"
+msgstr "Ajoutez une case à cocher d'inscription à n'importe quel formulaire Contact Form 7 en insérant la balise suivante dans l'éditeur de formulaire :"
+
+#: integrations/contact-form-7/class-contact-form-7.php:297
+msgid "Sign me up for the newsletter"
+msgstr "Inscrivez-moi à la newsletter"
+
+#: integrations/contact-form-7/class-contact-form-7.php:302
+msgid "Replace the `group:` attribute with the slug of the group you want sign-ups to land in. The quoted text becomes the visible checkbox label. The form must include an email field — that's where the subscriber's address comes from."
+msgstr "Remplacez l'attribut `group:` par le slug du groupe dans lequel vous souhaitez que les inscriptions soient enregistrées. Le texte entre guillemets deviendra le libellé visible de la case à cocher. Le formulaire doit comporter un champ e-mail : c'est de là que provient l'adresse de l'abonné."
+
+#: integrations/woocommerce/class-woocommerce.php:64
+#: integrations/woocommerce/class-woocommerce.php:73
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: integrations/woocommerce/class-woocommerce.php:298
+msgid "Customers group"
+msgstr "Groupe de clients"
+
+#: integrations/woocommerce/class-woocommerce.php:301
+msgid "Every checkout adds the customer to this group. T&C acceptance at checkout is the consent record. Leave unset to disable."
+msgstr "Chaque passage en caisse ajoute le client à ce groupe. L'acceptation des conditions générales lors du paiement constitue la preuve du consentement. Ne rien sélectionner pour désactiver cette option."
+
+#: integrations/woocommerce/class-woocommerce.php:307
+msgid "— Disabled —"
+msgstr "— Désactivé —"
+
+#: integrations/woocommerce/class-woocommerce.php:327
+msgid "Checkout opt-in checkboxes"
+msgstr "Cases à cocher d'acceptation lors du paiement"
+
+#: integrations/woocommerce/class-woocommerce.php:330
+msgid "Tick groups you want to offer at checkout as optional sign-ups, and provide the label text customers will see. The intro paragraph is rendered above all checkboxes."
+msgstr "Cochez les groupes que vous souhaitez proposer lors du paiement en tant qu'inscriptions facultatives, puis indiquez le texte du libellé qui s'affichera pour les clients. Le paragraphe d'introduction s'affiche au-dessus de toutes les cases à cocher."
+
+#: integrations/woocommerce/class-woocommerce.php:335
+msgid "Intro paragraph (1–2 sentences)"
+msgstr "Paragraphe d'introduction (1 à 2 phrases)"
+
+#: integrations/woocommerce/class-woocommerce.php:348
+msgid "Group"
+msgstr "Groupe"
+
+#: integrations/woocommerce/class-woocommerce.php:348
+msgid "Show at checkout"
+msgstr "Afficher lors du paiement"
+
+#: integrations/woocommerce/class-woocommerce.php:348
+msgid "Label text"
+msgstr "Texte de l'étiquette"
+
+#: integrations/woocommerce/class-woocommerce.php:353
+msgid "No groups defined yet. Create groups under Heads Up Mailer → Groups, then return here."
+msgstr "Aucun groupe n'a encore été défini. Créez des groupes dans Heads Up Mailer → Groupes, puis revenez ici."
+
+#: public-templates/manage-comms.php:41
+#: public-templates/manage-comms.php:109
+msgid "Email preferences"
+msgstr "Préférences de messagerie"
+
+#: public-templates/manage-comms.php:81
+msgid "You're unsubscribed"
+msgstr "Vous n'êtes plus abonné"
+
+#. translators: 1: site name, 2: subscriber email.
+#: public-templates/manage-comms.php:88
+#, php-format
+msgid "We have you on record as no longer wishing to receive newsletters from %1$s at %2$s."
+msgstr "D'après nos dossiers, vous ne souhaitez plus recevoir les newsletters de %1$s à %2$s."
+
+#: public-templates/manage-comms.php:96
+msgid "If you believe this is a mistake, please contact us — we'll need to update your record manually."
+msgstr "Si vous pensez qu'il s'agit d'une erreur, veuillez nous contacter ; nous devrons mettre à jour votre dossier manuellement."
+
+#. translators: 1: site name, 2: subscriber email.
+#: public-templates/manage-comms.php:116
+#, php-format
+msgid "Manage your subscription to %1$s newsletters sent to %2$s."
+msgstr "Gérez votre abonnement aux newsletters de %1$s envoyées à %2$s."
+
+#: public-templates/manage-comms.php:129
+msgid "Your preferences have been saved."
+msgstr "Vos préférences ont été enregistrées."
+
+#: public-templates/manage-comms.php:136
+msgid "You're currently unsubscribed from all newsletters. Tick a group below and save to resubscribe."
+msgstr "Vous n'êtes actuellement abonné à aucune newsletter. Cochez une catégorie ci-dessous pour vous réabonner."
+
+#: public-templates/manage-comms.php:155
+msgid "Which newsletters?"
+msgstr "Quelles newsletters ?"
+
+#: public-templates/manage-comms.php:161
+msgid "No mailing groups are defined yet."
+msgstr "Aucun groupe de diffusion n'a encore été défini."
+
+#: public-templates/manage-comms.php:187
+msgid "Save preferences"
+msgstr "Enregistrer les préférences"
+
+#: public-templates/manage-comms.php:201
+msgid "Unsubscribe from everything"
+msgstr "Se désabonner de tout"
+
+#: public-templates/manage-comms.php:205
+msgid "One click removes you from every group and flags your record so future imports can't resubscribe you by mistake. Use this if you want our newsletters to stop completely."
+msgstr "En un seul clic, vous serez retiré de tous les groupes et votre profil sera marqué afin que les futures importations ne puissent pas vous réinscrire par erreur. Utilisez cette option si vous souhaitez ne plus recevoir du tout nos newsletters."
+
+#: public-templates/manage-comms.php:221
+msgid "Unsubscribe me from everything"
+msgstr "Désabonnez-moi de toutes les listes"
