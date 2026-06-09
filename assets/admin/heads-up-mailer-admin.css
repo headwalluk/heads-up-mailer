@@ -1,0 +1,22 @@
+/**
+ * Heads Up Mailer — admin styles.
+ *
+ * @package Heads_Up_Mailer
+ * @since 1.2.0
+ */
+
+.hum-group-pill {
+	display: inline-block;
+	margin: 1px 4px 1px 0;
+	padding: 1px 8px;
+	font-size: 11px;
+	line-height: 1.7;
+	color: #1d2327;
+	background: #e0e7ec;
+	border-radius: 9px;
+	white-space: nowrap;
+}
+
+.hum-group-none {
+	color: #787c82;
+}

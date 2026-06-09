@@ -16,21 +16,16 @@ namespace Heads_Up_Mailer;
 
 defined( 'ABSPATH' ) || die();
 
-$is_edit   = ( null !== $draft );
+$is_edit   = null !== $draft;
 $draft_id  = $is_edit ? (int) $draft->id : 0;
 $subject   = $is_edit ? (string) $draft->subject : '';
 $html_body = $is_edit ? (string) $draft->html_body : '';
 $is_locked = $is_edit && DRAFT_STATUS_SENDING === (string) $draft->status;
 $disabled  = $is_locked ? ' disabled' : '';
 
-$page_title = $is_edit
-	? __( 'Edit draft', 'heads-up-mailer' )
-	: __( 'Add draft', 'heads-up-mailer' );
+$page_title = $is_edit ? __( 'Edit draft', 'heads-up-mailer' ) : __( 'Add draft', 'heads-up-mailer' );
 
-$back_url = add_query_arg(
-	array( 'page' => 'heads-up-mailer-drafts' ),
-	admin_url( 'admin.php' )
-);
+$back_url = add_query_arg( array( 'page' => 'heads-up-mailer-drafts' ), admin_url( 'admin.php' ) );
 
 $preview_url = $is_edit
 	? add_query_arg(
@@ -68,14 +63,9 @@ if ( '' !== $error_code ) {
 		'hum_draft_locked_while_sending' => __( 'Cannot edit a draft while it is sending.', 'heads-up-mailer' ),
 	);
 
-	$msg = isset( $error_messages[ $error_code ] )
-		? $error_messages[ $error_code ]
-		: __( 'An error occurred.', 'heads-up-mailer' );
+	$msg = isset( $error_messages[ $error_code ] ) ? $error_messages[ $error_code ] : __( 'An error occurred.', 'heads-up-mailer' );
 
-	printf(
-		'<div class="notice notice-error"><p>%s</p></div>',
-		esc_html( $msg )
-	);
+	printf( '<div class="notice notice-error"><p>%s</p></div>', esc_html( $msg ) );
 }
 
 // Live status banner for `sending` drafts.
@@ -86,10 +76,7 @@ if ( $is_edit && DRAFT_STATUS_SENDING === (string) $draft->status ) {
 	);
 }
 
-printf(
-	'<form method="post" action="%s">',
-	esc_url( admin_url( 'admin-post.php' ) )
-);
+printf( '<form method="post" action="%s">', esc_url( admin_url( 'admin-post.php' ) ) );
 
 printf( '<input type="hidden" name="action" value="hum_save_draft" />' );
 printf( '<input type="hidden" name="draft_id" value="%d" />', (int) $draft_id );
@@ -101,7 +88,7 @@ echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEs
 printf( '<table class="form-table" role="presentation"><tbody>' );
 
 printf(
-	'<tr><th scope="row"><label for="hum-draft-subject">%s</label></th><td><input name="subject" id="hum-draft-subject" type="text" class="regular-text" value="%s" maxlength="%d" required%s /></td></tr>',
+	'<tr><th scope="row"><label for="hum-draft-subject">%s</label></th><td><input name="subject" id="hum-draft-subject" type="text" class="large-text" value="%s" maxlength="%d" required%s /></td></tr>',
 	esc_html__( 'Subject', 'heads-up-mailer' ),
 	esc_attr( $subject ),
 	(int) DEF_DRAFT_SUBJECT_MAX,
@@ -117,16 +104,10 @@ printf(
 );
 
 // Group picker.
-printf(
-	'<tr><th scope="row">%s</th><td>',
-	esc_html__( 'Suggested groups', 'heads-up-mailer' )
-);
+printf( '<tr><th scope="row">%s</th><td>', esc_html__( 'Suggested groups', 'heads-up-mailer' ) );
 
 if ( empty( $all_groups ) ) {
-	printf(
-		'<p class="description">%s</p>',
-		esc_html__( 'No groups defined. Add one on the Groups page first.', 'heads-up-mailer' )
-	);
+	printf( '<p class="description">%s</p>', esc_html__( 'No groups defined. Add one on the Groups page first.', 'heads-up-mailer' ) );
 } else {
 	foreach ( $all_groups as $group ) {
 		$checked = in_array( (string) $group->slug, $suggested_slugs, true ) ? ' checked' : '';
@@ -161,8 +142,8 @@ printf( '</form>' );
 // in `Sends_Controller::queue()` so we can show the recipient count
 // or a clear blocker reason without queueing.
 if ( $is_edit ) {
-	$is_in_flight = ( DRAFT_STATUS_SENDING === (string) $draft->status );
-	$is_resend    = ( DRAFT_STATUS_SENT === (string) $draft->status );
+	$is_in_flight = DRAFT_STATUS_SENDING === (string) $draft->status;
+	$is_resend    = DRAFT_STATUS_SENT === (string) $draft->status;
 	$from_email   = (string) get_option( OPTION_FROM_EMAIL, '' );
 	$send_count   = 0;
 	$send_blocker = '';
@@ -188,7 +169,7 @@ if ( $is_edit ) {
 		if ( empty( $group_ids ) ) {
 			$send_blocker = __( 'None of the selected groups exist any more.', 'heads-up-mailer' );
 		} else {
-			$send_count = count( ( new Sends_Controller() )->compute_recipient_ids( $group_ids ) );
+			$send_count = count( new Sends_Controller()->compute_recipient_ids( $group_ids ) );
 
 			if ( 0 === $send_count ) {
 				$send_blocker = __( 'No subscribed recipients in the selected groups.', 'heads-up-mailer' );
@@ -206,21 +187,19 @@ if ( $is_edit ) {
 		);
 	} else {
 		$confirm = $is_resend
-			/* translators: %d: recipient count. */
-			? sprintf( __( 'This draft was already sent. Send AGAIN to %d recipients?', 'heads-up-mailer' ), $send_count )
-			/* translators: %d: recipient count. */
-			: sprintf( __( 'Send to %d recipients?', 'heads-up-mailer' ), $send_count );
+			? /* translators: %d: recipient count. */
+			sprintf( __( 'This draft was already sent. Send AGAIN to %d recipients?', 'heads-up-mailer' ), $send_count )
+			: /* translators: %d: recipient count. */
+			sprintf( __( 'Send to %d recipients?', 'heads-up-mailer' ), $send_count );
 
 		$button_label = $is_resend
-			/* translators: %d: recipient count. */
-			? sprintf( __( 'Re-send to %d recipients', 'heads-up-mailer' ), $send_count )
-			/* translators: %d: recipient count. */
-			: sprintf( __( 'Send to %d recipients', 'heads-up-mailer' ), $send_count );
+			? /* translators: %d: recipient count. */
+			sprintf( __( 'Re-send to %d recipients', 'heads-up-mailer' ), $send_count )
+			: /* translators: %d: recipient count. */
+			sprintf( __( 'Send to %d recipients', 'heads-up-mailer' ), $send_count );
 
-		printf(
-			'<form method="post" action="%s" style="display:inline-block;">',
-			esc_url( admin_url( 'admin-post.php' ) )
-		);
+		printf( ' <p class="description">%s</p>', esc_html__( 'Queues the send. The cron worker drains in the background.', 'heads-up-mailer' ) );
+		printf( '<form method="post" action="%s" style="margin-bottom:4em;">', esc_url( admin_url( 'admin-post.php' ) ) );
 		printf( '<input type="hidden" name="action" value="hum_send_draft" />' );
 		printf( '<input type="hidden" name="draft_id" value="%d" />', (int) $draft_id );
 
@@ -228,26 +207,14 @@ if ( $is_edit ) {
 		wp_nonce_field( 'hum_send_draft_' . (int) $draft_id );
 		echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_nonce_field output is safe.
 
-		printf(
-			'<button type="submit" class="button button-primary" data-hum-confirm="%s">%s</button>',
-			esc_attr( $confirm ),
-			esc_html( $button_label )
-		);
+		printf( '<button type="submit" class="button button-primary" data-hum-confirm="%s">%s</button>', esc_attr( $confirm ), esc_html( $button_label ) );
 		printf( '</form>' );
-
-		printf(
-			' <span class="description">%s</span>',
-			esc_html__( 'Queues the send. The cron worker drains in the background.', 'heads-up-mailer' )
-		);
 	}
 }
 
 // Preview iframe — only for saved drafts (needs a draft_id to render).
 if ( $is_edit ) {
-	printf(
-		'<h2>%s</h2>',
-		esc_html__( 'Preview', 'heads-up-mailer' )
-	);
+	printf( '<h2>%s</h2>', esc_html__( 'Preview', 'heads-up-mailer' ) );
 	// `sandbox` with no allow-list disables scripts, forms, and
 	// top-level navigation but still lets the HTML render visually.
 	// `allow-same-origin` would re-enable DOM access from the iframe;

@@ -4,7 +4,9 @@
  *
  * Variables expected from the caller (`Plugin::render_drafts`):
  *
- * - `$drafts` array<int, object> Rows from `Drafts_Controller::get_all()`.
+ * - `$drafts`            array<int, object>      Rows from `Drafts_Controller::get_all()`.
+ * - `$drafts_controller` Drafts_Controller       For decoding each draft's group slugs.
+ * - `$group_names`       array<string, string>   Map of group slug => display name.
  *
  * @package Heads_Up_Mailer
  * @since 0.3.0
@@ -104,10 +106,11 @@ if ( empty( $drafts ) ) {
 } else {
 	printf( '<table class="wp-list-table widefat striped">' );
 	printf(
-		'<thead><tr><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th></tr></thead>',
+		'<thead><tr><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th></tr></thead>',
 		esc_html__( 'ID', 'heads-up-mailer' ),
 		esc_html__( 'Subject', 'heads-up-mailer' ),
 		esc_html__( 'Status', 'heads-up-mailer' ),
+		esc_html__( 'Groups', 'heads-up-mailer' ),
 		esc_html__( 'Created', 'heads-up-mailer' ),
 		esc_html__( 'Actions', 'heads-up-mailer' )
 	);
@@ -136,16 +139,35 @@ if ( empty( $drafts ) ) {
 
 		$status_label = isset( $status_labels[ $draft->status ] ) ? $status_labels[ $draft->status ] : (string) $draft->status;
 
+		$group_slugs = $drafts_controller->suggested_groups( $draft );
+		if ( empty( $group_slugs ) ) {
+			$groups_html = sprintf(
+				'<span class="hum-group-none">%s</span>',
+				esc_html__( '—', 'heads-up-mailer' )
+			);
+		} else {
+			$groups_html = '';
+			foreach ( $group_slugs as $group_slug ) {
+				$group_label  = isset( $group_names[ $group_slug ] ) ? $group_names[ $group_slug ] : $group_slug;
+				$groups_html .= sprintf(
+					'<span class="hum-group-pill">%s</span>',
+					esc_html( $group_label )
+				);
+			}
+		}
+
 		/* translators: %s: Draft subject. */
 		$confirm = sprintf( __( 'Delete the draft "%s"?', 'heads-up-mailer' ), $draft->subject );
 
 		printf(
-			'<tr><td>%d</td><td><a href="%s"><strong>%s</strong></a></td><td><span class="hum-status hum-status-%s">%s</span></td><td>%s</td><td><a href="%s">%s</a> | <a href="%s" data-hum-confirm="%s">%s</a></td></tr>',
+			'<tr><td>%d</td><td><a href="%s"><strong>%s</strong></a></td><td><span class="hum-status hum-status-%s">%s</span></td><td>%s</td><td>%s</td><td><a href="%s">%s</a> | <a href="%s" data-hum-confirm="%s">%s</a></td></tr>',
 			(int) $draft->id,
 			esc_url( $edit_url ),
 			esc_html( $draft->subject ),
 			esc_attr( (string) $draft->status ),
 			esc_html( $status_label ),
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $groups_html built from esc_html'd values above.
+			$groups_html,
 			esc_html( (string) $draft->created_at ),
 			esc_url( $edit_url ),
 			esc_html__( 'Edit', 'heads-up-mailer' ),

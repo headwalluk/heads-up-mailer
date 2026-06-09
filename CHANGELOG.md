@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-06-09
+
+### Added
+
+- Groups column on the Drafts list table
+  (`admin-templates/drafts-list.php`). Each draft's selected
+  groups render as pills, resolved from the stored slugs to their
+  display names via a slug→name map built in
+  `Plugin::render_drafts()`. Slugs whose group was since deleted
+  fall back to the raw slug; drafts with no groups show a muted
+  em-dash.
+- `assets/admin/heads-up-mailer-admin.css` — first admin
+  stylesheet for the plugin. Carries the `.hum-group-pill` and
+  `.hum-group-none` styles, enqueued on all HUM admin pages
+  alongside the existing admin JS.
+
+### Changed
+
+- Draft editor Subject field switched from `regular-text` to
+  `large-text`, so it is full width and consistent with the HTML
+  body field below it (`admin-templates/draft-edit.php`).
+
 ## [1.1.0] — 2026-05-27
 
 ### Added

@@ -342,6 +342,13 @@ class Plugin {
 			return;
 		}
 
+		wp_enqueue_style(
+			'heads-up-mailer-admin',
+			HUM_URL . 'assets/admin/heads-up-mailer-admin.css',
+			array(),
+			HUM_VERSION
+		);
+
 		wp_enqueue_script(
 			'heads-up-mailer-admin',
 			HUM_URL . 'assets/admin/heads-up-mailer-admin.js',
@@ -879,6 +886,11 @@ class Plugin {
 			require HUM_PATH . 'admin-templates/draft-edit.php';
 		} else {
 			$drafts = $drafts_controller->get_all();
+
+			$group_names = array();
+			foreach ( $groups_controller->get_all() as $group ) {
+				$group_names[ (string) $group->slug ] = (string) $group->name;
+			}
 
 			require HUM_PATH . 'admin-templates/drafts-list.php';
 		}
