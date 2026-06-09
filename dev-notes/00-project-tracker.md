@@ -759,6 +759,17 @@ this row" button writes a fresh `send_id` with just that
 recipient, keeping the `UNIQUE(send_id, subscriber_id)` story
 clean.
 
+### Translation polish (native-speaker pass)
+
+Shipped 1.2.1 bundles `languages/` catalogues for eight locales
+(de_DE, el_GR, en_GB, es_ES, fr_FR, it_IT, nl_NL, pl_PL),
+machine-kickstarted with `wp-translate-tool`. The tool is weaker on
+short strings than long ones, so the short admin UI labels are the
+likeliest to read awkwardly. Before any non-English locale goes
+live, get a native-speaker pass over the short labels. The plural
+strings already have correct `Plural-Forms` headers (fixed in
+1.2.1), so this is wording polish only, not a structural fix.
+
 ### Other v1 exclusions
 
 See `dev-notes/01-requirements.md` "Out of scope". Open / click
