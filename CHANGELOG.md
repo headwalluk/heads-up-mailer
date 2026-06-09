@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] — 2026-06-09
+
+### Added
+
+- Translation catalogues under `languages/` for eight locales
+  (de_DE, el_GR, en_GB, es_ES, fr_FR, it_IT, nl_NL, pl_PL),
+  kickstarted with the `wp-translate-tool` and committed alongside
+  the `.pot` template. Compiled `.mo` files are tracked because the
+  plugin has no build step, so they must ship in the release zip.
+  Catalogues cover all strings through 1.2.0.
+
+### Fixed
+
+- Plural-form handling in the translation catalogues. None of the
+  `.po` files carried a `Plural-Forms` header, so the plural string
+  `%d subscriber flagged as "never contact".` would not have
+  pluralised. Added the correct header per locale — two forms for
+  the European languages, three for Polish (with the extra "many"
+  `msgstr[2]`) — and the placeholder header to the `.pot` template.
+  All `.mo` files recompiled with `msgfmt --check`; no untranslated
+  or fuzzy strings remain.
+
 ## [1.2.0] — 2026-06-09
 
 ### Added

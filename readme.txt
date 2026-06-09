@@ -4,7 +4,7 @@ Tags: newsletter, email, subscribers, mailer, unsubscribe
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,6 +64,9 @@ Add `add_filter( 'hum_updater_enabled', '__return_false' );` to your site's `fun
 
 == Changelog ==
 
+= 1.2.1 =
+Ships translation catalogues for eight locales (de_DE, el_GR, en_GB, es_ES, fr_FR, it_IT, nl_NL, pl_PL), machine-kickstarted and committed so they land in the release zip. Also fixes a latent plural bug: the .po files had no Plural-Forms header, so plural strings would not have pluralised. No code or schema change. See `CHANGELOG.md` for the full entry.
+
 = 1.2.0 =
 Admin polish. The Drafts list now has a Groups column showing each draft's selected groups as pills, and the draft editor's Subject field is full width. No schema migration, no behavioural change to sending. See `CHANGELOG.md` for the full entry.
 
@@ -74,6 +77,9 @@ New custom capability `hum_create_drafts`, granted to Administrator and Editor o
 First stable release. Replaces MailerLite at headwall-hosting.com. Stack covers: drafts via REST → admin review → async send queue → RFC 8058 unsubscribe → public `/manage-comms/` page → IMAP poll for mailto unsubscribes → sent log → never-contact status → Contact Form 7 + WooCommerce integrations → in-plugin GitHub auto-updater. See `CHANGELOG.md` in the plugin folder for the detailed per-feature history (0.1.0 through 0.10.1).
 
 == Upgrade Notice ==
+
+= 1.2.1 =
+Adds bundled translations for eight locales and fixes plural-form handling in the catalogues. No action required.
 
 = 1.2.0 =
 Cosmetic admin update: Groups column on the Drafts list and a full-width Subject field in the editor. No action required.
