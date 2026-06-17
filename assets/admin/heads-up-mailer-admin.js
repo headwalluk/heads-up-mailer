@@ -1,7 +1,7 @@
 /**
  * Heads Up Mailer admin JS.
  *
- * Four delegated handlers:
+ * Delegated handlers and screen behaviours:
  *
  * - `data-hum-confirm` on any element prompts the user before the
  *   default action proceeds (used for destructive links).
@@ -12,6 +12,8 @@
  *   `hum_test_mailbox` AJAX endpoint and prints the result inline.
  * - `#hum-mb-poll` triggers a synchronous mailbox poll using the
  *   stored credentials and prints the result inline.
+ * - Group "add" screen: generates the slug from the name as the user
+ *   types, with a `.hum-slug-manual-toggle` checkbox to edit it by hand.
  *
  * @since 0.1.0
  */
@@ -247,4 +249,79 @@ document.addEventListener('click', (event) => {
 
 	event.preventDefault();
 	humPollMailbox(button);
+});
+
+// Group "add" screen: derive a slug from the name as the user types.
+// A "Set the slug manually" checkbox reveals the slug field for hand
+// editing; while it is unchecked the (hidden) slug input is kept in
+// sync so it still posts a value. Mirrors sanitize_title() closely
+// enough for a live preview — the server re-sanitises on save.
+function humSlugify(value) {
+	return value
+		.toString()
+		.toLowerCase()
+		.replace(/[\s_]+/g, '-')
+		.replace(/[^a-z0-9-]+/g, '')
+		.replace(/-+/g, '-')
+		.replace(/^-+|-+$/g, '');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+	const toggle = document.querySelector('.hum-slug-manual-toggle');
+
+	if (!toggle) {
+		return;
+	}
+
+	const nameInput = document.getElementById('hum-group-name');
+	const slugInput = document.getElementById('hum-group-slug');
+	const preview = document.querySelector('.hum-slug-preview');
+	const previewValue = document.querySelector('.hum-slug-value');
+	const fieldWrap = document.querySelector('.hum-slug-field-wrap');
+
+	if (!nameInput || !slugInput) {
+		return;
+	}
+
+	const syncFromName = () => {
+		if (toggle.checked) {
+			return;
+		}
+
+		const slug = humSlugify(nameInput.value);
+		slugInput.value = slug;
+
+		if (previewValue) {
+			previewValue.textContent = slug;
+		}
+	};
+
+	nameInput.addEventListener('input', syncFromName);
+
+	toggle.addEventListener('change', () => {
+		const manual = toggle.checked;
+
+		if (fieldWrap) {
+			fieldWrap.hidden = !manual;
+		}
+
+		if (preview) {
+			preview.hidden = manual;
+		}
+
+		// Only require (and pattern-validate via the browser) the slug
+		// field while it is visible — a required hidden field cannot be
+		// focused and would silently block submission.
+		slugInput.required = manual;
+
+		if (manual) {
+			slugInput.focus();
+		} else {
+			syncFromName();
+		}
+	});
+
+	// Prime the preview from any value already in the name field
+	// (e.g. a validation bounce-back or browser autofill).
+	syncFromName();
 });

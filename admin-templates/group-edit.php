@@ -71,23 +71,53 @@ echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEs
 
 printf( '<table class="form-table" role="presentation"><tbody>' );
 
+// Name — always the first field. Wide input for longer group names.
 printf(
-	'<tr><th scope="row"><label for="hum-group-slug">%s</label></th><td><input name="slug" id="hum-group-slug" type="text" class="regular-text" value="%s" required pattern="[a-z0-9-]+" /><p class="description">%s</p></td></tr>',
-	esc_html__( 'Slug', 'heads-up-mailer' ),
-	esc_attr( $slug ),
-	esc_html__( 'Lowercase letters, numbers, and hyphens. Used in REST and the database.', 'heads-up-mailer' )
+	'<tr><th scope="row"><label for="hum-group-name">%s</label></th><td>',
+	esc_html__( 'Name', 'heads-up-mailer' )
 );
-
 printf(
-	'<tr><th scope="row"><label for="hum-group-name">%s</label></th><td><input name="name" id="hum-group-name" type="text" class="regular-text" value="%s" required /></td></tr>',
-	esc_html__( 'Name', 'heads-up-mailer' ),
+	'<input name="name" id="hum-group-name" type="text" class="widefat" value="%s" required />',
 	esc_attr( $name )
 );
 
+if ( ! $is_edit ) {
+	// Add: the slug is auto-generated from the name. A checkbox reveals
+	// the manual slug field; admin JS keeps the hidden input in sync and
+	// adds the `required` attribute only when manual entry is enabled (a
+	// `required` field that is `display:none` blocks form submission).
+	printf(
+		'<p class="description hum-slug-preview">%s <code class="hum-slug-value"></code></p>',
+		esc_html__( 'Slug:', 'heads-up-mailer' )
+	);
+	printf(
+		'<p><label><input type="checkbox" class="hum-slug-manual-toggle" /> %s</label></p>',
+		esc_html__( 'Set the slug manually', 'heads-up-mailer' )
+	);
+	printf(
+		'<p class="hum-slug-field-wrap" hidden><input name="slug" id="hum-group-slug" type="text" class="regular-text" value="" pattern="[a-z0-9-]+" /><span class="description">%s</span></p>',
+		esc_html__( 'Lowercase letters, numbers, and hyphens. Used in REST and the database.', 'heads-up-mailer' )
+	);
+}
+
+printf( '</td></tr>' );
+
+if ( $is_edit ) {
+	// Edit: the slug already exists, so keep it as an ordinary visible
+	// field — auto-generating over a saved slug would invalidate links.
+	printf(
+		'<tr><th scope="row"><label for="hum-group-slug">%s</label></th><td><input name="slug" id="hum-group-slug" type="text" class="regular-text" value="%s" required pattern="[a-z0-9-]+" /><p class="description">%s</p></td></tr>',
+		esc_html__( 'Slug', 'heads-up-mailer' ),
+		esc_attr( $slug ),
+		esc_html__( 'Lowercase letters, numbers, and hyphens. Used in REST and the database.', 'heads-up-mailer' )
+	);
+}
+
 printf(
-	'<tr><th scope="row"><label for="hum-group-description">%s</label></th><td><textarea name="description" id="hum-group-description" class="large-text" rows="4">%s</textarea></td></tr>',
+	'<tr><th scope="row"><label for="hum-group-description">%s</label></th><td><textarea name="description" id="hum-group-description" class="large-text" rows="4">%s</textarea><p class="description">%s</p></td></tr>',
 	esc_html__( 'Description', 'heads-up-mailer' ),
-	esc_textarea( $desc )
+	esc_textarea( $desc ),
+	esc_html__( 'Plain text only — any HTML tags are stripped when the group is saved. A short sentence or two describing who belongs in this group is plenty.', 'heads-up-mailer' )
 );
 
 // Hidden value="0" sibling before the checkbox so an unchecked
