@@ -1,6 +1,6 @@
 # Heads Up Mailer
 
-![Status](https://img.shields.io/badge/status-1.2.2-brightgreen)
+![Status](https://img.shields.io/badge/status-1.3.0-brightgreen)
 ![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b?logo=wordpress&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-8.0%2B-777bb4?logo=php&logoColor=white)
 ![License](https://img.shields.io/badge/license-GPLv2%2B-blue)
@@ -28,8 +28,13 @@ form that the plugin harvests by polling an IMAP mailbox.
 This plugin is **not** a hosted service, a multi-site mailer, or a
 marketing-automation suite.
 
-## What's in 1.0.0
+## Features
 
+- **Dashboard** — a privacy-first overview of the last 30 days:
+  send health with a failure-rate alert banner, active-audience
+  size, a per-group breakdown (active members plus sign-ups and
+  departures), and recent send failures. Every figure comes from
+  data the plugin already holds — no pixels, no link rewriting.
 - **Drafts pipeline** — REST endpoint, sandboxed admin preview,
   configurable footer + sender identity.
 - **Send queue + worker** — async drain on a configurable WP-Cron

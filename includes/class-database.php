@@ -40,6 +40,7 @@ class Database {
 		$table_drafts            = $wpdb->prefix . TABLE_DRAFTS;
 		$table_sends             = $wpdb->prefix . TABLE_SENDS;
 		$table_send_recipients   = $wpdb->prefix . TABLE_SEND_RECIPIENTS;
+		$table_events            = $wpdb->prefix . TABLE_EVENTS;
 
 		$statements = array(
 			"CREATE TABLE {$table_subscribers} (
@@ -110,6 +111,17 @@ class Database {
 				PRIMARY KEY  (id),
 				UNIQUE KEY send_subscriber (send_id, subscriber_id),
 				KEY status (status)
+			) {$charset_collate}",
+
+			"CREATE TABLE {$table_events} (
+				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				event_type varchar(20) NOT NULL DEFAULT '',
+				subscriber_id bigint(20) unsigned NOT NULL DEFAULT 0,
+				group_id bigint(20) unsigned NOT NULL DEFAULT 0,
+				created_at varchar(30) NOT NULL DEFAULT '',
+				PRIMARY KEY  (id),
+				KEY group_event_time (group_id, event_type, created_at),
+				KEY created_at (created_at)
 			) {$charset_collate}",
 		);
 

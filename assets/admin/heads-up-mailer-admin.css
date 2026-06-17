@@ -20,3 +20,69 @@
 .hum-group-none {
 	color: #787c82;
 }
+
+/* Dashboard overview. */
+.hum-dash-grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin: 16px 0 8px;
+}
+
+.hum-card {
+	flex: 1 1 240px;
+	min-width: 240px;
+	padding: 16px 20px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+}
+
+.hum-card-title {
+	margin: 0 0 8px;
+	font-size: 13px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+	color: #50575e;
+}
+
+.hum-stat-num {
+	margin: 0;
+	font-size: 32px;
+	font-weight: 600;
+	line-height: 1.2;
+	color: #1d2327;
+}
+
+.hum-stat-num.hum-good {
+	color: #00794b;
+}
+
+.hum-stat-num.hum-bad {
+	color: #b32d2e;
+}
+
+.hum-stat-label {
+	margin: 2px 0 0;
+	color: #787c82;
+}
+
+.hum-stat-list {
+	margin: 12px 0 0;
+	color: #3c434a;
+}
+
+.hum-stat-list li {
+	margin: 0 0 2px;
+}
+
+.hum-groups-table,
+.hum-failures-table {
+	margin-top: 8px;
+}
+
+.hum-num-col {
+	text-align: right;
+	white-space: nowrap;
+}

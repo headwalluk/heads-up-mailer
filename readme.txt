@@ -4,7 +4,7 @@ Tags: newsletter, email, subscribers, mailer, unsubscribe
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 1.2.2
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,6 +22,8 @@ Privacy-positive by design:
 * No click tracking, no link rewriting.
 * Unsubscribes work via RFC 8058 one-click POST and via a `mailto:` form that the plugin harvests by polling an IMAP mailbox.
 * "Never contact" is a sticky terminal state that future CSV re-imports refuse to overwrite — belt-and-braces for GDPR erasure requests.
+
+The admin dashboard gives an at-a-glance, privacy-first overview of the last 30 days: send health with a failure-rate alert, active-audience size, per-group sign-ups and departures, and recent send failures — all derived from data the plugin already holds, with no tracking pixels or link rewriting.
 
 Built-in plugin integrations (each only loads when its parent plugin is active):
 
@@ -64,6 +66,9 @@ Add `add_filter( 'hum_updater_enabled', '__return_false' );` to your site's `fun
 
 == Changelog ==
 
+= 1.3.0 =
+Turns the placeholder dashboard into a privacy-first overview of the last 30 days: send health with a failure-rate alert banner, audience size, a per-group breakdown of active members plus sign-ups and departures, and recent send failures. Adds a `hum_events` activity log (schema version 3, auto-migrates) to track per-group joins and leaves — these counts are forward-looking and start accumulating from the upgrade. Also polishes the group "add" screen: the slug auto-generates from the name with an opt-in manual override, the name field is full-width, and the description notes it's plain text. See `CHANGELOG.md` for the full entry.
+
 = 1.2.2 =
 Fixes machine-translation artifacts in the bundled catalogues. Short, context-free admin labels were mistranslated identically across all eight locales — "Sent" rendered in the "late/delayed" sense, "Folder" as "brochure", and the acronyms "TLS" and "ID" expanded into prose. Corrected and recompiled. No code or schema change. See `CHANGELOG.md` for the full entry.
 
@@ -80,6 +85,9 @@ New custom capability `hum_create_drafts`, granted to Administrator and Editor o
 First stable release. Replaces MailerLite at headwall-hosting.com. Stack covers: drafts via REST → admin review → async send queue → RFC 8058 unsubscribe → public `/manage-comms/` page → IMAP poll for mailto unsubscribes → sent log → never-contact status → Contact Form 7 + WooCommerce integrations → in-plugin GitHub auto-updater. See `CHANGELOG.md` in the plugin folder for the detailed per-feature history (0.1.0 through 0.10.1).
 
 == Upgrade Notice ==
+
+= 1.3.0 =
+New admin dashboard plus a `hum_events` table (schema version 3, migrates automatically on upgrade). Per-group sign-up / departure tracking starts from this release; existing memberships are not backfilled. No action required.
 
 = 1.2.2 =
 Corrects mistranslated admin labels (Sent, Folder, TLS, ID) in the bundled catalogues for all eight locales. No action required.

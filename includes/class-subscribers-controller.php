@@ -113,6 +113,14 @@ class Subscribers_Controller {
 	 * expected to pass validated group IDs (e.g. by intersecting
 	 * with `Groups_Controller::get_all()` first).
 	 *
+	 * Records a `group_join` / `group_leave` event for every added or
+	 * removed group so the dashboard can chart per-group trends. The
+	 * old set is read first and diffed against the new one; an
+	 * unchanged membership writes no events. This is the single
+	 * choke-point for membership changes, so instrumenting it here
+	 * captures every path (admin edit, public preferences, checkout
+	 * opt-in, unsubscribe-everything).
+	 *
 	 * @since 0.1.0
 	 * @param int        $subscriber_id Subscriber ID.
 	 * @param array<int> $group_ids     Group IDs to attach.
@@ -120,6 +128,9 @@ class Subscribers_Controller {
 	public function set_groups( int $subscriber_id, array $group_ids ): void {
 		global $wpdb;
 		$table = $this->groups_table();
+
+		$old_ids = $this->get_groups( $subscriber_id );
+		$new_ids = array();
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Membership reset before re-insert.
 		$wpdb->delete( $table, array( 'subscriber_id' => $subscriber_id ), array( '%d' ) );
@@ -140,7 +151,11 @@ class Subscribers_Controller {
 				),
 				array( '%d', '%d' )
 			);
+
+			$new_ids[] = $group_id;
 		}
+
+		( new Events_Controller() )->record_membership_change( $subscriber_id, $old_ids, $new_ids );
 	}
 
 	/**

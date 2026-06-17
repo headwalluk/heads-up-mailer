@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-06-17
+
+### Added
+
+- **Admin dashboard.** The previously-placeholder landing page is now
+  a privacy-first overview of the last 30 days
+  (`DASHBOARD_WINDOW_DAYS`):
+  - Send health — delivery success rate, sends / delivered / failed
+    counts, and a red alert banner when the failure rate (over
+    completed recipients) crosses `DASHBOARD_ALERT_FAIL_PCT` (5%).
+  - Audience — active subscriber total and account unsubscribes in
+    the window (one-click and IMAP unsubscribes included, read from
+    subscriber status).
+  - Per-group breakdown — active members, plus sign-ups and
+    departures over the window.
+  - Recent send failures — the latest failed recipients with their
+    error text.
+
+  No tracking pixels and no link rewriting; every figure is derived
+  from data the plugin already owns.
+- **Activity event log (`hum_events`).** New table recording per-group
+  join / leave events, written from the single membership choke-point
+  (`Subscribers_Controller::set_groups()`), so every path — admin
+  edit, public preferences, checkout opt-in, unsubscribe-everything —
+  is captured. Powers the dashboard's per-group trends.
+- **Group "add" screen polish.** The slug now auto-generates from the
+  name as you type, with an opt-in "Set the slug manually" checkbox;
+  the Name field is full-width (`widefat`). Editing an existing group
+  keeps the slug as an ordinary editable field (auto-generating over a
+  saved slug would invalidate live links).
+
+### Changed
+
+- The group Description field gained inline help noting it is plain
+  text — any HTML is stripped on save.
+- Schema version bumped to 3. The migration runs automatically on
+  upgrade (activation and `admin_init`). Per-group sign-up / departure
+  counts are **forward-looking**: they accumulate from the upgrade and
+  are not backfilled, since existing memberships carry no recorded
+  join date.
+
 ## [1.2.2] — 2026-06-17
 
 ### Fixed

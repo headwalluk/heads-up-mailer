@@ -391,6 +391,8 @@ class Plugin {
 			wp_die( esc_html__( 'You do not have permission to access this page.', 'heads-up-mailer' ) );
 		}
 
+		$overview = ( new Dashboard_Controller() )->get_overview();
+
 		require HUM_PATH . 'admin-templates/dashboard.php';
 	}
 

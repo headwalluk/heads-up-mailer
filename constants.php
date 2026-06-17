@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || die();
  *
  * @since 0.1.0
  */
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 /**
  * Custom table name suffixes (after `$wpdb->prefix`).
@@ -28,6 +28,7 @@ const TABLE_SUBSCRIBER_GROUPS = 'hum_subscriber_groups';
 const TABLE_DRAFTS            = 'hum_drafts';
 const TABLE_SENDS             = 'hum_sends';
 const TABLE_SEND_RECIPIENTS   = 'hum_send_recipients';
+const TABLE_EVENTS            = 'hum_events';
 
 /**
  * Option keys (wp_options).
@@ -122,6 +123,36 @@ const SEND_STATUS_PENDING    = 'pending';
 const SEND_STATUS_PROCESSING = 'processing';
 const SEND_STATUS_SENT       = 'sent';
 const SEND_STATUS_FAILED     = 'failed';
+
+/**
+ * Activity event types (`hum_events.event_type`).
+ *
+ * Per-group membership transitions, recorded whenever
+ * `Subscribers_Controller::set_groups()` adds or removes a junction
+ * row. They power the dashboard's per-group sign-up / departure
+ * trends. Account-wide unsubscribes (one-click, IMAP) flip the
+ * subscriber status without touching memberships, so they are NOT
+ * events — the dashboard reads those from `subscribers.status`.
+ *
+ * @since 1.3.0
+ */
+const EVENT_GROUP_JOIN  = 'group_join';
+const EVENT_GROUP_LEAVE = 'group_leave';
+
+/**
+ * Dashboard overview tuning.
+ *
+ * `WINDOW_DAYS` is the rolling look-back for every "recent" metric.
+ * `ALERT_FAIL_PCT` is the send-failure rate (percent of *completed*
+ * recipients — sent + failed, ignoring still-pending ones) at or
+ * above which the dashboard raises a red alert. `RECENT_LIMIT` caps
+ * the rows in the recent-failures list.
+ *
+ * @since 1.3.0
+ */
+const DASHBOARD_WINDOW_DAYS    = 30;
+const DASHBOARD_ALERT_FAIL_PCT = 5;
+const DASHBOARD_RECENT_LIMIT   = 5;
 
 /**
  * Transient keys / prefixes.
