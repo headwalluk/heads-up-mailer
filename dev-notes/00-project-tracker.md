@@ -1,10 +1,10 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** 1.0.0 release candidate — repo on GitHub, auto-updater shipped, integrations live, classic-checkout WC verified
-**Current Version:** 1.0.0
-**Current Phase:** Final tag + first release publication
-**Last Updated:** 27 May 2026
-**Progress:** 12 of 12 milestones complete (5 items deferred to post-1.0.0)
+**Status:** Shipping post-1.0.0 increments — dashboard + per-group activity log live (1.3.0)
+**Current Version:** 1.3.0
+**Current Phase:** Post-v1 admin polish and observability
+**Last Updated:** 17 June 2026
+**Progress:** 13 of 13 milestones complete (5 items deferred to post-1.0.0)
 
 ---
 
@@ -692,6 +692,70 @@ falls through cleanly). Released as 0.10.0 / 0.10.1 on
 
 ---
 
+## Milestone 13: Dashboard + per-group activity log
+
+**Goal:** Turn the placeholder dashboard into a useful, privacy-first
+overview that shows current state and alerts to problems — without
+open / click tracking. Every figure derives from data the plugin
+already owns.
+
+**Status:** ✅ Complete — released 1.3.0 on 2026-06-17.
+**Dependencies:** Sends / send_recipients schema (M5), subscriber
+groups (M2).
+
+### Tasks
+
+- [x] `hum_events` table (DB_VERSION 2 → 3, auto-migrates via the
+      existing `Plugin::check_first_run()` runner). Columns
+      `event_type`, `subscriber_id`, `group_id`, `created_at`, with
+      a `(group_id, event_type, created_at)` composite key.
+- [x] `EVENT_GROUP_JOIN` / `EVENT_GROUP_LEAVE` recorded from the
+      single membership choke-point, `Subscribers_Controller::set_groups()`,
+      by diffing old vs new memberships. Captures every path (admin
+      edit, public preferences, checkout opt-in,
+      unsubscribe-everything); a no-op change writes nothing.
+- [x] `Events_Controller` — append + per-group / total count queries
+      over a UTC cut-off.
+- [x] `Dashboard_Controller::get_overview()` — assembles the whole
+      view-model so the template stays presentation-only.
+- [x] Dashboard template rebuilt: send-health card (delivery success
+      rate, newsletters sent / emails delivered / emails failed) with
+      a red alert banner when the failure rate (over completed
+      recipients) crosses `DASHBOARD_ALERT_FAIL_PCT` (5%); audience
+      card (active subscribers + account unsubscribes in the window);
+      per-group breakdown (active members, joins, leaves); recent
+      send failures with error text.
+- [x] Tuning constants: `DASHBOARD_WINDOW_DAYS` (30),
+      `DASHBOARD_ALERT_FAIL_PCT` (5), `DASHBOARD_RECENT_LIMIT` (5).
+- [x] Group "add" screen polish (same release): slug auto-generates
+      from the name with an opt-in manual-override checkbox, full-width
+      (`widefat`) name field, plain-text help on the description.
+- [x] Verified end-to-end against the dev DB (migration, overview
+      queries, set_groups event round-trip) and the alignment / label
+      tweaks from the first dashboard screenshot review.
+
+**Design decisions:**
+
+- **Account unsubscribes vs group leaves.** One-click (RFC 8058) and
+  IMAP unsubscribes flip subscriber *status* without touching group
+  memberships, so they are NOT events — the dashboard reads those
+  from `subscribers.status` / `unsubscribed_at`. Per-group
+  `group_leave` events come only from explicit membership changes.
+  The two metrics are shown separately and deliberately.
+- **Per-group counts are forward-looking.** Existing memberships carry
+  no recorded join date, so nothing is backfilled — Joined / Left
+  start at zero on upgrade and accumulate from there. A `created_at`
+  approximation was rejected as misleading (it would invent a spike
+  on upgrade day).
+
+**Deliverable:** Released 1.3.0 (`v1.3.0`) on 2026-06-17. Schema
+migrates on first admin load post-upgrade, as verified on the dev
+site. New admin UI strings are not yet translated — folded into the
+[Translation polish](#translation-polish-native-speaker-pass) item
+below, pending the `wp-translate-tool` review.
+
+---
+
 ## Deferred (post-v1)
 
 ### Subscriber list search and filters
@@ -728,7 +792,11 @@ Candidate commands once admin flows are stable:
 
 Schema reserves `bounced` status. A future cron / VERP
 integration on `nexus.headwall.co.uk` flips rows. Out of scope for
-v1.
+v1. Now the natural next observability step after the 1.3.0
+dashboard: a bounce-mailbox IMAP poller (modelled on the existing
+`Mailbox_Poller`) would feed a bounce stats card on the dashboard,
+which currently has no bounce figure because nothing ingests them
+yet.
 
 ### WooCommerce Block checkout support
 
@@ -769,6 +837,15 @@ likeliest to read awkwardly. Before any non-English locale goes
 live, get a native-speaker pass over the short labels. The plural
 strings already have correct `Plural-Forms` headers (fixed in
 1.2.1), so this is wording polish only, not a structural fix.
+
+1.2.2 hand-corrected a batch of DeepL short-string artifacts across
+all eight locales (e.g. "Sent" → "late", "Folder" → "brochure",
+acronym expansion); a seed glossary for the upstream fix is filed in
+the `wp-translate-tool` repo. 1.3.0 then added ~two dozen new
+dashboard / group-screen strings that are **not yet translated** —
+they fall back to English. Both are pending the same
+`wp-translate-tool` review before the next catalogue regen, so the
+plugin's `languages/` are deliberately untouched until then.
 
 ### Other v1 exclusions
 
