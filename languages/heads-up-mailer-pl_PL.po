@@ -293,7 +293,7 @@ msgstr "Wysyłanie"
 
 #: admin-templates/drafts-list.php:97
 msgid "Sent"
-msgstr "Późno"
+msgstr "Wysłane"
 
 #: admin-templates/drafts-list.php:98
 msgid "Cancelled"
@@ -307,7 +307,7 @@ msgstr "Nie ma jeszcze żadnych szkiców. Dodaj jeden lub wyślij żądanie POST
 #: admin-templates/sent-log-detail.php:134
 #: admin-templates/sent-log-list.php:31
 msgid "ID"
-msgstr "Numer identyfikacyjny"
+msgstr "ID"
 
 #: admin-templates/drafts-list.php:112
 #: admin-templates/sent-log-detail.php:136
@@ -479,7 +479,7 @@ msgstr "Publiczne"
 #: includes/class-plugin.php:306
 #: includes/class-plugin.php:307
 msgid "Sent log"
-msgstr "Późny wpis"
+msgstr "Rejestr wysłanych"
 
 #: admin-templates/sent-log-detail.php:33
 msgid "Back to list"
@@ -520,7 +520,7 @@ msgstr "Wszystkie (%d)"
 #: admin-templates/sent-log-detail.php:74
 #, php-format
 msgid "Sent (%d)"
-msgstr "Późno (%d)"
+msgstr "Wysłane (%d)"
 
 #. translators: %d: number of recipients in this status.
 #: admin-templates/sent-log-detail.php:79
@@ -573,7 +573,7 @@ msgstr "Nie zarejestrowano jeszcze żadnych wysłanych wiadomości. Gdy szkic zo
 
 #: admin-templates/sent-log-list.php:34
 msgid "Sent / Total"
-msgstr "Opóźnienie / Łącznie"
+msgstr "Wysłane / Łącznie"
 
 #: admin-templates/sent-log-list.php:35
 msgid "Failed"
@@ -963,11 +963,11 @@ msgstr "Hasło"
 
 #: admin-templates/tab-mailbox.php:104
 msgid "Folder"
-msgstr "Ulotka"
+msgstr "Folder"
 
 #: admin-templates/tab-mailbox.php:114
 msgid "TLS"
-msgstr "Najnowsze standardy bezpieczeństwa"
+msgstr "TLS"
 
 #: admin-templates/tab-mailbox.php:118
 msgid "Connect over SSL / TLS (recommended)."

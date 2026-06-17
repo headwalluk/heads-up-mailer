@@ -293,7 +293,7 @@ msgstr "Αποστολή"
 
 #: admin-templates/drafts-list.php:97
 msgid "Sent"
-msgstr "Αργά"
+msgstr "Απεσταλμένα"
 
 #: admin-templates/drafts-list.php:98
 msgid "Cancelled"
@@ -307,7 +307,7 @@ msgstr "Δεν υπάρχουν ακόμη πρόχειρα. Προσθέστε 
 #: admin-templates/sent-log-detail.php:134
 #: admin-templates/sent-log-list.php:31
 msgid "ID"
-msgstr "Αριθμός ταυτοποίησης"
+msgstr "ID"
 
 #: admin-templates/drafts-list.php:112
 #: admin-templates/sent-log-detail.php:136
@@ -479,7 +479,7 @@ msgstr "Δημόσιο"
 #: includes/class-plugin.php:306
 #: includes/class-plugin.php:307
 msgid "Sent log"
-msgstr "Καθυστερημένη καταγραφή"
+msgstr "Αρχείο απεσταλμένων"
 
 #: admin-templates/sent-log-detail.php:33
 msgid "Back to list"
@@ -520,7 +520,7 @@ msgstr "Όλα (%d)"
 #: admin-templates/sent-log-detail.php:74
 #, php-format
 msgid "Sent (%d)"
-msgstr "Αργά (%d)"
+msgstr "Απεσταλμένα (%d)"
 
 #. translators: %d: number of recipients in this status.
 #: admin-templates/sent-log-detail.php:79
@@ -557,7 +557,7 @@ msgstr "Προσπάθειες"
 
 #: admin-templates/sent-log-detail.php:138
 msgid "Sent at (UTC)"
-msgstr "Αργά το (UTC)"
+msgstr "Απεστάλη στις (UTC)"
 
 #: admin-templates/sent-log-detail.php:139
 msgid "Last error"
@@ -573,7 +573,7 @@ msgstr "Δεν έχουν καταγραφεί ακόμη αποστολές. Μ
 
 #: admin-templates/sent-log-list.php:34
 msgid "Sent / Total"
-msgstr "Καθυστερημένη / Συνολική"
+msgstr "Απεσταλμένα / Σύνολο"
 
 #: admin-templates/sent-log-list.php:35
 msgid "Failed"
@@ -962,11 +962,11 @@ msgstr "Κωδικός πρόσβασης"
 
 #: admin-templates/tab-mailbox.php:104
 msgid "Folder"
-msgstr "Φυλλάδιο"
+msgstr "Φάκελος"
 
 #: admin-templates/tab-mailbox.php:114
 msgid "TLS"
-msgstr "Τα πιο πρόσφατα πρότυπα ασφαλείας"
+msgstr "TLS"
 
 #: admin-templates/tab-mailbox.php:118
 msgid "Connect over SSL / TLS (recommended)."

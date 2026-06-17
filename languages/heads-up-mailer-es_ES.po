@@ -293,7 +293,7 @@ msgstr "Enviando"
 
 #: admin-templates/drafts-list.php:97
 msgid "Sent"
-msgstr "Tarde"
+msgstr "Enviado"
 
 #: admin-templates/drafts-list.php:98
 msgid "Cancelled"
@@ -307,7 +307,7 @@ msgstr "Aún no hay borradores. Añade uno o envía una solicitud POST al punto 
 #: admin-templates/sent-log-detail.php:134
 #: admin-templates/sent-log-list.php:31
 msgid "ID"
-msgstr "Número de identificación"
+msgstr "ID"
 
 #: admin-templates/drafts-list.php:112
 #: admin-templates/sent-log-detail.php:136
@@ -479,7 +479,7 @@ msgstr "Público"
 #: includes/class-plugin.php:306
 #: includes/class-plugin.php:307
 msgid "Sent log"
-msgstr "Registro tardío"
+msgstr "Registro de envíos"
 
 #: admin-templates/sent-log-detail.php:33
 msgid "Back to list"
@@ -520,7 +520,7 @@ msgstr "Todos (%d)"
 #: admin-templates/sent-log-detail.php:74
 #, php-format
 msgid "Sent (%d)"
-msgstr "Tarde (%d)"
+msgstr "Enviados (%d)"
 
 #. translators: %d: number of recipients in this status.
 #: admin-templates/sent-log-detail.php:79
@@ -573,7 +573,7 @@ msgstr "Aún no hay mensajes enviados. Cuando se ponga en cola un borrador desde
 
 #: admin-templates/sent-log-list.php:34
 msgid "Sent / Total"
-msgstr "Tardío / Total"
+msgstr "Enviados / Total"
 
 #: admin-templates/sent-log-list.php:35
 msgid "Failed"
@@ -962,11 +962,11 @@ msgstr "Contraseña"
 
 #: admin-templates/tab-mailbox.php:104
 msgid "Folder"
-msgstr "Folleto"
+msgstr "Carpeta"
 
 #: admin-templates/tab-mailbox.php:114
 msgid "TLS"
-msgstr "Las últimas normas de seguridad"
+msgstr "TLS"
 
 #: admin-templates/tab-mailbox.php:118
 msgid "Connect over SSL / TLS (recommended)."
