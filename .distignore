@@ -17,8 +17,16 @@ vendor
 
 # Project-internal docs that don't ship to end users
 CLAUDE.md
-dev-notes
 docs
+
+# dev-notes/ ships (design notes + tracker), but not its screenshots
+dev-notes/*.png
+dev-notes/*.jpg
+dev-notes/*.jpeg
+dev-notes/*.gif
+dev-notes/*.webp
+dev-notes/*.bmp
+dev-notes/*.tiff
 
 # Linting config — phpcs runs locally / in CI, not on installed sites
 phpcs.xml
