@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2] — 2026-06-17
+
+### Fixed
+
+- Machine-translation artifacts in the bundled `languages/`
+  catalogues. DeepL mistranslated several short, context-free admin
+  UI labels identically across all eight locales (de_DE, el_GR,
+  en_GB, es_ES, fr_FR, it_IT, nl_NL, pl_PL):
+  - `Sent` (email status) was rendered in the "late / delayed"
+    sense (e.g. de "Spät", es "Tarde", nl "Laat"), which also
+    propagated into the `Sent log`, `Sent (%d)`, `Sent / Total`
+    and `Sent at (UTC)` compounds built on it.
+  - `Folder` (IMAP mailbox folder) became "brochure / leaflet"
+    (e.g. de "Broschüre", fr "Dépliant").
+  - The acronyms `TLS` and `ID` were expanded into prose (e.g.
+    "The latest security standards", "Identification number").
+  Corrected per locale and the `.mo` files recompiled. No code or
+  schema change. Root cause and a seed glossary for the upstream
+  fix are filed in the `wp-translate-tool` repo.
+
 ## [1.2.1] — 2026-06-09
 
 ### Added

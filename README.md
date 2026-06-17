@@ -1,6 +1,6 @@
 # Heads Up Mailer
 
-![Status](https://img.shields.io/badge/status-1.2.1-brightgreen)
+![Status](https://img.shields.io/badge/status-1.2.2-brightgreen)
 ![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b?logo=wordpress&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-8.0%2B-777bb4?logo=php&logoColor=white)
 ![License](https://img.shields.io/badge/license-GPLv2%2B-blue)
