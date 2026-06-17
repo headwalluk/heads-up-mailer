@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-06-17
+
+### Added
+
+- **`checked` option for the Contact Form 7 `[hum_signup]` tag.**
+  Adding the bare word `checked` (e.g.
+  `[hum_signup signup-news group:wordpress-news checked "…"]`) renders
+  the sign-up checkbox pre-ticked. Intended for a dedicated subscribe
+  page where pre-selecting the most popular list is a reasonable nudge
+  — the visitor can still untick it, and the submit handler only
+  enrols boxes that come back ticked. Like CF7 core's `include_blank`,
+  it is a bare option, so it never pollutes the checkbox label. The
+  Integrations → Contact Form 7 help text documents it. No schema
+  change.
+
 ## [1.3.0] — 2026-06-17
 
 ### Added

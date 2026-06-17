@@ -88,6 +88,11 @@ class Contact_Form_7 extends Integration {
 	 *   - `group:slug` — target Heads Up group slug (required;
 	 *     unresolved slugs render the checkbox but the submit
 	 *     handler will skip the row with a debug log entry).
+	 *   - `checked` — render the checkbox pre-ticked. The visitor can
+	 *     still untick it before submitting, and the submit handler
+	 *     only enrols rows that come back ticked. Intended for a
+	 *     dedicated sign-up form, not for opt-ins bolted onto another
+	 *     form (a pre-ticked box is not valid consent in that context).
 	 *   - Free-text values (the bit after the colon-attributes)
 	 *     become the visible label. Falls back to the group's
 	 *     display name, then to a generic prompt.
@@ -103,6 +108,11 @@ class Contact_Form_7 extends Integration {
 		$slug  = (string) $tag->get_option( 'group', '', true );
 		$label = trim( (string) implode( ' ', $tag->values ) );
 
+		// `checked` is a bare option (like CF7 core's `include_blank`),
+		// so it lands in the tag's options, not its values — the label
+		// above stays clean.
+		$checked = $tag->has_option( 'checked' );
+
 		if ( '' === $label ) {
 			$groups_controller = new Groups_Controller();
 			$group             = $groups_controller->get_by_slug( $slug );
@@ -115,11 +125,12 @@ class Contact_Form_7 extends Integration {
 		$id = 'hum-signup-' . sanitize_html_class( $name );
 
 		return sprintf(
-			'<span class="wpcf7-form-control-wrap %1$s"><label for="%2$s"><input type="checkbox" name="%3$s" id="%2$s" value="1" /> %4$s</label></span>',
+			'<span class="wpcf7-form-control-wrap %1$s"><label for="%2$s"><input type="checkbox" name="%3$s" id="%2$s" value="1"%5$s /> %4$s</label></span>',
 			esc_attr( $name ),
 			esc_attr( $id ),
 			esc_attr( $name ),
-			esc_html( $label )
+			esc_html( $label ),
+			$checked ? ' checked="checked"' : ''
 		);
 	}
 
@@ -299,7 +310,7 @@ class Contact_Form_7 extends Integration {
 
 		printf(
 			'<p class="description">%s</p>',
-			esc_html__( 'Replace the `group:` attribute with the slug of the group you want sign-ups to land in. The quoted text becomes the visible checkbox label. The form must include an email field — that\'s where the subscriber\'s address comes from.', 'heads-up-mailer' )
+			esc_html__( 'Replace the `group:` attribute with the slug of the group you want sign-ups to land in. The quoted text becomes the visible checkbox label. The form must include an email field — that\'s where the subscriber\'s address comes from. Add `checked` to render the checkbox pre-ticked (e.g. on a dedicated sign-up form); the visitor can still untick it before submitting.', 'heads-up-mailer' )
 		);
 	}
 
