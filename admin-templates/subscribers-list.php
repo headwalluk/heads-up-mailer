@@ -52,6 +52,8 @@ $never_contact_flag = isset( $_GET['never_contact'] ) ? sanitize_key( wp_unslash
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read only.
 $bulk_never_contact = isset( $_GET['bulk_never_contact'] ) ? absint( $_GET['bulk_never_contact'] ) : 0;
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read only.
+$bulk_deleted = isset( $_GET['bulk_deleted'] ) ? absint( $_GET['bulk_deleted'] ) : 0;
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read only.
 $error_code = isset( $_GET['error'] ) ? sanitize_key( wp_unslash( $_GET['error'] ) ) : '';
 
 if ( '' !== $updated ) {
@@ -83,6 +85,19 @@ if ( $bulk_never_contact > 0 ) {
 				/* translators: %d: number of subscribers flipped to never-contact. */
 				_n( '%d subscriber flagged as "never contact".', '%d subscribers flagged as "never contact".', $bulk_never_contact, 'heads-up-mailer' ),
 				$bulk_never_contact
+			)
+		)
+	);
+}
+
+if ( $bulk_deleted > 0 ) {
+	printf(
+		'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
+		esc_html(
+			sprintf(
+				/* translators: %d: number of subscribers deleted. */
+				_n( '%d subscriber deleted.', '%d subscribers deleted.', $bulk_deleted, 'heads-up-mailer' ),
+				$bulk_deleted
 			)
 		)
 	);
@@ -125,7 +140,7 @@ if ( empty( $subscribers ) ) {
 		STATUS_NEVER_CONTACT => __( 'Never contact', 'heads-up-mailer' ),
 	);
 
-	$bulk_confirm = __( 'Apply this bulk action to the selected subscribers? Marking as "never contact" is sticky — future imports will skip these rows.', 'heads-up-mailer' );
+	$bulk_confirm = __( 'Apply this bulk action to the selected subscribers? Deleting is permanent and cannot be undone. Marking as "never contact" is sticky — future imports will skip these rows.', 'heads-up-mailer' );
 
 	// Confirm lives on the Apply BUTTON, not the form. Otherwise
 	// every click inside the table (Edit, email link) bubbles up
@@ -144,10 +159,11 @@ if ( empty( $subscribers ) ) {
 
 	printf( '<div class="tablenav top">' );
 	printf(
-		'<label for="hum-bulk-action" class="screen-reader-text">%s</label><select name="bulk_action" id="hum-bulk-action"><option value="">%s</option><option value="never_contact">%s</option></select> <button type="submit" class="button action" data-hum-confirm="%s">%s</button>',
+		'<label for="hum-bulk-action" class="screen-reader-text">%s</label><select name="bulk_action" id="hum-bulk-action"><option value="">%s</option><option value="never_contact">%s</option><option value="delete">%s</option></select> <button type="submit" class="button action" data-hum-confirm="%s">%s</button>',
 		esc_html__( 'Bulk actions', 'heads-up-mailer' ),
 		esc_html__( 'Bulk actions', 'heads-up-mailer' ),
 		esc_html__( 'Mark as never contact', 'heads-up-mailer' ),
+		esc_html__( 'Delete', 'heads-up-mailer' ),
 		esc_attr( $bulk_confirm ),
 		esc_html__( 'Apply', 'heads-up-mailer' )
 	);

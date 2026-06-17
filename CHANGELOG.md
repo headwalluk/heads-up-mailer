@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Bulk "Delete" action on the Subscribers list.** Joins the existing
+  "Mark as never contact" bulk action; reuses the per-row
+  `Subscribers_Controller::delete()` (which removes group memberships
+  first), with a plural-aware success notice and an Apply-confirm that
+  warns deletion is permanent. No schema change. Needs a version bump
+  to release.
+
 ## [1.4.0] — 2026-06-17
 
 ### Added

@@ -672,18 +672,28 @@ class Plugin {
 		}
 
 		$controller = new Subscribers_Controller();
-		$flipped    = 0;
+		$count      = 0;
 
 		if ( 'never_contact' === $action ) {
 			foreach ( $ids as $id ) {
 				$result = $controller->mark_never_contact( (int) $id );
 
 				if ( true === $result ) {
-					++$flipped;
+					++$count;
 				}
 			}
 
-			$redirect_args['bulk_never_contact'] = (string) $flipped;
+			$redirect_args['bulk_never_contact'] = (string) $count;
+		} elseif ( 'delete' === $action ) {
+			foreach ( $ids as $id ) {
+				$result = $controller->delete( (int) $id );
+
+				if ( true === $result ) {
+					++$count;
+				}
+			}
+
+			$redirect_args['bulk_deleted'] = (string) $count;
 		} else {
 			$redirect_args['error'] = 'hum_bulk_unknown_action';
 		}
