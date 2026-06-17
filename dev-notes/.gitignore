@@ -1,0 +1,10 @@
+# Local screenshots / image scratch — handy while iterating on the
+# UI, but not part of the design record. The Markdown notes here are
+# tracked; binary screenshots are not.
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.bmp
+*.tiff
