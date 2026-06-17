@@ -70,18 +70,18 @@ if ( $health['completed'] > 0 ) {
 	printf(
 		'<ul class="hum-stat-list"><li>%1$s</li><li>%2$s</li><li>%3$s</li></ul>',
 		sprintf(
-			/* translators: %s: number of sends. */
-			esc_html__( 'Sends: %s', 'heads-up-mailer' ),
+			/* translators: %s: number of newsletters (sends). */
+			esc_html__( 'Newsletters sent: %s', 'heads-up-mailer' ),
 			esc_html( number_format_i18n( (int) $health['sends'] ) )
 		),
 		sprintf(
-			/* translators: %s: number of emails sent. */
-			esc_html__( 'Delivered: %s', 'heads-up-mailer' ),
+			/* translators: %s: number of individual emails delivered. */
+			esc_html__( 'Emails delivered: %s', 'heads-up-mailer' ),
 			esc_html( number_format_i18n( (int) $health['sent'] ) )
 		),
 		sprintf(
-			/* translators: %s: number of emails failed. */
-			esc_html__( 'Failed: %s', 'heads-up-mailer' ),
+			/* translators: %s: number of individual emails that failed. */
+			esc_html__( 'Emails failed: %s', 'heads-up-mailer' ),
 			esc_html( number_format_i18n( (int) $health['failed'] ) )
 		)
 	);

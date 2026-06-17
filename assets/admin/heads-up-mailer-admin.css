@@ -82,7 +82,10 @@
 	margin-top: 8px;
 }
 
-.hum-num-col {
+/* Scope under .widefat so the right-align beats WordPress core's
+   `.widefat th { text-align: left }`, which otherwise leaves the
+   numeric column headings misaligned with their cells. */
+.widefat .hum-num-col {
 	text-align: right;
 	white-space: nowrap;
 }
