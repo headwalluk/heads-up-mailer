@@ -756,6 +756,100 @@ below, pending the `wp-translate-tool` review.
 
 ---
 
+## Planned: public sign-up hardening (double opt-in + rate limiting)
+
+**Goal:** Make public, self-service sign-ups safe to expose on a
+marketing page — protect both list quality (no unconfirmed addresses
+get newsletters) and send reputation (no bot-triggered flood of
+confirmation emails).
+
+**Status:** 📋 Planned — not started. Design agreed 2026-06-17.
+
+### Context: sign-up surfaces and their gates
+
+There are only two ways a member of the public adds themselves:
+
+1. **CF7 sign-up form** (`[hum_signup]` on a public page; see the
+   curated agency / web-designer newsletter page). Untrusted —
+   needs an anti-bot gate **and** double opt-in.
+2. **WooCommerce checkout opt-in checkbox.** Making a payment IS the
+   gate, and a completed order is consent — so this path needs
+   **neither** a captcha nor double opt-in.
+
+Admin add and CSV import are trusted (no gate, no confirmation).
+
+### Key decision: the anti-bot gate lives at the CF7 layer
+
+`[hum_signup]` processes on `wpcf7_before_send_mail`, which only
+fires **after** CF7 validation passes. So an off-the-shelf CF7 spam
+gate (Cloudflare Turnstile addon, a CF7 honeypot plugin, or CF7's
+native reCAPTCHA v3) stops bots **before** heads-up-mailer ever sees
+the submission — no pending row, no confirmation email. We do NOT
+reimplement Turnstile in the plugin; that would duplicate a mature
+layer. Plugin-side anti-bot code only becomes necessary if a
+dedicated public shortcode / block is ever built (deferred), since
+that would post straight to a plugin handler, bypassing CF7.
+
+**Why double opt-in and the gate are both needed (not alternatives):**
+double opt-in protects *list quality* — a forged / bot address never
+becomes an active subscriber. But it does NOT stop the confirmation
+email being *sent* to whatever (often forged, innocent) address was
+submitted; a flood of those makes us the spam source. The gate
+protects *send reputation* by stopping the submission upstream. Hence
+**gate first, then double opt-in.**
+
+### Tasks — plugin-side rate-limit backstop
+
+- [ ] Per-IP rate limit on hum sign-ups / confirmation-email sends,
+      reusing the existing `/manage-comms/` limiter
+      (`RATE_LIMIT_MANAGE_PER_HOUR`, `within_rate_limit()`). Defence
+      in depth behind the CF7 gate, so nothing slipping through can
+      trigger a burst of confirmation mail.
+
+### Tasks — double opt-in
+
+- [ ] `STATUS_PENDING` ('pending') subscriber status. New public
+      sign-ups land here, not `subscribed`; the send worker and the
+      dashboard's active counts already filter `status = 'subscribed'`,
+      so a pending row is inert for free.
+- [ ] Stash the intended group IDs on the pending row
+      (`pending_groups` column on `hum_subscribers`; DB_VERSION 3 → 4,
+      auto-migrates via `check_first_run()`). Memberships and the
+      dashboard `group_join` events are created only on confirmation,
+      so `subscriber_groups` and the per-group stats reflect confirmed
+      humans only — spam that never confirms leaves no trace.
+- [ ] **One** confirmation email per sign-up, even for multiple
+      groups — one click activates every chosen group together.
+- [ ] Confirm link reuses the existing token (`{id}.{hmac}`) and the
+      `/manage-comms/` endpoint with a new `action=confirm` branch:
+      verify token → flip `pending → subscribed`, stamp `consent_at`
+      at confirm time (a stronger consent record than single opt-in),
+      activate memberships, render a "You're subscribed" page.
+      Idempotent on a second click.
+- [ ] Confirmation email — subject + body using the configured From
+      identity; likely a configurable template alongside the footer
+      setting.
+- [ ] `hum_double_optin_enabled` setting (Settings API, one option per
+      field). Gates the **public / CF7 path only**; WooCommerce
+      checkout, admin add, and CSV import always bypass.
+- [ ] Existing confirmed subscribers adding a new group (e.g. ticking
+      another newsletter) do NOT re-confirm — only brand-new emails
+      get the double opt-in.
+- [ ] Cleanup cron purges `pending` rows older than ~7 days, so
+      unconfirmed spam doesn't accumulate and a later genuine
+      re-sign-up works cleanly.
+
+### Sequencing
+
+1. (Owner) Configure + test the corrected CF7 sign-up form on dev.
+2. (Owner) Add the CF7-layer gate — Turnstile addon + honeypot, or
+   CF7 reCAPTCHA — and verify bots bounce before submission.
+3. (Plugin) Rate-limit backstop, then the double opt-in feature set
+   above. Versioned as a minor release with the DB_VERSION 4
+   migration.
+
+---
+
 ## Deferred (post-v1)
 
 ### Subscriber list search and filters
