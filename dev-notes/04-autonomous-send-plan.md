@@ -112,13 +112,31 @@ daily-security agent to draft → send. Design below.
 
 ### Control knobs
 
-- **Master kill switch** — a setting that disables REST sending
-  entirely, independent of the capability. Instant revoke.
-- **Group allowlist** — restrict autonomous send to specific groups
-  (e.g. only the daily-security group), so a bug can't blast a
-  different audience.
-- **Recipient ceiling** — refuse an autonomous send above N
-  recipients, as a blast-radius guard.
+Three layers, designed so the dangerous default is "off". The
+per-group flag is the primary control — it's fail-safe by *data*, not
+by a setting the agent or a bug could ignore.
+
+- **Master toggle — "Allow trigger-send via REST API"** (setting,
+  **default OFF**). Global on/off, independent of the capability, so
+  REST sending can be revoked instantly without touching roles. With
+  it off, the send route always refuses.
+- **Per-group "Allow automated sending" flag** (**primary control**).
+  A boolean on each group (new column on `hum_groups`, alongside
+  `is_private`; **default OFF**), surfaced as a checkbox on the
+  group-edit screen. The REST send route refuses unless **every** group
+  the draft targets is flagged automation-enabled — fail-safe: one
+  non-enabled group in the set blocks the whole send. This is what
+  guarantees the agent can never autonomously email the `general`
+  customer list: that group simply stays unflagged. Automation is
+  opt-in, per audience, and visible in the admin.
+- **Subscriber-count threshold** (setting). The REST send route refuses
+  when the **total subscriber count** exceeds a configured number —
+  training-wheels for early autonomy, so a hands-off send can't go to a
+  list that has quietly grown past the size we're comfortable trusting
+  to automation. (Open question: threshold on *total subscribers* as
+  framed, vs *recipients of this specific send* — possibly both.)
+- **Recipient ceiling** — refuse an autonomous send above N recipients,
+  as a per-send blast-radius guard (complements the global threshold).
 - **Daily cap** — max autonomous sends per day (reuse / mirror the
   `/manage-comms/` rate-limiter pattern).
 - **Send-window enforcement** — optionally require autonomous sends to
@@ -126,6 +144,13 @@ daily-security agent to draft → send. Design below.
 - **Hold / delay** — optional "soft send": queue but hold for a short
   abort window, or a held state a human can cancel, during early
   autonomy.
+
+How the layers compose for a send to succeed autonomously: master
+toggle ON **and** every targeted group automation-enabled **and** total
+subscribers under the threshold **and** this send under the recipient
+ceiling **and** within the daily cap (and send-window, if enforced).
+Any one failing → refuse, with a structured reason logged to the audit
+trail.
 
 ### Audit
 
@@ -152,14 +177,20 @@ daily-security agent to draft → send. Design below.
 1. Capability model: agent Editor + new cap, dedicated service
    account, or admin-only?
 2. Idempotency: status-based refusal only, or also an idempotency key?
-3. Which control knobs are v1 vs later (group allowlist + kill switch
-   feel like v1; send-window + hold may be later)?
-4. Audit storage: `hum_events` extension vs dedicated audit log; and
+3. Which control knobs are v1 vs later? Lean v1: master toggle +
+   per-group flag + subscriber-count threshold + recipient ceiling.
+   Lean later: daily cap, send-window enforcement, hold/abort window.
+4. Subscriber-count threshold — measured on *total subscribers*, on
+   *this send's recipients*, or both? And what default / whether it
+   ships enabled.
+5. Audit storage: `hum_events` extension vs dedicated audit log; and
    whether per-send human notification ships in v1.
-5. Route shape: `/drafts/{id}/send` vs `/sends`.
-6. Schema impact (audit columns / table) → DB_VERSION bump? Versioned
+6. Route shape: `/drafts/{id}/send` vs `/sends`.
+7. Schema impact → DB_VERSION bump. Confirmed: a per-group
+   `allow_automated_send` column on `hum_groups` (default 0) plus a
+   group-edit checkbox. Possibly also audit columns / table. Versioned
    as a minor release.
-7. Phase 0 exit criteria — the exact "clean days" bar.
+8. Phase 0 exit criteria — the exact "clean days" bar.
 
 ---
 
