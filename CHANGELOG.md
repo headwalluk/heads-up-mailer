@@ -54,6 +54,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to `hum_groups` and `is_automated` to `hum_sends`, both defaulting
   to 0 — so the upgrade changes no behaviour until an admin opts a
   group in and flips the master switch.
+- Translations refreshed across all eight bundled locales (de_DE,
+  el_GR, en_GB, es_ES, fr_FR, it_IT, nl_NL, pl_PL). The `.pot` was
+  regenerated and the new autonomous-send strings machine-translated,
+  which also cleared the previously-untranslated 1.3.0 dashboard /
+  group-screen backlog. Short, ambiguous admin labels (`Trigger`,
+  `Auto`, `Manual`, `Auto-send`) now carry `_x()` context per the
+  project i18n guidance. A native-speaker pass over the short labels
+  and the `%d subscriber(s) deleted.` plural is still pending — those
+  fall back to English until then (tracked, not blocking).
 
 ## [1.4.0] — 2026-06-17
 
