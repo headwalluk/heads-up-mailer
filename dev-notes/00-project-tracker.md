@@ -767,13 +767,11 @@ The use case is a daily security email going to one small, managed
 group; the design guarantees the agent can never autonomously email
 the general customer list.
 
-**Status:** ✅ Built + documented 2026-06-20 (1.5.0, committed to
-`master` at `9f8af8a`) — schema, gates, REST route, admin UI, and all
-docs done and verified on the dev DB. Only `v1.5.0` tag/push remains.
-Phase 0 soak test (agent drafts, human sends) runs in parallel; **do
-not enable the master switch in production** until the soak bar in
-`04-autonomous-send-plan.md` is met (the switch ships OFF, so this is
-safe by default).
+**Status:** ✅ Shipped 2026-06-20 — released as **1.5.0** (tagged,
+pushed, release built) and **validated in production** with a real
+end-to-end autonomous send via the daily-security agent. Schema,
+gates, REST route, admin UI, docs, and translations all done. Master
+switch ships OFF; it is now on for the managed security group only.
 **Dependencies:** Send pipeline (M5), REST drafts API (M4 / 1.1.0),
 groups (M2).
 **Design source:** `dev-notes/04-autonomous-send-plan.md` (full
@@ -903,9 +901,16 @@ rationale + phased rollout). This milestone is the agreed v1 cut.
       updated for 1.5.0.
 - [x] Committed (`feat: autonomous draft->send via gated REST route`,
       `9f8af8a`) on `master`. Bundles the unreleased bulk-delete.
-- [ ] Tag + push `v1.5.0` to trigger the release workflow. New admin
-      strings fold into the pending `wp-translate-tool` pass like the
-      1.3.0 batch (catalogues deliberately untouched until then).
+- [x] Tagged + pushed `v1.5.0` (2026-06-20) — release workflow built
+      successfully; GitHub release published with
+      `heads-up-mailer-1.5.0.zip` + the stable `heads-up-mailer.zip`.
+      Translations regenerated in the same session (see the
+      translation-polish note); native-speaker pass still pending.
+- [x] **Validated in production** (2026-06-20) — the owner ran an
+      end-to-end autonomous send via the daily-security agent and
+      confirmed the workflow is good. Phase 0 soak is effectively
+      satisfied for this flow; the master switch can stay on for the
+      managed security group.
 
 ### Open items deliberately deferred (not v1)
 
