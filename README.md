@@ -1,6 +1,6 @@
 # Heads Up Mailer
 
-![Status](https://img.shields.io/badge/status-1.4.0-brightgreen)
+![Status](https://img.shields.io/badge/status-1.5.0-brightgreen)
 ![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b?logo=wordpress&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-8.0%2B-777bb4?logo=php&logoColor=white)
 ![License](https://img.shields.io/badge/license-GPLv2%2B-blue)
@@ -37,6 +37,12 @@ marketing-automation suite.
   data the plugin already holds — no pixels, no link rewriting.
 - **Drafts pipeline** — REST endpoint, sandboxed admin preview,
   configurable footer + sender identity.
+- **Optional autonomous send** — a trusted agent can trigger a send
+  over REST, gated behind a site-wide master switch **and** a
+  per-group opt-in flag (both off by default). Fail-safe: a send only
+  proceeds when every target group is opted in, so the general list
+  can never be auto-mailed. Drafting is unaffected; the Sent log
+  flags Auto vs Manual sends.
 - **Send queue + worker** — async drain on a configurable WP-Cron
   interval, per-recipient optimistic claim against
   `UNIQUE(send_id, subscriber_id)`, wall-clock budget per tick.
@@ -76,7 +82,10 @@ repo](https://github.com/headwalluk/heads-up-mailer/tree/master/docs)
 on GitHub):
 
 - [REST API for AI agents](https://github.com/headwalluk/heads-up-mailer/blob/master/docs/ai-agent-rest-guide.md) —
-  how to POST drafts and read them back.
+  how to POST drafts, read them back, and trigger an autonomous send.
+- [Autonomous send — admin setup](https://github.com/headwalluk/heads-up-mailer/blob/master/docs/autonomous-send-setup.md) —
+  the two safety gates and how to enable / revoke agent-triggered
+  sending.
 
 Additional admin / editor / host guides are tracked as a
 follow-up; the in-admin tab descriptions cover day-to-day use.
@@ -84,7 +93,8 @@ follow-up; the in-admin tab descriptions cover day-to-day use.
 ## REST API
 
 AI agents post drafts via the `heads-up-mailer/v1` namespace
-with WordPress application-password auth. See the
+with WordPress application-password auth — `POST /drafts`,
+`GET /drafts/{id}`, and the gated `POST /drafts/{id}/send`. See the
 [REST API reference](https://github.com/headwalluk/heads-up-mailer/blob/master/docs/ai-agent-rest-guide.md)
 for endpoints, request / response shapes, and `curl` examples.
 

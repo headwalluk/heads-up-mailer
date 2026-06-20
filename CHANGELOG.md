@@ -7,14 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] — 2026-06-20
+
 ### Added
 
+- **Autonomous draft → send via REST.** A new
+  `POST /heads-up-mailer/v1/drafts/{id}/send` route lets a trusted
+  agent trigger a send end-to-end — the same async pipeline a human
+  triggers from the admin Send button — without a human in the loop.
+  Built for a daily security email going to one small, managed group.
+  Gated by two fail-safe controls, **both default OFF**:
+  - **Master switch** `hum_autonomous_send_enabled` (*Settings →
+    Sending → "Allow trigger-send via REST API"*). Site-wide on/off,
+    independent of capabilities, so REST sending revokes instantly.
+  - **Per-group `allow_automated_send` flag** (checkbox on each
+    group's edit screen; `· Auto-send` marker in the groups list).
+    The route refuses unless **every** group the draft targets is
+    flagged — one un-flagged group blocks the whole send. The
+    guarantee is by data, not config: the general list can never be
+    auto-mailed while its group stays un-flagged.
+  - New capability `hum_send_newsletters`, granted to Administrator +
+    Editor alongside `hum_create_drafts`, but separate so the send
+    right can be revoked independently of drafting.
+  - Machine-level idempotency: a draft already `sent`/`sending` is
+    refused (no REST "Send AGAIN"). Status map: `200` queued, `403`
+    master-off or a group not enabled (names the blocked slugs),
+    `409` already sent/sending, `404` not found, `422` pre-flight
+    failure.
+  - Audit: a new `is_automated` column on `hum_sends` (written in the
+    send transaction) drives a **Trigger** column (Auto / Manual) in
+    the Sent log; every trigger — queued or refused — is written to
+    the PHP error log via `audit_autonomous_send()`.
+  - **Drafting is unaffected** — posting drafts and assigning groups
+    over REST works exactly as before; the flag gates only the new
+    send route.
 - **Bulk "Delete" action on the Subscribers list.** Joins the existing
   "Mark as never contact" bulk action; reuses the per-row
   `Subscribers_Controller::delete()` (which removes group memberships
   first), with a plural-aware success notice and an Apply-confirm that
-  warns deletion is permanent. No schema change. Needs a version bump
-  to release.
+  warns deletion is permanent. No schema change.
+
+### Changed
+
+- Schema version bumped to 4. The migration runs automatically on
+  upgrade (activation and `admin_init`), adding `allow_automated_send`
+  to `hum_groups` and `is_automated` to `hum_sends`, both defaulting
+  to 0 — so the upgrade changes no behaviour until an admin opts a
+  group in and flips the master switch.
 
 ## [1.4.0] — 2026-06-17
 

@@ -4,7 +4,7 @@ Tags: newsletter, email, subscribers, mailer, unsubscribe
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,6 +15,8 @@ In-house newsletter plugin: async send queue, RFC 8058 one-click unsubscribe, IM
 Heads Up Mailer is a lightweight in-house newsletter plugin built to replace MailerLite on a single WordPress site.
 
 Drafts are authored by an AI agent via REST. The administrator reviews and edits them in the WordPress admin, then sends to one or more customer groups. Sends are queued in custom tables and drained by WP-Cron in configurable batches — never inline with the admin POST.
+
+Sending stays a human action by default. Optionally (since 1.5.0), a trusted agent can trigger a send autonomously over REST — but only when a site-wide master switch is on AND every target group has been individually opted in. Both ship OFF, so automation can never reach a group an admin has not deliberately flagged.
 
 Privacy-positive by design:
 
@@ -66,6 +68,9 @@ Add `add_filter( 'hum_updater_enabled', '__return_false' );` to your site's `fun
 
 == Changelog ==
 
+= 1.5.0 =
+Adds optional autonomous sending: a new REST route lets a trusted agent trigger a send without a human pressing Send. It is gated by two fail-safe controls that both default OFF — a site-wide master switch (Settings → Sending) and a per-group "Allow autonomous send" flag — so a send only proceeds when the switch is on and every target group is opted in. A separate `hum_send_newsletters` capability keeps send rights revocable independently of drafting; the Sent log gains an Auto/Manual "Trigger" column. Also promotes the bulk Delete action on the Subscribers list. Schema version 4 (auto-migrates; no behaviour change until you opt a group in). See `CHANGELOG.md` for the full entry.
+
 = 1.4.0 =
 Adds a `checked` option to the Contact Form 7 `[hum_signup]` tag, so a sign-up checkbox can render pre-ticked — handy for a dedicated subscribe page where you want to suggest the most popular list. The visitor can still untick it, and only ticked boxes enrol. No schema change. See `CHANGELOG.md` for the full entry.
 
@@ -88,6 +93,9 @@ New custom capability `hum_create_drafts`, granted to Administrator and Editor o
 First stable release. Replaces MailerLite at headwall-hosting.com. Stack covers: drafts via REST → admin review → async send queue → RFC 8058 unsubscribe → public `/manage-comms/` page → IMAP poll for mailto unsubscribes → sent log → never-contact status → Contact Form 7 + WooCommerce integrations → in-plugin GitHub auto-updater. See `CHANGELOG.md` in the plugin folder for the detailed per-feature history (0.1.0 through 0.10.1).
 
 == Upgrade Notice ==
+
+= 1.5.0 =
+Optional autonomous sending over REST, plus schema version 4 (migrates automatically on upgrade). Both new gates ship OFF, so nothing sends autonomously until you enable the master switch and opt a group in. No action required to upgrade.
 
 = 1.4.0 =
 Optional `checked` attribute for the `[hum_signup]` CF7 tag to pre-tick a sign-up checkbox. No action required.

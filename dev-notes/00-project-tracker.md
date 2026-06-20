@@ -1,11 +1,12 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** Shipping post-1.0.0 increments — dashboard + per-group activity log live (1.3.0)
-**Current Version:** 1.3.0
+**Status:** Shipping post-1.0.0 increments — autonomous draft → send built (1.5.0)
+**Current Version:** 1.5.0 (committed; `v1.5.0` tag/push pending)
 **Current Phase:** Post-v1 admin polish and observability
 **Last Updated:** 20 June 2026
-**Progress:** 13 of 13 milestones complete; Milestone 14 (autonomous
-draft → send) scoped and ready to build (5 items deferred to post-1.0.0)
+**Progress:** 14 of 14 milestones complete — Milestone 14 (autonomous
+draft → send) built + documented, release tag pending (5 items
+deferred to post-1.0.0)
 
 ---
 
@@ -766,12 +767,13 @@ The use case is a daily security email going to one small, managed
 group; the design guarantees the agent can never autonomously email
 the general customer list.
 
-**Status:** 🛠️ Built 2026-06-20 (1.5.0, on `master`, uncommitted) —
-schema, gates, REST route, and admin UI done and verified on the dev
-DB; docs + release pending. Phase 0 soak test (agent drafts, human
-sends) runs in parallel; **do not enable the master switch in
-production** until the soak bar in `04-autonomous-send-plan.md` is met
-(the switch ships OFF, so this is safe by default).
+**Status:** ✅ Built + documented 2026-06-20 (1.5.0, committed to
+`master` at `9f8af8a`) — schema, gates, REST route, admin UI, and all
+docs done and verified on the dev DB. Only `v1.5.0` tag/push remains.
+Phase 0 soak test (agent drafts, human sends) runs in parallel; **do
+not enable the master switch in production** until the soak bar in
+`04-autonomous-send-plan.md` is met (the switch ships OFF, so this is
+safe by default).
 **Dependencies:** Send pipeline (M5), REST drafts API (M4 / 1.1.0),
 groups (M2).
 **Design source:** `dev-notes/04-autonomous-send-plan.md` (full
@@ -893,11 +895,17 @@ rationale + phased rollout). This milestone is the agreed v1 cut.
 - [x] `phpcs` clean across all touched files; migration + gate matrix
       + `is_automated` write verified on the dev DB (queued then torn
       down before the worker could drain — no test email sent).
-- [ ] Document the agent send flow + the two gates in `docs/`
-      (host/admin facing), and update the REST section.
-- [ ] Commit (conventional `feat:`) and ship as 1.5.0 (bundles the
-      unreleased bulk-delete change). New strings fold into the
-      pending `wp-translate-tool` pass like the 1.3.0 batch.
+- [x] Documented: `docs/ai-agent-rest-guide.md` gains the
+      `POST /drafts/{id}/send` endpoint, send-route error codes, the
+      `hum_send_newsletters` cap, and a two-mode workflow; new
+      `docs/autonomous-send-setup.md` is the host/admin guide to the
+      two gates. `CHANGELOG.md`, `readme.txt`, and `README.md` all
+      updated for 1.5.0.
+- [x] Committed (`feat: autonomous draft->send via gated REST route`,
+      `9f8af8a`) on `master`. Bundles the unreleased bulk-delete.
+- [ ] Tag + push `v1.5.0` to trigger the release workflow. New admin
+      strings fold into the pending `wp-translate-tool` pass like the
+      1.3.0 batch (catalogues deliberately untouched until then).
 
 ### Open items deliberately deferred (not v1)
 
