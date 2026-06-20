@@ -81,7 +81,7 @@ if ( empty( $groups ) ) {
 } else {
 	printf( '<table class="wp-list-table widefat striped">' );
 	printf(
-		'<thead><tr><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th></tr></thead>',
+		'<thead><tr><th scope="col">%s</th><th scope="col" class="hum-nowrap">%s</th><th scope="col" class="hum-nowrap">%s</th><th scope="col">%s</th><th scope="col" class="hum-nowrap">%s</th></tr></thead>',
 		esc_html__( 'Name', 'heads-up-mailer' ),
 		esc_html__( 'Slug', 'heads-up-mailer' ),
 		esc_html__( 'Visibility', 'heads-up-mailer' ),
@@ -125,7 +125,7 @@ if ( empty( $groups ) ) {
 		}
 
 		printf(
-			'<tr><td><strong>%s</strong></td><td><code>%s</code></td><td>%s</td><td>%s</td><td><a href="%s">%s</a> | <a href="%s" class="hum-delete-link" data-hum-confirm="%s">%s</a></td></tr>',
+			'<tr><td><strong>%s</strong></td><td class="hum-nowrap"><code>%s</code></td><td class="hum-nowrap">%s</td><td>%s</td><td class="hum-nowrap"><a href="%s">%s</a> | <a href="%s" class="hum-delete-link" data-hum-confirm="%s">%s</a></td></tr>',
 			esc_html( $group->name ),
 			esc_html( $group->slug ),
 			esc_html( $visibility ),

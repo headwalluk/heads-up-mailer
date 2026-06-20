@@ -89,3 +89,9 @@
 	text-align: right;
 	white-space: nowrap;
 }
+
+/* Columns that should keep to one line, so a long Description cell
+   can't squeeze them onto multiple rows (Groups list table). */
+.hum-nowrap {
+	white-space: nowrap;
+}

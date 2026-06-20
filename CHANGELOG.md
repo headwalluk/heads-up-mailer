@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Groups list table: the Slug, Visibility, and Actions columns no
+  longer wrap, so a long group Description can't squeeze them onto
+  multiple lines. CSS-only (new reusable `.hum-nowrap` class), no
+  behaviour change.
+
 ## [1.5.0] — 2026-06-20
 
 ### Added
