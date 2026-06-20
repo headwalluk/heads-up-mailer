@@ -1,9 +1,5 @@
-# Copyright (C) 2026 Paul Faulkner
-# This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Language: nl_NL\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Project-Id-Version: Heads Up Mailer 1.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/heads-up-mailer\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
@@ -13,6 +9,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-06-09T20:12:40+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: nl_NL\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: heads-up-mailer\n"
 
@@ -42,14 +40,6 @@ msgstr "Paul Faulkner"
 #: heads-up-mailer.php
 msgid "https://headwall-hosting.com"
 msgstr "https://headwall-hosting.com"
-
-#: admin-templates/dashboard.php:21
-msgid "Use the submenu to manage subscribers, groups, drafts, and the sent log, or to review the send queue and integrations under Settings."
-msgstr "Gebruik het submenu om abonnees, groepen, concepten en het verzendlogboek te beheren, of om de verzendwachtrij en integraties te bekijken onder Instellingen."
-
-#: admin-templates/dashboard.php:29
-msgid "Send statistics and activity analytics will arrive in a future release."
-msgstr "Functies voor het verzenden van statistieken en activiteitsanalyses zullen in een toekomstige release beschikbaar komen."
 
 #: admin-templates/draft-edit.php:26
 msgid "Edit draft"
@@ -87,9 +77,10 @@ msgstr "Een of meer groepsnamen zijn onbekend."
 #: admin-templates/drafts-list.php:75
 #: includes/class-drafts-controller.php:137
 #: includes/class-drafts-controller.php:182
-#: includes/class-plugin.php:1076
-#: includes/class-rest-controller.php:157
-#: includes/class-sends-controller.php:129
+#: includes/class-plugin.php:1089
+#: includes/class-rest-controller.php:193
+#: includes/class-sends-controller.php:133
+#: includes/class-sends-controller.php:214
 msgid "Draft not found."
 msgstr "Concept niet gevonden."
 
@@ -106,26 +97,26 @@ msgid "Failed to update draft."
 msgstr "Het bijwerken van het concept is mislukt."
 
 #: admin-templates/draft-edit.php:57
-#: includes/class-sends-controller.php:133
+#: includes/class-sends-controller.php:137
 msgid "This draft is already sending. Wait for it to finish."
 msgstr "Dit concept wordt al verzonden. Wacht tot het klaar is."
 
 #: admin-templates/draft-edit.php:58
 #: admin-templates/drafts-list.php:77
-#: includes/class-sends-controller.php:139
+#: includes/class-sends-controller.php:143
 msgid "Configure a From: email on Settings → Sending before sending."
 msgstr "Stel voor het verzenden een afzender-e-mailadres in via Instellingen → Verzenden."
 
 #: admin-templates/draft-edit.php:59
 #: admin-templates/drafts-list.php:78
-#: includes/class-sends-controller.php:145
+#: includes/class-sends-controller.php:149
 msgid "Select at least one group on the draft before sending."
 msgstr "Selecteer ten minste één groep in het concept voordat u het verstuurt."
 
 #: admin-templates/draft-edit.php:60
 #: admin-templates/draft-edit.php:175
 #: admin-templates/drafts-list.php:79
-#: includes/class-sends-controller.php:166
+#: includes/class-sends-controller.php:170
 msgid "No subscribed recipients in the selected groups."
 msgstr "Er zijn geen geabonneerde ontvangers in de geselecteerde groepen."
 
@@ -136,7 +127,7 @@ msgstr "Het verzenden is mislukt (schrijven naar de database is mislukt)."
 
 #: admin-templates/draft-edit.php:62
 #: admin-templates/drafts-list.php:81
-#: includes/class-sends-controller.php:277
+#: includes/class-sends-controller.php:374
 msgid "Failed to mark draft as sending."
 msgstr "Het is niet gelukt om het concept als verzonden te markeren."
 
@@ -147,10 +138,10 @@ msgstr "Je kunt een concept niet bewerken terwijl het wordt verzonden."
 
 #: admin-templates/draft-edit.php:66
 #: admin-templates/drafts-list.php:86
-#: admin-templates/group-edit.php:52
+#: admin-templates/group-edit.php:53
 #: admin-templates/groups-list.php:68
 #: admin-templates/subscriber-edit.php:54
-#: admin-templates/subscribers-list.php:106
+#: admin-templates/subscribers-list.php:121
 msgid "An error occurred."
 msgstr "Er is een fout opgetreden."
 
@@ -185,7 +176,7 @@ msgid "Save draft"
 msgstr "Concept opslaan"
 
 #: admin-templates/draft-edit.php:136
-#: admin-templates/group-edit.php:110
+#: admin-templates/group-edit.php:151
 #: admin-templates/subscriber-edit.php:166
 #: admin-templates/subscriber-import.php:75
 msgid "Cancel"
@@ -204,10 +195,11 @@ msgid "Tick at least one group above before sending."
 msgstr "Vink ten minste één van de bovenstaande groepen aan voordat u het verzendt."
 
 #: admin-templates/draft-edit.php:170
-#: includes/class-sends-controller.php:160
+#: includes/class-sends-controller.php:164
 msgid "None of the selected groups exist any more."
 msgstr "Geen van de geselecteerde groepen bestaat nog."
 
+#: admin-templates/dashboard.php:178
 #: admin-templates/draft-edit.php:180
 #: admin-templates/draft-edit.php:185
 msgid "Send"
@@ -311,16 +303,17 @@ msgstr "ID"
 
 #: admin-templates/drafts-list.php:112
 #: admin-templates/sent-log-detail.php:136
-#: admin-templates/sent-log-list.php:33
+#: admin-templates/sent-log-list.php:34
 #: admin-templates/subscriber-edit.php:112
-#: admin-templates/subscribers-list.php:162
+#: admin-templates/subscribers-list.php:178
 msgid "Status"
 msgstr "Status"
 
+#: admin-templates/dashboard.php:124
 #: admin-templates/drafts-list.php:113
 #: admin-templates/groups-list.php:28
 #: admin-templates/subscriber-edit.php:140
-#: admin-templates/subscribers-list.php:163
+#: admin-templates/subscribers-list.php:179
 #: includes/class-plugin.php:288
 #: includes/class-plugin.php:289
 msgid "Groups"
@@ -332,7 +325,7 @@ msgstr "Aangemaakt"
 
 #: admin-templates/drafts-list.php:115
 #: admin-templates/groups-list.php:89
-#: admin-templates/subscribers-list.php:165
+#: admin-templates/subscribers-list.php:181
 msgid "Actions"
 msgstr "Acties"
 
@@ -347,99 +340,101 @@ msgid "Delete the draft \"%s\"?"
 msgstr "Het concept \"%s\" verwijderen?"
 
 #: admin-templates/drafts-list.php:173
-#: admin-templates/groups-list.php:128
-#: admin-templates/subscribers-list.php:226
+#: admin-templates/groups-list.php:134
+#: admin-templates/subscribers-list.php:242
 msgid "Edit"
 msgstr "Bewerken"
 
 #: admin-templates/drafts-list.php:176
-#: admin-templates/groups-list.php:131
-#: admin-templates/subscribers-list.php:242
+#: admin-templates/groups-list.php:137
+#: admin-templates/subscribers-list.php:166
+#: admin-templates/subscribers-list.php:258
 msgid "Delete"
 msgstr "Verwijderen"
 
-#: admin-templates/group-edit.php:25
+#: admin-templates/group-edit.php:26
 msgid "Edit group"
 msgstr "Groep bewerken"
 
-#: admin-templates/group-edit.php:26
+#: admin-templates/group-edit.php:27
 msgid "Add group"
 msgstr "Groep toevoegen"
 
-#: admin-templates/group-edit.php:42
+#: admin-templates/group-edit.php:43
 #: admin-templates/groups-list.php:57
 #: includes/class-groups-controller.php:126
 #: includes/class-groups-controller.php:177
 msgid "A group with that slug already exists."
 msgstr "Er bestaat al een groep met die naam."
 
-#: admin-templates/group-edit.php:43
+#: admin-templates/group-edit.php:44
 #: admin-templates/groups-list.php:58
-#: includes/class-groups-controller.php:281
+#: includes/class-groups-controller.php:282
 msgid "A valid slug is required."
 msgstr "Er is een geldige slug vereist."
 
-#: admin-templates/group-edit.php:44
+#: admin-templates/group-edit.php:45
 #: admin-templates/groups-list.php:59
-#: includes/class-groups-controller.php:288
+#: includes/class-groups-controller.php:289
 msgid "Group name is required."
 msgstr "De groepsnaam is verplicht."
 
-#: admin-templates/group-edit.php:45
+#: admin-templates/group-edit.php:46
 #: admin-templates/groups-list.php:60
 #: includes/class-groups-controller.php:159
 #: includes/class-groups-controller.php:209
 msgid "Group not found."
 msgstr "Groep niet gevonden."
 
-#: admin-templates/group-edit.php:46
+#: admin-templates/group-edit.php:47
 #: admin-templates/groups-list.php:61
 #: includes/class-groups-controller.php:139
 msgid "Failed to insert group."
 msgstr "Het is niet gelukt om de groep in te voegen."
 
-#: admin-templates/group-edit.php:47
+#: admin-templates/group-edit.php:48
 #: admin-templates/groups-list.php:62
 #: includes/class-groups-controller.php:192
 msgid "Failed to update group."
 msgstr "Het bijwerken van de groep is mislukt."
 
-#: admin-templates/group-edit.php:76
+#: admin-templates/group-edit.php:111
 #: admin-templates/groups-list.php:86
-#: admin-templates/tab-sending.php:90
+#: admin-templates/tab-sending.php:116
 msgid "Slug"
 msgstr "Slug"
 
-#: admin-templates/group-edit.php:78
+#: admin-templates/group-edit.php:100
+#: admin-templates/group-edit.php:113
 msgid "Lowercase letters, numbers, and hyphens. Used in REST and the database."
 msgstr "Kleine letters, cijfers en koppeltekens. Wordt gebruikt in REST en de database."
 
-#: admin-templates/group-edit.php:83
+#: admin-templates/group-edit.php:78
 #: admin-templates/groups-list.php:85
 #: admin-templates/subscriber-edit.php:87
-#: admin-templates/subscribers-list.php:161
+#: admin-templates/subscribers-list.php:177
 msgid "Name"
 msgstr "Naam"
 
-#: admin-templates/group-edit.php:89
+#: admin-templates/group-edit.php:119
 #: admin-templates/groups-list.php:88
 msgid "Description"
 msgstr "Beschrijving"
 
-#: admin-templates/group-edit.php:97
+#: admin-templates/group-edit.php:128
 #: admin-templates/groups-list.php:118
 msgid "Private"
 msgstr "Privé"
 
-#: admin-templates/group-edit.php:99
+#: admin-templates/group-edit.php:130
 msgid "Hide this group from the public preferences page for non-members."
 msgstr "Verberg deze groep op de pagina met algemene instellingen voor niet-leden."
 
-#: admin-templates/group-edit.php:100
+#: admin-templates/group-edit.php:131
 msgid "Private groups never appear as a sign-up option on /manage-comms/. Existing members still see it (so they can unsubscribe), but anyone else does not. Useful for internal / test groups and one-off targeted lists."
 msgstr "Privé-groepen worden nooit als aanmeldingsoptie weergegeven op /manage-comms/. Bestaande leden zien deze optie nog steeds (zodat ze zich kunnen afmelden), maar anderen niet. Handig voor interne of testgroepen en eenmalige doelgerichte lijsten."
 
-#: admin-templates/group-edit.php:108
+#: admin-templates/group-edit.php:149
 msgid "Save group"
 msgstr "Groep opslaan"
 
@@ -494,7 +489,7 @@ msgid "Subject:"
 msgstr "Onderwerp:"
 
 #: admin-templates/sent-log-detail.php:57
-#: admin-templates/sent-log-list.php:63
+#: admin-templates/sent-log-list.php:69
 msgid "(draft deleted)"
 msgstr "(concept verwijderd)"
 
@@ -544,10 +539,11 @@ msgstr "Verwerking (%d)"
 msgid "No recipients match this filter."
 msgstr "Er zijn geen ontvangers die aan deze filtervoorwaarden voldoen."
 
+#: admin-templates/dashboard.php:176
 #: admin-templates/sent-log-detail.php:135
 #: admin-templates/subscriber-edit.php:81
 #: admin-templates/subscriber-import.php:111
-#: admin-templates/subscribers-list.php:160
+#: admin-templates/subscribers-list.php:176
 msgid "Email"
 msgstr "E-mail"
 
@@ -563,6 +559,7 @@ msgstr "Verzonden om (UTC)"
 msgid "Last error"
 msgstr "Laatste fout"
 
+#: admin-templates/dashboard.php:184
 #: admin-templates/sent-log-detail.php:151
 msgid "(subscriber removed)"
 msgstr "(abonnee verwijderd)"
@@ -571,23 +568,23 @@ msgstr "(abonnee verwijderd)"
 msgid "No sends recorded yet. Once a draft is queued from the Drafts page, it will appear here."
 msgstr "Er zijn nog geen verzendingen geregistreerd. Zodra een concept vanaf de pagina ‘Concepten’ in de wachtrij wordt geplaatst, verschijnt het hier."
 
-#: admin-templates/sent-log-list.php:34
+#: admin-templates/sent-log-list.php:35
 msgid "Sent / Total"
 msgstr "Verzonden / Totaal"
 
-#: admin-templates/sent-log-list.php:35
+#: admin-templates/sent-log-list.php:36
 msgid "Failed"
 msgstr "Mislukt"
 
-#: admin-templates/sent-log-list.php:36
+#: admin-templates/sent-log-list.php:37
 msgid "In progress"
 msgstr "Bezig"
 
-#: admin-templates/sent-log-list.php:37
+#: admin-templates/sent-log-list.php:38
 msgid "Started (UTC)"
 msgstr "Gestart (UTC)"
 
-#: admin-templates/sent-log-list.php:38
+#: admin-templates/sent-log-list.php:39
 msgid "Finished (UTC)"
 msgstr "Voltooid (UTC)"
 
@@ -617,51 +614,51 @@ msgid "Add subscriber"
 msgstr "Abonnee toevoegen"
 
 #: admin-templates/subscriber-edit.php:44
-#: admin-templates/subscribers-list.php:93
-#: includes/class-subscribers-controller.php:167
-#: includes/class-subscribers-controller.php:253
+#: admin-templates/subscribers-list.php:108
+#: includes/class-subscribers-controller.php:182
+#: includes/class-subscribers-controller.php:268
 msgid "A subscriber with that email already exists."
 msgstr "Er bestaat al een abonnee met dat e-mailadres."
 
 #: admin-templates/subscriber-edit.php:45
-#: admin-templates/subscribers-list.php:94
-#: includes/class-subscribers-controller.php:471
-#: includes/class-subscribers-controller.php:624
-#: includes/class-subscribers-controller.php:688
+#: admin-templates/subscribers-list.php:109
+#: includes/class-subscribers-controller.php:486
+#: includes/class-subscribers-controller.php:639
+#: includes/class-subscribers-controller.php:703
 msgid "A valid email address is required."
 msgstr "Er is een geldig e-mailadres vereist."
 
 #: admin-templates/subscriber-edit.php:46
-#: admin-templates/subscribers-list.php:95
-#: includes/class-subscribers-controller.php:649
-#: includes/class-subscribers-controller.php:703
+#: admin-templates/subscribers-list.php:110
+#: includes/class-subscribers-controller.php:664
+#: includes/class-subscribers-controller.php:718
 msgid "Invalid subscriber status."
 msgstr "Ongeldige abonneestatus."
 
 #: admin-templates/subscriber-edit.php:47
-#: admin-templates/subscribers-list.php:96
-#: includes/class-subscribers-controller.php:236
-#: includes/class-subscribers-controller.php:320
-#: includes/class-subscribers-controller.php:363
-#: includes/class-subscribers-controller.php:410
-#: includes/class-subscribers-controller.php:532
-#: includes/class-subscribers-controller.php:576
+#: admin-templates/subscribers-list.php:111
+#: includes/class-subscribers-controller.php:251
+#: includes/class-subscribers-controller.php:335
+#: includes/class-subscribers-controller.php:378
+#: includes/class-subscribers-controller.php:425
+#: includes/class-subscribers-controller.php:547
+#: includes/class-subscribers-controller.php:591
 msgid "Subscriber not found."
 msgstr "Geen abonnee gevonden."
 
 #: admin-templates/subscriber-edit.php:48
-#: admin-templates/subscribers-list.php:97
-#: includes/class-subscribers-controller.php:193
+#: admin-templates/subscribers-list.php:112
+#: includes/class-subscribers-controller.php:208
 msgid "Failed to insert subscriber."
 msgstr "Het is niet gelukt om de abonnee toe te voegen."
 
 #: admin-templates/subscriber-edit.php:49
-#: admin-templates/subscribers-list.php:98
-#: includes/class-subscribers-controller.php:298
-#: includes/class-subscribers-controller.php:385
-#: includes/class-subscribers-controller.php:432
-#: includes/class-subscribers-controller.php:554
-#: includes/class-subscribers-controller.php:591
+#: admin-templates/subscribers-list.php:113
+#: includes/class-subscribers-controller.php:313
+#: includes/class-subscribers-controller.php:400
+#: includes/class-subscribers-controller.php:447
+#: includes/class-subscribers-controller.php:569
+#: includes/class-subscribers-controller.php:606
 msgid "Failed to update subscriber."
 msgstr "Het bijwerken van de abonnee is mislukt."
 
@@ -674,27 +671,27 @@ msgid "They will not receive newsletters, and CSV re-imports will skip them. Onl
 msgstr "Ze ontvangen geen nieuwsbrieven en worden bij het opnieuw importeren van CSV-bestanden overgeslagen. Wijzig de status hier alleen als je uitdrukkelijke toestemming hebt om het contact te hervatten."
 
 #: admin-templates/subscriber-edit.php:93
-#: admin-templates/subscribers-list.php:121
+#: admin-templates/subscribers-list.php:136
 msgid "Subscribed"
 msgstr "Geabonneerd"
 
 #: admin-templates/subscriber-edit.php:94
-#: admin-templates/subscribers-list.php:122
+#: admin-templates/subscribers-list.php:137
 msgid "Unsubscribed"
 msgstr "Afgemeld"
 
 #: admin-templates/subscriber-edit.php:95
-#: admin-templates/subscribers-list.php:123
+#: admin-templates/subscribers-list.php:138
 msgid "Bounced"
 msgstr "Teruggekaatst"
 
 #: admin-templates/subscriber-edit.php:96
-#: admin-templates/subscribers-list.php:124
+#: admin-templates/subscribers-list.php:139
 msgid "Complained"
 msgstr "Een klacht ingediend"
 
 #: admin-templates/subscriber-edit.php:97
-#: admin-templates/subscribers-list.php:125
+#: admin-templates/subscribers-list.php:140
 msgid "Never contact"
 msgstr "Neem nooit contact op"
 
@@ -711,7 +708,7 @@ msgid "Free-text label for where consent was captured (e.g. \"checkout\", \"impo
 msgstr "Vrije tekst om aan te geven waar de toestemming is verkregen (bijv. \"tijdens het afrekenen\", \"geïmporteerd vanuit MailerLite\")."
 
 #: admin-templates/subscriber-edit.php:154
-#: admin-templates/subscribers-list.php:164
+#: admin-templates/subscribers-list.php:180
 msgid "Consent at"
 msgstr "Toestemming op"
 
@@ -790,6 +787,7 @@ msgstr "Resultaat"
 msgid "Notes"
 msgstr "Opmerkingen"
 
+#: admin-templates/dashboard.php:177
 #: admin-templates/subscriber-import.php:121
 msgid "Error"
 msgstr "Fout"
@@ -812,82 +810,78 @@ msgstr "Abonnees"
 msgid "Import CSV"
 msgstr "CSV importeren"
 
-#: admin-templates/subscribers-list.php:60
+#: admin-templates/subscribers-list.php:62
 msgid "Subscriber saved."
 msgstr "Abonnee opgeslagen."
 
-#: admin-templates/subscribers-list.php:67
+#: admin-templates/subscribers-list.php:69
 msgid "Subscriber deleted."
 msgstr "Abonnee verwijderd."
 
-#: admin-templates/subscribers-list.php:74
+#: admin-templates/subscribers-list.php:76
 msgid "Subscriber flagged as \"never contact\"."
 msgstr "Abonnee gemarkeerd als \"nooit contacteren\"."
 
 #. translators: %d: number of subscribers flipped to never-contact.
-#: admin-templates/subscribers-list.php:84
+#: admin-templates/subscribers-list.php:86
 #, php-format
 msgid "%d subscriber flagged as \"never contact\"."
 msgid_plural "%d subscribers flagged as \"never contact\"."
 msgstr[0] "%d abonnee gemarkeerd als \"Neem nooit contact op\"."
 msgstr[1] "%d abonnees gemarkeerd als \"Neem nooit contact op\"."
 
-#: admin-templates/subscribers-list.php:99
-#: includes/class-subscribers-controller.php:340
+#: admin-templates/subscribers-list.php:114
+#: includes/class-subscribers-controller.php:355
 msgid "Failed to delete subscriber."
 msgstr "Het verwijderen van de abonnee is mislukt."
 
-#: admin-templates/subscribers-list.php:100
+#: admin-templates/subscribers-list.php:115
 msgid "Select an action and at least one subscriber before clicking Apply."
 msgstr "Selecteer een actie en ten minste één abonnee voordat u op ‘Toepassen’ klikt."
 
-#: admin-templates/subscribers-list.php:101
+#: admin-templates/subscribers-list.php:116
 msgid "That bulk action is not recognised."
 msgstr "Die bulkactie wordt niet herkend."
 
-#: admin-templates/subscribers-list.php:117
+#: admin-templates/subscribers-list.php:132
 msgid "No subscribers yet. Add one or import from CSV."
 msgstr "Er zijn nog geen abonnees. Voeg er een toe of importeer vanuit een CSV-bestand."
 
-#: admin-templates/subscribers-list.php:128
-msgid "Apply this bulk action to the selected subscribers? Marking as \"never contact\" is sticky — future imports will skip these rows."
-msgstr "Wilt u deze bulkactie toepassen op de geselecteerde abonnees? De markering 'nooit contacteren' blijft van kracht — bij toekomstige imports worden deze rijen overgeslagen."
-
-#: admin-templates/subscribers-list.php:148
-#: admin-templates/subscribers-list.php:149
+#: admin-templates/subscribers-list.php:163
+#: admin-templates/subscribers-list.php:164
 msgid "Bulk actions"
 msgstr "Bulkacties"
 
-#: admin-templates/subscribers-list.php:150
+#: admin-templates/subscribers-list.php:165
 msgid "Mark as never contact"
 msgstr "Markeren als 'nooit meer contacteren'"
 
-#: admin-templates/subscribers-list.php:152
+#: admin-templates/subscribers-list.php:168
 msgid "Apply"
 msgstr "Solliciteren"
 
-#: admin-templates/subscribers-list.php:159
+#: admin-templates/subscribers-list.php:175
 msgid "Select all"
 msgstr "Alles selecteren"
 
 #. translators: %s: Subscriber email.
-#: admin-templates/subscribers-list.php:215
+#: admin-templates/subscribers-list.php:231
 #, php-format
 msgid "Delete the subscriber \"%s\"?"
 msgstr "De abonnee \"%s\" verwijderen?"
 
 #. translators: %s: Subscriber email.
-#: admin-templates/subscribers-list.php:217
+#: admin-templates/subscribers-list.php:233
 #, php-format
 msgid "Flag %s as \"never contact\"? This is sticky — future imports will skip them, and the only way back is to edit the status manually."
 msgstr "%s markeren als \"nooit contact opnemen\"? Dit is een permanente instelling — bij toekomstige imports worden deze records overgeslagen, en de enige manier om dit ongedaan te maken is door de status handmatig te wijzigen."
 
-#: admin-templates/subscribers-list.php:234
+#: admin-templates/subscribers-list.php:250
 msgid "Mark never-contact"
 msgstr "Mark (nooit contact)"
 
 #. translators: %s: Subscriber email used as accessible checkbox label.
-#: admin-templates/subscribers-list.php:251
+#: admin-templates/subscribers-list.php:267
 #, php-format
 msgid "Select %s"
 msgstr "Selecteer %s"
@@ -1028,49 +1022,49 @@ msgstr "Tikinterval (minuten)"
 msgid "How often the queue drains. Default every 5 minutes, range 1–60. The cron event re-schedules itself automatically when this value changes."
 msgstr "Hoe vaak de wachtrij wordt geleegd. Standaard elke 5 minuten, bereik 1–60. De cron-taak wordt automatisch opnieuw ingepland wanneer deze waarde verandert."
 
-#: admin-templates/tab-sending.php:24
+#: admin-templates/tab-sending.php:25
 msgid "Sender identity"
 msgstr "Identiteit van de afzender"
 
-#: admin-templates/tab-sending.php:27
+#: admin-templates/tab-sending.php:28
 msgid "Every send uses this From: identity. Leave blank and the worker will refuse to queue."
 msgstr "Bij elke verzending wordt deze ‘Van:’-identiteit gebruikt. Laat dit veld leeg en de worker zal weigeren de verzending in de wachtrij te plaatsen."
 
-#: admin-templates/tab-sending.php:37
+#: admin-templates/tab-sending.php:38
 msgid "From name"
 msgstr "Van naam"
 
-#: admin-templates/tab-sending.php:44
+#: admin-templates/tab-sending.php:45
 msgid "From email"
 msgstr "Uit een e-mail"
 
-#: admin-templates/tab-sending.php:47
+#: admin-templates/tab-sending.php:48
 msgid "Must be an address your outbound mail provider is authorised to send as (SPF / DKIM aligned)."
 msgstr "Dit moet een adres zijn waarvoor uw e-mailprovider toestemming heeft om namens te verzenden (in overeenstemming met SPF en DKIM)."
 
-#: admin-templates/tab-sending.php:52
+#: admin-templates/tab-sending.php:78
 msgid "Footer"
 msgstr "Voettekst"
 
 #. translators: %s: literal placeholder token shown inline.
-#: admin-templates/tab-sending.php:58
+#: admin-templates/tab-sending.php:84
 #, php-format
 msgid "HTML appended to every outgoing newsletter immediately before the closing %1$s tag (or at the end of the body for fragment HTML). The %2$s token is replaced with the recipient's personalised unsubscribe URL at send time."
 msgstr "HTML die aan elke uitgaande nieuwsbrief wordt toegevoegd, direct vóór de afsluitende %1$s-tag (of aan het einde van de hoofdtekst bij fragment-HTML). Het %2$s-token wordt op het moment van verzending vervangen door de gepersonaliseerde afmeld-URL van de ontvanger."
 
-#: admin-templates/tab-sending.php:70
+#: admin-templates/tab-sending.php:96
 msgid "Footer HTML"
 msgstr "HTML-voettekst"
 
-#: admin-templates/tab-sending.php:77
+#: admin-templates/tab-sending.php:103
 msgid "Public preferences page"
 msgstr "Pagina met publieke voorkeuren"
 
-#: admin-templates/tab-sending.php:80
+#: admin-templates/tab-sending.php:106
 msgid "The URL slug where recipients land to manage preferences or one-click unsubscribe. Changing this flushes the WordPress rewrite rules."
 msgstr "De URL-slug waar ontvangers terechtkomen om hun voorkeuren te beheren of zich met één klik uit te schrijven. Als je dit wijzigt, worden de herschrijfregels van WordPress geleegd."
 
-#: admin-templates/tab-sending.php:94
+#: admin-templates/tab-sending.php:120
 msgid "Recipients will visit:"
 msgstr "De begunstigden zullen een bezoek brengen aan:"
 
@@ -1137,7 +1131,7 @@ msgid "Heads Up Mailer mailbox poll"
 msgstr "Heads Up Mailer-enquête via de mailbox"
 
 #: includes/class-mailbox-poller.php:183
-#: includes/class-plugin.php:777
+#: includes/class-plugin.php:790
 msgid "The PHP imap extension is not loaded on this host."
 msgstr "De PHP IMAP-extensie is op deze host niet geladen."
 
@@ -1150,7 +1144,7 @@ msgid "Another poll is already in progress. Try again in a moment."
 msgstr "Er is al een nieuwe peiling aan de gang. Probeer het straks nog eens."
 
 #: includes/class-mailbox-poller.php:270
-#: includes/class-plugin.php:822
+#: includes/class-plugin.php:835
 msgid "Failed to open IMAP connection."
 msgstr "Het is niet gelukt om de IMAP-verbinding te openen."
 
@@ -1194,50 +1188,50 @@ msgstr "Instellingen"
 
 #: includes/class-plugin.php:378
 #: includes/class-plugin.php:391
-#: includes/class-plugin.php:405
-#: includes/class-plugin.php:477
-#: includes/class-plugin.php:871
-#: includes/class-plugin.php:910
+#: includes/class-plugin.php:407
+#: includes/class-plugin.php:480
+#: includes/class-plugin.php:884
+#: includes/class-plugin.php:923
 msgid "You do not have permission to access this page."
 msgstr "Je hebt geen toestemming om deze pagina te bekijken."
 
-#: includes/class-plugin.php:432
-#: includes/class-plugin.php:534
-#: includes/class-plugin.php:584
-#: includes/class-plugin.php:615
-#: includes/class-plugin.php:650
-#: includes/class-plugin.php:703
-#: includes/class-plugin.php:949
-#: includes/class-plugin.php:1000
-#: includes/class-plugin.php:1033
-#: includes/class-plugin.php:1066
-#: includes/class-plugin.php:1090
+#: includes/class-plugin.php:434
+#: includes/class-plugin.php:537
+#: includes/class-plugin.php:587
+#: includes/class-plugin.php:618
+#: includes/class-plugin.php:653
+#: includes/class-plugin.php:716
+#: includes/class-plugin.php:962
+#: includes/class-plugin.php:1013
+#: includes/class-plugin.php:1046
+#: includes/class-plugin.php:1079
+#: includes/class-plugin.php:1103
 msgid "You do not have permission."
 msgstr "Je hebt geen toestemming."
 
-#: includes/class-plugin.php:720
+#: includes/class-plugin.php:733
 msgid "No file was uploaded."
 msgstr "Er is geen bestand geüpload."
 
-#: includes/class-plugin.php:725
+#: includes/class-plugin.php:738
 msgid "File upload failed."
 msgstr "Het uploaden van het bestand is mislukt."
 
-#: includes/class-plugin.php:727
+#: includes/class-plugin.php:740
 msgid "Uploaded file is not a valid upload."
 msgstr "Het geüploade bestand is ongeldig."
 
-#: includes/class-plugin.php:773
-#: includes/class-plugin.php:851
+#: includes/class-plugin.php:786
+#: includes/class-plugin.php:864
 msgid "Insufficient permissions."
 msgstr "Onvoldoende rechten."
 
-#: includes/class-plugin.php:796
+#: includes/class-plugin.php:809
 msgid "Host, port, username, and password are all required."
 msgstr "Host, poort, gebruikersnaam en wachtwoord zijn allemaal verplicht."
 
 #. translators: %s: folder name on the IMAP server.
-#: includes/class-plugin.php:832
+#: includes/class-plugin.php:845
 #, php-format
 msgid "Connection successful — folder \"%s\" is reachable."
 msgstr "Verbinding tot stand gebracht — de map \"%s\" is bereikbaar."
@@ -1263,19 +1257,19 @@ msgstr "Deze afmeldlink is ongeldig of is verlopen. Neem contact op met de afzen
 msgid "Too many requests. Please try again later."
 msgstr "Er zijn te veel verzoeken. Probeer het later nog eens."
 
-#: includes/class-sends-controller.php:234
+#: includes/class-sends-controller.php:331
 msgid "Failed to create send."
 msgstr "Het aanmaken van de verzending is mislukt."
 
-#: includes/class-sends-controller.php:264
+#: includes/class-sends-controller.php:361
 msgid "Failed to insert recipients."
 msgstr "Het is niet gelukt om de ontvangers toe te voegen."
 
-#: includes/class-settings.php:339
+#: includes/class-settings.php:349
 msgid "From email address is not valid. The previous value was kept."
 msgstr "Het opgegeven e-mailadres is ongeldig. De vorige waarde is behouden."
 
-#: includes/class-subscribers-controller.php:480
+#: includes/class-subscribers-controller.php:495
 msgid "Subscriber is flagged never-contact."
 msgstr "De abonnee is gemarkeerd als 'nooit contacteren'."
 
@@ -1288,21 +1282,17 @@ msgstr "Heads Up Mailer-vinkje"
 msgid "Contact Form 7"
 msgstr "Contactformulier 7"
 
-#: integrations/contact-form-7/class-contact-form-7.php:112
+#: integrations/contact-form-7/class-contact-form-7.php:122
 msgid "Sign up for our newsletter"
 msgstr "Meld je aan voor onze nieuwsbrief"
 
-#: integrations/contact-form-7/class-contact-form-7.php:291
+#: integrations/contact-form-7/class-contact-form-7.php:302
 msgid "Add a sign-up checkbox to any Contact Form 7 form by inserting the following tag in the form editor:"
 msgstr "Voeg een selectievakje voor aanmelding toe aan elk Contact Form 7-formulier door de volgende tag in de formulier-editor in te voegen:"
 
-#: integrations/contact-form-7/class-contact-form-7.php:297
+#: integrations/contact-form-7/class-contact-form-7.php:308
 msgid "Sign me up for the newsletter"
 msgstr "Schrijf me in voor de nieuwsbrief"
-
-#: integrations/contact-form-7/class-contact-form-7.php:302
-msgid "Replace the `group:` attribute with the slug of the group you want sign-ups to land in. The quoted text becomes the visible checkbox label. The form must include an email field — that's where the subscriber's address comes from."
-msgstr "Vervang het `group:`-attribuut door de slug van de groep waar je de aanmeldingen naartoe wilt sturen. De tekst tussen aanhalingstekens wordt het zichtbare label van het selectievakje. Het formulier moet een e-mailveld bevatten — daar komt het e-mailadres van de abonnee vandaan."
 
 #: integrations/woocommerce/class-woocommerce.php:64
 #: integrations/woocommerce/class-woocommerce.php:73
@@ -1333,6 +1323,7 @@ msgstr "Vink de groepen aan die je bij het afrekenen als optionele aanmeldingen 
 msgid "Intro paragraph (1–2 sentences)"
 msgstr "Inleidende alinea (1–2 zinnen)"
 
+#: admin-templates/dashboard.php:133
 #: integrations/woocommerce/class-woocommerce.php:348
 msgid "Group"
 msgstr "Groep"
@@ -1405,3 +1396,193 @@ msgstr "Met één klik word je uit alle groepen verwijderd en wordt je profiel g
 #: public-templates/manage-comms.php:221
 msgid "Unsubscribe me from everything"
 msgstr "Schrap mij uit alle lijsten"
+
+#. translators: 1: failure rate percent, 2: number of days, 3: failed count, 4: completed count.
+#: admin-templates/dashboard.php:37
+#, php-format
+msgid "%1$s%% of emails failed in the last %2$d days (%3$s of %4$s attempted). Check Settings &rarr; Sending for your From: address and mail provider."
+msgstr "%1$s%% van de e-mails is in de afgelopen %2$d dagen mislukt (%3$s van %4$s pogingen). Controleer Instellingen → Verzenden voor uw ‘Van:’-adres en e-mailprovider."
+
+#. translators: %d: number of days in the rolling window.
+#: admin-templates/dashboard.php:50
+#, php-format
+msgid "Overview of the last %d days."
+msgstr "Overzicht van de afgelopen %d dagen."
+
+#: admin-templates/dashboard.php:59
+msgid "Send health"
+msgstr "Stuur gezondheid"
+
+#: admin-templates/dashboard.php:68
+msgid "delivery success rate"
+msgstr "succespercentage van leveringen"
+
+#. translators: %s: number of newsletters (sends).
+#: admin-templates/dashboard.php:74
+#, php-format
+msgid "Newsletters sent: %s"
+msgstr "Verzonden nieuwsbrieven: %s"
+
+#. translators: %s: number of individual emails delivered.
+#: admin-templates/dashboard.php:79
+#, php-format
+msgid "Emails delivered: %s"
+msgstr "Verzonden e-mails: %s"
+
+#. translators: %s: number of individual emails that failed.
+#: admin-templates/dashboard.php:84
+#, php-format
+msgid "Emails failed: %s"
+msgstr "Mislukte e-mails: %s"
+
+#: admin-templates/dashboard.php:91
+msgid "A send is queued or in progress. Rates appear once recipients have been attempted."
+msgstr "Er staat een verzending in de wachtrij of deze is bezig. De statistieken worden weergegeven zodra er een poging is gedaan om de ontvangers te bereiken."
+
+#: admin-templates/dashboard.php:96
+msgid "No newsletters sent in this window."
+msgstr "In deze periode zijn er geen nieuwsbrieven verzonden."
+
+#: admin-templates/dashboard.php:104
+msgid "Audience"
+msgstr "Doelgroep"
+
+#: admin-templates/dashboard.php:108
+msgid "active subscribers"
+msgstr "actieve abonnees"
+
+#. translators: 1: number of unsubscribes, 2: number of days.
+#: admin-templates/dashboard.php:114
+#, php-format
+msgid "Account unsubscribes (last %2$d days): %1$s"
+msgstr "Afmeldingen van accounts (afgelopen %2$d dagen): %1$s"
+
+#: admin-templates/dashboard.php:129
+msgid "No groups yet."
+msgstr "Nog geen groepen."
+
+#: admin-templates/dashboard.php:134
+msgid "Active members"
+msgstr "Actieve leden"
+
+#. translators: %d: number of days.
+#: admin-templates/dashboard.php:139
+#, php-format
+msgid "Joined (%dd)"
+msgstr "Lid sinds (%dd)"
+
+#. translators: %d: number of days.
+#: admin-templates/dashboard.php:147
+#, php-format
+msgid "Left (%dd)"
+msgstr "Links (%dd)"
+
+#: admin-templates/dashboard.php:167
+msgid "Recent send failures"
+msgstr "Recente verzendfouten"
+
+#: admin-templates/dashboard.php:172
+msgid "No send failures recorded — everything delivered cleanly."
+msgstr "Er zijn geen verzendfouten geregistreerd — alles is vlekkeloos afgeleverd."
+
+#: admin-templates/dashboard.php:188
+msgid "(no error recorded)"
+msgstr "(er is geen fout geregistreerd)"
+
+#: admin-templates/group-edit.php:92
+msgid "Slug:"
+msgstr "Slug:"
+
+#: admin-templates/group-edit.php:96
+msgid "Set the slug manually"
+msgstr "Stel de slug handmatig in"
+
+#: admin-templates/group-edit.php:121
+msgid "Plain text only — any HTML tags are stripped when the group is saved. A short sentence or two describing who belongs in this group is plenty."
+msgstr "Alleen platte tekst — eventuele HTML-tags worden verwijderd wanneer de groep wordt opgeslagen. Een paar korte zinnen waarin wordt beschreven wie tot deze groep behoort, zijn voldoende."
+
+#: admin-templates/group-edit.php:138
+msgid "Allow autonomous send"
+msgstr "Automatisch verzenden toestaan"
+
+#: admin-templates/group-edit.php:140
+msgid "Let an agent autonomously send drafts targeting this group"
+msgstr "Laat een agent zelfstandig concepten versturen die op deze groep zijn gericht"
+
+#: admin-templates/group-edit.php:141
+msgid "When ticked, a trusted agent may trigger a send to this group via the REST API without a human pressing Send. A send is only allowed when EVERY group on the draft has this ticked AND the master switch on Settings → Sending is on. Leave off for any large or general audience."
+msgstr "Als dit vakje is aangevinkt, kan een vertrouwde agent via de REST API een verzending naar deze groep in gang zetten zonder dat iemand op ‘Verzenden’ hoeft te klikken. Een verzending is alleen toegestaan als dit vakje bij ELKE groep in het concept is aangevinkt EN de hoofdschakelaar onder Instellingen → Verzenden is ingeschakeld. Laat dit vakje uitgeschakeld voor een groot of algemeen publiek."
+
+#: admin-templates/groups-list.php:124
+msgctxt "groups list marker: group is enabled for autonomous sending"
+msgid "Auto-send"
+msgstr "Automatisch verzenden"
+
+#: admin-templates/sent-log-list.php:33
+msgctxt "sent-log column: how the send was started"
+msgid "Trigger"
+msgstr "Trigger"
+
+#: admin-templates/sent-log-list.php:57
+msgctxt "send trigger: automated, via the REST API"
+msgid "Auto"
+msgstr "Auto"
+
+#: admin-templates/sent-log-list.php:58
+msgctxt "send trigger: a human pressed Send"
+msgid "Manual"
+msgstr "Handmatig"
+
+#. translators: %d: number of subscribers deleted.
+#: admin-templates/subscribers-list.php:99
+#, php-format
+msgid "%d subscriber deleted."
+msgid_plural "%d subscribers deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin-templates/subscribers-list.php:143
+msgid "Apply this bulk action to the selected subscribers? Deleting is permanent and cannot be undone. Marking as \"never contact\" is sticky — future imports will skip these rows."
+msgstr "Wilt u deze bulkactie toepassen op de geselecteerde abonnees? Het verwijderen is definitief en kan niet ongedaan worden gemaakt. De markering ‘nooit contacteren’ blijft van kracht — bij toekomstige importen worden deze rijen overgeslagen."
+
+#: admin-templates/tab-sending.php:53
+msgid "Autonomous sending"
+msgstr "Automatisch verzenden"
+
+#: admin-templates/tab-sending.php:56
+msgid "Master switch for the REST trigger-send route, which lets a trusted agent send a draft without a human pressing Send. Off by default. Even when this is on, an autonomous send only proceeds if every group the draft targets has \"Allow autonomous send\" ticked on the group — so this switch and the per-group flags must both agree."
+msgstr "Hoofdschakelaar voor de REST-trigger-verzendroute, waarmee een vertrouwde agent een concept kan verzenden zonder dat iemand op ‘Verzenden’ hoeft te klikken. Standaard uitgeschakeld. Zelfs als deze schakelaar is ingeschakeld, gaat een autonome verzending alleen door als bij elke groep waarvoor het concept bestemd is, het vakje ‘Autonome verzending toestaan’ is aangevinkt — deze schakelaar en de instellingen per groep moeten dus beide overeenkomen."
+
+#: admin-templates/tab-sending.php:68
+msgid "Allow trigger-send via REST API"
+msgstr "Trigger-verzending via de REST-API toestaan"
+
+#: admin-templates/tab-sending.php:72
+msgid "Enable autonomous sends to automation-enabled groups"
+msgstr "Automatische verzendingen naar groepen met automatiseringsfunctie inschakelen"
+
+#: admin-templates/tab-sending.php:73
+msgid "Leave off unless an agent is configured to send. Turning this off revokes REST sending instantly, without changing any user roles."
+msgstr "Laat deze optie uitgeschakeld, tenzij er een agent is geconfigureerd om berichten te verzenden. Als je deze optie uitschakelt, wordt het verzenden via REST onmiddellijk stopgezet, zonder dat er wijzigingen worden aangebracht in de gebruikersrollen."
+
+#: includes/class-sends-controller.php:203
+msgid "Autonomous sending is disabled. Enable \"Allow trigger-send via REST API\" on Settings → Sending."
+msgstr "Automatisch verzenden is uitgeschakeld. Schakel de optie „Trigger-verzending via REST API toestaan” in onder Instellingen → Verzenden."
+
+#: includes/class-sends-controller.php:224
+msgid "This draft has already been sent or is currently sending. Autonomous re-sends are refused."
+msgstr "Dit concept is al verzonden of wordt momenteel verzonden. Automatische herverzendingen worden geweigerd."
+
+#: includes/class-sends-controller.php:234
+msgid "The draft targets no groups, so there is nothing to authorise."
+msgstr "Het ontwerp richt zich niet op bepaalde groepen, dus er valt niets goed te keuren."
+
+#. translators: %s: comma-separated list of group slugs that are not automation-enabled.
+#: includes/class-sends-controller.php:256
+#, php-format
+msgid "Autonomous send refused: these target groups are not enabled for automated sending: %s. Tick \"Allow autonomous send\" on each group, or remove it from the draft."
+msgstr "Automatisch verzenden geweigerd: deze doelgroepen zijn niet ingeschakeld voor automatisch verzenden: %s. Vink bij elke groep 'Automatisch verzenden toestaan' aan, of verwijder de groep uit het concept."
+
+#: integrations/contact-form-7/class-contact-form-7.php:313
+msgid "Replace the `group:` attribute with the slug of the group you want sign-ups to land in. The quoted text becomes the visible checkbox label. The form must include an email field — that's where the subscriber's address comes from. Add `checked` to render the checkbox pre-ticked (e.g. on a dedicated sign-up form); the visitor can still untick it before submitting."
+msgstr "Vervang het `group:`-attribuut door de slug van de groep waarin je de aanmeldingen wilt laten terechtkomen. De tekst tussen aanhalingstekens wordt het zichtbare label van het selectievakje. Het formulier moet een e-mailveld bevatten — daar komt het adres van de abonnee vandaan. Voeg `checked` toe om het selectievakje vooraf aangevinkt weer te geven (bijvoorbeeld op een speciaal aanmeldingsformulier); de bezoeker kan het vakje nog steeds uitschakelen voordat hij het formulier verstuurt."

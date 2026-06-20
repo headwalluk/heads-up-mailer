@@ -1098,11 +1098,23 @@ strings already have correct `Plural-Forms` headers (fixed in
 1.2.2 hand-corrected a batch of DeepL short-string artifacts across
 all eight locales (e.g. "Sent" → "late", "Folder" → "brochure",
 acronym expansion); a seed glossary for the upstream fix is filed in
-the `wp-translate-tool` repo. 1.3.0 then added ~two dozen new
-dashboard / group-screen strings that are **not yet translated** —
-they fall back to English. Both are pending the same
-`wp-translate-tool` review before the next catalogue regen, so the
-plugin's `languages/` are deliberately untouched until then.
+the `wp-translate-tool` repo.
+
+**1.5.0 catalogue regen (2026-06-20):** ran `wp-translate .`, which
+cleared the standing backlog — the ~two dozen 1.3.0 dashboard /
+group-screen strings *and* the new 1.5.0 autonomous-send strings are
+now machine-translated across all eight locales (40 strings/locale,
+`.mo` recompiled). Two follow-ups remain for the native-speaker pass:
+- **Short labels** still want a human eye. The new ones use `_x()`
+  context (`Trigger`, `Auto`, `Manual`, `Auto-send`), which fixed
+  `Manual` → "Manuell"/"Manuel" — but `Auto` came back literally
+  (German "Auto" also = *car*); fine next to "Manuell", worth a check.
+- **One untranslated plural**: `%d subscriber(s) deleted.` (the
+  bulk-delete notice) came through empty in every locale — the tool
+  doesn't translate new plural forms. English fallback until the
+  native pass fills it (mirror the existing `%d subscriber(s) flagged
+  as "never contact".` plural, which is already translated with the
+  right 2-/3-form cases).
 
 ### Other v1 exclusions
 

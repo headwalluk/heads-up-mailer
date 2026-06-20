@@ -30,7 +30,7 @@ if ( empty( $sends ) ) {
 printf( '<table class="wp-list-table widefat fixed striped"><thead><tr>' );
 printf( '<th scope="col">%s</th>', esc_html__( 'ID', 'heads-up-mailer' ) );
 printf( '<th scope="col">%s</th>', esc_html__( 'Subject', 'heads-up-mailer' ) );
-printf( '<th scope="col">%s</th>', esc_html__( 'Trigger', 'heads-up-mailer' ) );
+printf( '<th scope="col">%s</th>', esc_html_x( 'Trigger', 'sent-log column: how the send was started', 'heads-up-mailer' ) );
 printf( '<th scope="col">%s</th>', esc_html__( 'Status', 'heads-up-mailer' ) );
 printf( '<th scope="col">%s</th>', esc_html__( 'Sent / Total', 'heads-up-mailer' ) );
 printf( '<th scope="col">%s</th>', esc_html__( 'Failed', 'heads-up-mailer' ) );
@@ -54,8 +54,8 @@ foreach ( $sends as $row ) {
 	$is_automated  = ! empty( $row->is_automated );
 
 	$trigger_label = $is_automated
-		? __( 'Auto', 'heads-up-mailer' )
-		: __( 'Manual', 'heads-up-mailer' );
+		? _x( 'Auto', 'send trigger: automated, via the REST API', 'heads-up-mailer' )
+		: _x( 'Manual', 'send trigger: a human pressed Send', 'heads-up-mailer' );
 
 	$detail_url = add_query_arg(
 		array(

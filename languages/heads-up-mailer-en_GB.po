@@ -1,9 +1,5 @@
-# Copyright (C) 2026 Paul Faulkner
-# This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Language: en_GB\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Project-Id-Version: Heads Up Mailer 1.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/heads-up-mailer\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
@@ -13,6 +9,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-06-09T20:12:40+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: en_GB\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: heads-up-mailer\n"
 
@@ -42,14 +40,6 @@ msgstr "Paul Faulkner"
 #: heads-up-mailer.php
 msgid "https://headwall-hosting.com"
 msgstr "https://headwall-hosting.com"
-
-#: admin-templates/dashboard.php:21
-msgid "Use the submenu to manage subscribers, groups, drafts, and the sent log, or to review the send queue and integrations under Settings."
-msgstr "Use the submenu to manage subscribers, groups, drafts, and the sent log, or to review the send queue and integrations under Settings."
-
-#: admin-templates/dashboard.php:29
-msgid "Send statistics and activity analytics will arrive in a future release."
-msgstr "Send statistics and activity analytics will arrive in a future release."
 
 #: admin-templates/draft-edit.php:26
 msgid "Edit draft"
@@ -87,9 +77,10 @@ msgstr "One or more group slugs are unknown."
 #: admin-templates/drafts-list.php:75
 #: includes/class-drafts-controller.php:137
 #: includes/class-drafts-controller.php:182
-#: includes/class-plugin.php:1076
-#: includes/class-rest-controller.php:157
-#: includes/class-sends-controller.php:129
+#: includes/class-plugin.php:1089
+#: includes/class-rest-controller.php:193
+#: includes/class-sends-controller.php:133
+#: includes/class-sends-controller.php:214
 msgid "Draft not found."
 msgstr "Draft not found."
 
@@ -106,26 +97,26 @@ msgid "Failed to update draft."
 msgstr "Failed to update draft."
 
 #: admin-templates/draft-edit.php:57
-#: includes/class-sends-controller.php:133
+#: includes/class-sends-controller.php:137
 msgid "This draft is already sending. Wait for it to finish."
 msgstr "This draft is already sending. Wait for it to finish."
 
 #: admin-templates/draft-edit.php:58
 #: admin-templates/drafts-list.php:77
-#: includes/class-sends-controller.php:139
+#: includes/class-sends-controller.php:143
 msgid "Configure a From: email on Settings → Sending before sending."
 msgstr "Configure a From: email on Settings → Sending before sending."
 
 #: admin-templates/draft-edit.php:59
 #: admin-templates/drafts-list.php:78
-#: includes/class-sends-controller.php:145
+#: includes/class-sends-controller.php:149
 msgid "Select at least one group on the draft before sending."
 msgstr "Select at least one group on the draft before sending."
 
 #: admin-templates/draft-edit.php:60
 #: admin-templates/draft-edit.php:175
 #: admin-templates/drafts-list.php:79
-#: includes/class-sends-controller.php:166
+#: includes/class-sends-controller.php:170
 msgid "No subscribed recipients in the selected groups."
 msgstr "No subscribed recipients in the selected groups."
 
@@ -136,7 +127,7 @@ msgstr "Failed to queue send (database write failed)."
 
 #: admin-templates/draft-edit.php:62
 #: admin-templates/drafts-list.php:81
-#: includes/class-sends-controller.php:277
+#: includes/class-sends-controller.php:374
 msgid "Failed to mark draft as sending."
 msgstr "Failed to mark draft as sending."
 
@@ -147,10 +138,10 @@ msgstr "Cannot edit a draft while it is sending."
 
 #: admin-templates/draft-edit.php:66
 #: admin-templates/drafts-list.php:86
-#: admin-templates/group-edit.php:52
+#: admin-templates/group-edit.php:53
 #: admin-templates/groups-list.php:68
 #: admin-templates/subscriber-edit.php:54
-#: admin-templates/subscribers-list.php:106
+#: admin-templates/subscribers-list.php:121
 msgid "An error occurred."
 msgstr "An error occurred."
 
@@ -185,7 +176,7 @@ msgid "Save draft"
 msgstr "Save draft"
 
 #: admin-templates/draft-edit.php:136
-#: admin-templates/group-edit.php:110
+#: admin-templates/group-edit.php:151
 #: admin-templates/subscriber-edit.php:166
 #: admin-templates/subscriber-import.php:75
 msgid "Cancel"
@@ -204,10 +195,11 @@ msgid "Tick at least one group above before sending."
 msgstr "Tick at least one group above before sending."
 
 #: admin-templates/draft-edit.php:170
-#: includes/class-sends-controller.php:160
+#: includes/class-sends-controller.php:164
 msgid "None of the selected groups exist any more."
 msgstr "None of the selected groups exist any more."
 
+#: admin-templates/dashboard.php:178
 #: admin-templates/draft-edit.php:180
 #: admin-templates/draft-edit.php:185
 msgid "Send"
@@ -311,16 +303,17 @@ msgstr "ID"
 
 #: admin-templates/drafts-list.php:112
 #: admin-templates/sent-log-detail.php:136
-#: admin-templates/sent-log-list.php:33
+#: admin-templates/sent-log-list.php:34
 #: admin-templates/subscriber-edit.php:112
-#: admin-templates/subscribers-list.php:162
+#: admin-templates/subscribers-list.php:178
 msgid "Status"
 msgstr "Status"
 
+#: admin-templates/dashboard.php:124
 #: admin-templates/drafts-list.php:113
 #: admin-templates/groups-list.php:28
 #: admin-templates/subscriber-edit.php:140
-#: admin-templates/subscribers-list.php:163
+#: admin-templates/subscribers-list.php:179
 #: includes/class-plugin.php:288
 #: includes/class-plugin.php:289
 msgid "Groups"
@@ -332,7 +325,7 @@ msgstr "Created"
 
 #: admin-templates/drafts-list.php:115
 #: admin-templates/groups-list.php:89
-#: admin-templates/subscribers-list.php:165
+#: admin-templates/subscribers-list.php:181
 msgid "Actions"
 msgstr "Actions"
 
@@ -347,99 +340,101 @@ msgid "Delete the draft \"%s\"?"
 msgstr "Delete the draft \"%s\"?"
 
 #: admin-templates/drafts-list.php:173
-#: admin-templates/groups-list.php:128
-#: admin-templates/subscribers-list.php:226
+#: admin-templates/groups-list.php:134
+#: admin-templates/subscribers-list.php:242
 msgid "Edit"
 msgstr "Edit"
 
 #: admin-templates/drafts-list.php:176
-#: admin-templates/groups-list.php:131
-#: admin-templates/subscribers-list.php:242
+#: admin-templates/groups-list.php:137
+#: admin-templates/subscribers-list.php:166
+#: admin-templates/subscribers-list.php:258
 msgid "Delete"
 msgstr "Delete"
 
-#: admin-templates/group-edit.php:25
+#: admin-templates/group-edit.php:26
 msgid "Edit group"
 msgstr "Edit group"
 
-#: admin-templates/group-edit.php:26
+#: admin-templates/group-edit.php:27
 msgid "Add group"
 msgstr "Add group"
 
-#: admin-templates/group-edit.php:42
+#: admin-templates/group-edit.php:43
 #: admin-templates/groups-list.php:57
 #: includes/class-groups-controller.php:126
 #: includes/class-groups-controller.php:177
 msgid "A group with that slug already exists."
 msgstr "A group with that slug already exists."
 
-#: admin-templates/group-edit.php:43
+#: admin-templates/group-edit.php:44
 #: admin-templates/groups-list.php:58
-#: includes/class-groups-controller.php:281
+#: includes/class-groups-controller.php:282
 msgid "A valid slug is required."
 msgstr "A valid slug is required."
 
-#: admin-templates/group-edit.php:44
+#: admin-templates/group-edit.php:45
 #: admin-templates/groups-list.php:59
-#: includes/class-groups-controller.php:288
+#: includes/class-groups-controller.php:289
 msgid "Group name is required."
 msgstr "Group name is required."
 
-#: admin-templates/group-edit.php:45
+#: admin-templates/group-edit.php:46
 #: admin-templates/groups-list.php:60
 #: includes/class-groups-controller.php:159
 #: includes/class-groups-controller.php:209
 msgid "Group not found."
 msgstr "Group not found."
 
-#: admin-templates/group-edit.php:46
+#: admin-templates/group-edit.php:47
 #: admin-templates/groups-list.php:61
 #: includes/class-groups-controller.php:139
 msgid "Failed to insert group."
 msgstr "Failed to insert group."
 
-#: admin-templates/group-edit.php:47
+#: admin-templates/group-edit.php:48
 #: admin-templates/groups-list.php:62
 #: includes/class-groups-controller.php:192
 msgid "Failed to update group."
 msgstr "Failed to update group."
 
-#: admin-templates/group-edit.php:76
+#: admin-templates/group-edit.php:111
 #: admin-templates/groups-list.php:86
-#: admin-templates/tab-sending.php:90
+#: admin-templates/tab-sending.php:116
 msgid "Slug"
 msgstr "Slug"
 
-#: admin-templates/group-edit.php:78
+#: admin-templates/group-edit.php:100
+#: admin-templates/group-edit.php:113
 msgid "Lowercase letters, numbers, and hyphens. Used in REST and the database."
 msgstr "Lowercase letters, numbers, and hyphens. Used in REST and the database."
 
-#: admin-templates/group-edit.php:83
+#: admin-templates/group-edit.php:78
 #: admin-templates/groups-list.php:85
 #: admin-templates/subscriber-edit.php:87
-#: admin-templates/subscribers-list.php:161
+#: admin-templates/subscribers-list.php:177
 msgid "Name"
 msgstr "Name"
 
-#: admin-templates/group-edit.php:89
+#: admin-templates/group-edit.php:119
 #: admin-templates/groups-list.php:88
 msgid "Description"
 msgstr "Description"
 
-#: admin-templates/group-edit.php:97
+#: admin-templates/group-edit.php:128
 #: admin-templates/groups-list.php:118
 msgid "Private"
 msgstr "Private"
 
-#: admin-templates/group-edit.php:99
+#: admin-templates/group-edit.php:130
 msgid "Hide this group from the public preferences page for non-members."
 msgstr "Hide this group from the public preferences page for non-members."
 
-#: admin-templates/group-edit.php:100
+#: admin-templates/group-edit.php:131
 msgid "Private groups never appear as a sign-up option on /manage-comms/. Existing members still see it (so they can unsubscribe), but anyone else does not. Useful for internal / test groups and one-off targeted lists."
 msgstr "Private groups never appear as a sign-up option on /manage-comms/. Existing members still see it (so they can unsubscribe), but anyone else does not. Useful for internal / test groups and one-off targeted lists."
 
-#: admin-templates/group-edit.php:108
+#: admin-templates/group-edit.php:149
 msgid "Save group"
 msgstr "Save group"
 
@@ -494,7 +489,7 @@ msgid "Subject:"
 msgstr "Subject:"
 
 #: admin-templates/sent-log-detail.php:57
-#: admin-templates/sent-log-list.php:63
+#: admin-templates/sent-log-list.php:69
 msgid "(draft deleted)"
 msgstr "(draft deleted)"
 
@@ -544,10 +539,11 @@ msgstr "Processing (%d)"
 msgid "No recipients match this filter."
 msgstr "No recipients match this filter."
 
+#: admin-templates/dashboard.php:176
 #: admin-templates/sent-log-detail.php:135
 #: admin-templates/subscriber-edit.php:81
 #: admin-templates/subscriber-import.php:111
-#: admin-templates/subscribers-list.php:160
+#: admin-templates/subscribers-list.php:176
 msgid "Email"
 msgstr "Email"
 
@@ -563,6 +559,7 @@ msgstr "Sent at (UTC)"
 msgid "Last error"
 msgstr "Last error"
 
+#: admin-templates/dashboard.php:184
 #: admin-templates/sent-log-detail.php:151
 msgid "(subscriber removed)"
 msgstr "(subscriber removed)"
@@ -571,23 +568,23 @@ msgstr "(subscriber removed)"
 msgid "No sends recorded yet. Once a draft is queued from the Drafts page, it will appear here."
 msgstr "No sends recorded yet. Once a draft is queued from the Drafts page, it will appear here."
 
-#: admin-templates/sent-log-list.php:34
+#: admin-templates/sent-log-list.php:35
 msgid "Sent / Total"
 msgstr "Sent / Total"
 
-#: admin-templates/sent-log-list.php:35
+#: admin-templates/sent-log-list.php:36
 msgid "Failed"
 msgstr "Failed"
 
-#: admin-templates/sent-log-list.php:36
+#: admin-templates/sent-log-list.php:37
 msgid "In progress"
 msgstr "In progress"
 
-#: admin-templates/sent-log-list.php:37
+#: admin-templates/sent-log-list.php:38
 msgid "Started (UTC)"
 msgstr "Started (UTC)"
 
-#: admin-templates/sent-log-list.php:38
+#: admin-templates/sent-log-list.php:39
 msgid "Finished (UTC)"
 msgstr "Finished (UTC)"
 
@@ -617,51 +614,51 @@ msgid "Add subscriber"
 msgstr "Add subscriber"
 
 #: admin-templates/subscriber-edit.php:44
-#: admin-templates/subscribers-list.php:93
-#: includes/class-subscribers-controller.php:167
-#: includes/class-subscribers-controller.php:253
+#: admin-templates/subscribers-list.php:108
+#: includes/class-subscribers-controller.php:182
+#: includes/class-subscribers-controller.php:268
 msgid "A subscriber with that email already exists."
 msgstr "A subscriber with that email already exists."
 
 #: admin-templates/subscriber-edit.php:45
-#: admin-templates/subscribers-list.php:94
-#: includes/class-subscribers-controller.php:471
-#: includes/class-subscribers-controller.php:624
-#: includes/class-subscribers-controller.php:688
+#: admin-templates/subscribers-list.php:109
+#: includes/class-subscribers-controller.php:486
+#: includes/class-subscribers-controller.php:639
+#: includes/class-subscribers-controller.php:703
 msgid "A valid email address is required."
 msgstr "A valid email address is required."
 
 #: admin-templates/subscriber-edit.php:46
-#: admin-templates/subscribers-list.php:95
-#: includes/class-subscribers-controller.php:649
-#: includes/class-subscribers-controller.php:703
+#: admin-templates/subscribers-list.php:110
+#: includes/class-subscribers-controller.php:664
+#: includes/class-subscribers-controller.php:718
 msgid "Invalid subscriber status."
 msgstr "Invalid subscriber status."
 
 #: admin-templates/subscriber-edit.php:47
-#: admin-templates/subscribers-list.php:96
-#: includes/class-subscribers-controller.php:236
-#: includes/class-subscribers-controller.php:320
-#: includes/class-subscribers-controller.php:363
-#: includes/class-subscribers-controller.php:410
-#: includes/class-subscribers-controller.php:532
-#: includes/class-subscribers-controller.php:576
+#: admin-templates/subscribers-list.php:111
+#: includes/class-subscribers-controller.php:251
+#: includes/class-subscribers-controller.php:335
+#: includes/class-subscribers-controller.php:378
+#: includes/class-subscribers-controller.php:425
+#: includes/class-subscribers-controller.php:547
+#: includes/class-subscribers-controller.php:591
 msgid "Subscriber not found."
 msgstr "Subscriber not found."
 
 #: admin-templates/subscriber-edit.php:48
-#: admin-templates/subscribers-list.php:97
-#: includes/class-subscribers-controller.php:193
+#: admin-templates/subscribers-list.php:112
+#: includes/class-subscribers-controller.php:208
 msgid "Failed to insert subscriber."
 msgstr "Failed to insert subscriber."
 
 #: admin-templates/subscriber-edit.php:49
-#: admin-templates/subscribers-list.php:98
-#: includes/class-subscribers-controller.php:298
-#: includes/class-subscribers-controller.php:385
-#: includes/class-subscribers-controller.php:432
-#: includes/class-subscribers-controller.php:554
-#: includes/class-subscribers-controller.php:591
+#: admin-templates/subscribers-list.php:113
+#: includes/class-subscribers-controller.php:313
+#: includes/class-subscribers-controller.php:400
+#: includes/class-subscribers-controller.php:447
+#: includes/class-subscribers-controller.php:569
+#: includes/class-subscribers-controller.php:606
 msgid "Failed to update subscriber."
 msgstr "Failed to update subscriber."
 
@@ -674,27 +671,27 @@ msgid "They will not receive newsletters, and CSV re-imports will skip them. Onl
 msgstr "They will not receive newsletters, and CSV re-imports will skip them. Only change the status here if you have explicit consent to resume contact."
 
 #: admin-templates/subscriber-edit.php:93
-#: admin-templates/subscribers-list.php:121
+#: admin-templates/subscribers-list.php:136
 msgid "Subscribed"
 msgstr "Subscribed"
 
 #: admin-templates/subscriber-edit.php:94
-#: admin-templates/subscribers-list.php:122
+#: admin-templates/subscribers-list.php:137
 msgid "Unsubscribed"
 msgstr "Unsubscribed"
 
 #: admin-templates/subscriber-edit.php:95
-#: admin-templates/subscribers-list.php:123
+#: admin-templates/subscribers-list.php:138
 msgid "Bounced"
 msgstr "Bounced"
 
 #: admin-templates/subscriber-edit.php:96
-#: admin-templates/subscribers-list.php:124
+#: admin-templates/subscribers-list.php:139
 msgid "Complained"
 msgstr "Complained"
 
 #: admin-templates/subscriber-edit.php:97
-#: admin-templates/subscribers-list.php:125
+#: admin-templates/subscribers-list.php:140
 msgid "Never contact"
 msgstr "Never contact"
 
@@ -711,7 +708,7 @@ msgid "Free-text label for where consent was captured (e.g. \"checkout\", \"impo
 msgstr "Free-text label for where consent was captured (e.g. \"checkout\", \"imported-from-mailerlite\")."
 
 #: admin-templates/subscriber-edit.php:154
-#: admin-templates/subscribers-list.php:164
+#: admin-templates/subscribers-list.php:180
 msgid "Consent at"
 msgstr "Consent at"
 
@@ -790,6 +787,7 @@ msgstr "Result"
 msgid "Notes"
 msgstr "Notes"
 
+#: admin-templates/dashboard.php:177
 #: admin-templates/subscriber-import.php:121
 msgid "Error"
 msgstr "Error"
@@ -812,82 +810,78 @@ msgstr "Subscribers"
 msgid "Import CSV"
 msgstr "Import CSV"
 
-#: admin-templates/subscribers-list.php:60
+#: admin-templates/subscribers-list.php:62
 msgid "Subscriber saved."
 msgstr "Subscriber saved."
 
-#: admin-templates/subscribers-list.php:67
+#: admin-templates/subscribers-list.php:69
 msgid "Subscriber deleted."
 msgstr "Subscriber deleted."
 
-#: admin-templates/subscribers-list.php:74
+#: admin-templates/subscribers-list.php:76
 msgid "Subscriber flagged as \"never contact\"."
 msgstr "Subscriber flagged as \"never contact\"."
 
 #. translators: %d: number of subscribers flipped to never-contact.
-#: admin-templates/subscribers-list.php:84
+#: admin-templates/subscribers-list.php:86
 #, php-format
 msgid "%d subscriber flagged as \"never contact\"."
 msgid_plural "%d subscribers flagged as \"never contact\"."
 msgstr[0] "%d subscriber flagged as \"never contact\"."
 msgstr[1] "%d subscribers flagged as \"never contact\"."
 
-#: admin-templates/subscribers-list.php:99
-#: includes/class-subscribers-controller.php:340
+#: admin-templates/subscribers-list.php:114
+#: includes/class-subscribers-controller.php:355
 msgid "Failed to delete subscriber."
 msgstr "Failed to delete subscriber."
 
-#: admin-templates/subscribers-list.php:100
+#: admin-templates/subscribers-list.php:115
 msgid "Select an action and at least one subscriber before clicking Apply."
 msgstr "Select an action and at least one subscriber before clicking Apply."
 
-#: admin-templates/subscribers-list.php:101
+#: admin-templates/subscribers-list.php:116
 msgid "That bulk action is not recognised."
 msgstr "That bulk action is not recognised."
 
-#: admin-templates/subscribers-list.php:117
+#: admin-templates/subscribers-list.php:132
 msgid "No subscribers yet. Add one or import from CSV."
 msgstr "No subscribers yet. Add one or import from CSV."
 
-#: admin-templates/subscribers-list.php:128
-msgid "Apply this bulk action to the selected subscribers? Marking as \"never contact\" is sticky — future imports will skip these rows."
-msgstr "Apply this bulk action to the selected subscribers? Marking as \"never contact\" is sticky — future imports will skip these rows."
-
-#: admin-templates/subscribers-list.php:148
-#: admin-templates/subscribers-list.php:149
+#: admin-templates/subscribers-list.php:163
+#: admin-templates/subscribers-list.php:164
 msgid "Bulk actions"
 msgstr "Bulk actions"
 
-#: admin-templates/subscribers-list.php:150
+#: admin-templates/subscribers-list.php:165
 msgid "Mark as never contact"
 msgstr "Mark as never contact"
 
-#: admin-templates/subscribers-list.php:152
+#: admin-templates/subscribers-list.php:168
 msgid "Apply"
 msgstr "Apply"
 
-#: admin-templates/subscribers-list.php:159
+#: admin-templates/subscribers-list.php:175
 msgid "Select all"
 msgstr "Select all"
 
 #. translators: %s: Subscriber email.
-#: admin-templates/subscribers-list.php:215
+#: admin-templates/subscribers-list.php:231
 #, php-format
 msgid "Delete the subscriber \"%s\"?"
 msgstr "Delete the subscriber \"%s\"?"
 
 #. translators: %s: Subscriber email.
-#: admin-templates/subscribers-list.php:217
+#: admin-templates/subscribers-list.php:233
 #, php-format
 msgid "Flag %s as \"never contact\"? This is sticky — future imports will skip them, and the only way back is to edit the status manually."
 msgstr "Flag %s as \"never contact\"? This is sticky — future imports will skip them, and the only way back is to edit the status manually."
 
-#: admin-templates/subscribers-list.php:234
+#: admin-templates/subscribers-list.php:250
 msgid "Mark never-contact"
 msgstr "Mark never-contact"
 
 #. translators: %s: Subscriber email used as accessible checkbox label.
-#: admin-templates/subscribers-list.php:251
+#: admin-templates/subscribers-list.php:267
 #, php-format
 msgid "Select %s"
 msgstr "Select %s"
@@ -1028,49 +1022,49 @@ msgstr "Tick interval (minutes)"
 msgid "How often the queue drains. Default every 5 minutes, range 1–60. The cron event re-schedules itself automatically when this value changes."
 msgstr "How often the queue drains. Default every 5 minutes, range 1–60. The cron event re-schedules itself automatically when this value changes."
 
-#: admin-templates/tab-sending.php:24
+#: admin-templates/tab-sending.php:25
 msgid "Sender identity"
 msgstr "Sender identity"
 
-#: admin-templates/tab-sending.php:27
+#: admin-templates/tab-sending.php:28
 msgid "Every send uses this From: identity. Leave blank and the worker will refuse to queue."
 msgstr "Every send uses this From: identity. Leave blank and the worker will refuse to queue."
 
-#: admin-templates/tab-sending.php:37
+#: admin-templates/tab-sending.php:38
 msgid "From name"
 msgstr "From name"
 
-#: admin-templates/tab-sending.php:44
+#: admin-templates/tab-sending.php:45
 msgid "From email"
 msgstr "From email"
 
-#: admin-templates/tab-sending.php:47
+#: admin-templates/tab-sending.php:48
 msgid "Must be an address your outbound mail provider is authorised to send as (SPF / DKIM aligned)."
 msgstr "Must be an address your outbound mail provider is authorised to send as (SPF / DKIM aligned)."
 
-#: admin-templates/tab-sending.php:52
+#: admin-templates/tab-sending.php:78
 msgid "Footer"
 msgstr "Footer"
 
 #. translators: %s: literal placeholder token shown inline.
-#: admin-templates/tab-sending.php:58
+#: admin-templates/tab-sending.php:84
 #, php-format
 msgid "HTML appended to every outgoing newsletter immediately before the closing %1$s tag (or at the end of the body for fragment HTML). The %2$s token is replaced with the recipient's personalised unsubscribe URL at send time."
 msgstr "HTML appended to every outgoing newsletter immediately before the closing %1$s tag (or at the end of the body for fragment HTML). The %2$s token is replaced with the recipient's personalised unsubscribe URL at send time."
 
-#: admin-templates/tab-sending.php:70
+#: admin-templates/tab-sending.php:96
 msgid "Footer HTML"
 msgstr "Footer HTML"
 
-#: admin-templates/tab-sending.php:77
+#: admin-templates/tab-sending.php:103
 msgid "Public preferences page"
 msgstr "Public preferences page"
 
-#: admin-templates/tab-sending.php:80
+#: admin-templates/tab-sending.php:106
 msgid "The URL slug where recipients land to manage preferences or one-click unsubscribe. Changing this flushes the WordPress rewrite rules."
 msgstr "The URL slug where recipients land to manage preferences or one-click unsubscribe. Changing this flushes the WordPress rewrite rules."
 
-#: admin-templates/tab-sending.php:94
+#: admin-templates/tab-sending.php:120
 msgid "Recipients will visit:"
 msgstr "Recipients will visit:"
 
@@ -1137,7 +1131,7 @@ msgid "Heads Up Mailer mailbox poll"
 msgstr "Heads Up Mailer mailbox poll"
 
 #: includes/class-mailbox-poller.php:183
-#: includes/class-plugin.php:777
+#: includes/class-plugin.php:790
 msgid "The PHP imap extension is not loaded on this host."
 msgstr "The PHP imap extension is not loaded on this host."
 
@@ -1150,7 +1144,7 @@ msgid "Another poll is already in progress. Try again in a moment."
 msgstr "Another poll is already in progress. Try again in a moment."
 
 #: includes/class-mailbox-poller.php:270
-#: includes/class-plugin.php:822
+#: includes/class-plugin.php:835
 msgid "Failed to open IMAP connection."
 msgstr "Failed to open IMAP connection."
 
@@ -1194,50 +1188,50 @@ msgstr "Settings"
 
 #: includes/class-plugin.php:378
 #: includes/class-plugin.php:391
-#: includes/class-plugin.php:405
-#: includes/class-plugin.php:477
-#: includes/class-plugin.php:871
-#: includes/class-plugin.php:910
+#: includes/class-plugin.php:407
+#: includes/class-plugin.php:480
+#: includes/class-plugin.php:884
+#: includes/class-plugin.php:923
 msgid "You do not have permission to access this page."
 msgstr "You do not have permission to access this page."
 
-#: includes/class-plugin.php:432
-#: includes/class-plugin.php:534
-#: includes/class-plugin.php:584
-#: includes/class-plugin.php:615
-#: includes/class-plugin.php:650
-#: includes/class-plugin.php:703
-#: includes/class-plugin.php:949
-#: includes/class-plugin.php:1000
-#: includes/class-plugin.php:1033
-#: includes/class-plugin.php:1066
-#: includes/class-plugin.php:1090
+#: includes/class-plugin.php:434
+#: includes/class-plugin.php:537
+#: includes/class-plugin.php:587
+#: includes/class-plugin.php:618
+#: includes/class-plugin.php:653
+#: includes/class-plugin.php:716
+#: includes/class-plugin.php:962
+#: includes/class-plugin.php:1013
+#: includes/class-plugin.php:1046
+#: includes/class-plugin.php:1079
+#: includes/class-plugin.php:1103
 msgid "You do not have permission."
 msgstr "You do not have permission."
 
-#: includes/class-plugin.php:720
+#: includes/class-plugin.php:733
 msgid "No file was uploaded."
 msgstr "No file was uploaded."
 
-#: includes/class-plugin.php:725
+#: includes/class-plugin.php:738
 msgid "File upload failed."
 msgstr "File upload failed."
 
-#: includes/class-plugin.php:727
+#: includes/class-plugin.php:740
 msgid "Uploaded file is not a valid upload."
 msgstr "Uploaded file is not a valid upload."
 
-#: includes/class-plugin.php:773
-#: includes/class-plugin.php:851
+#: includes/class-plugin.php:786
+#: includes/class-plugin.php:864
 msgid "Insufficient permissions."
 msgstr "Insufficient permissions."
 
-#: includes/class-plugin.php:796
+#: includes/class-plugin.php:809
 msgid "Host, port, username, and password are all required."
 msgstr "Host, port, username, and password are all required."
 
 #. translators: %s: folder name on the IMAP server.
-#: includes/class-plugin.php:832
+#: includes/class-plugin.php:845
 #, php-format
 msgid "Connection successful — folder \"%s\" is reachable."
 msgstr "Connection successful — folder \"%s\" is reachable."
@@ -1263,19 +1257,19 @@ msgstr "This unsubscribe link is invalid or has expired. Please contact the send
 msgid "Too many requests. Please try again later."
 msgstr "Too many requests. Please try again later."
 
-#: includes/class-sends-controller.php:234
+#: includes/class-sends-controller.php:331
 msgid "Failed to create send."
 msgstr "Failed to create send."
 
-#: includes/class-sends-controller.php:264
+#: includes/class-sends-controller.php:361
 msgid "Failed to insert recipients."
 msgstr "Failed to insert recipients."
 
-#: includes/class-settings.php:339
+#: includes/class-settings.php:349
 msgid "From email address is not valid. The previous value was kept."
 msgstr "From email address is not valid. The previous value was kept."
 
-#: includes/class-subscribers-controller.php:480
+#: includes/class-subscribers-controller.php:495
 msgid "Subscriber is flagged never-contact."
 msgstr "Subscriber is flagged never-contact."
 
@@ -1288,21 +1282,17 @@ msgstr "Heads Up Mailer tick"
 msgid "Contact Form 7"
 msgstr "Contact Form 7"
 
-#: integrations/contact-form-7/class-contact-form-7.php:112
+#: integrations/contact-form-7/class-contact-form-7.php:122
 msgid "Sign up for our newsletter"
 msgstr "Sign up for our newsletter"
 
-#: integrations/contact-form-7/class-contact-form-7.php:291
+#: integrations/contact-form-7/class-contact-form-7.php:302
 msgid "Add a sign-up checkbox to any Contact Form 7 form by inserting the following tag in the form editor:"
 msgstr "Add a sign-up checkbox to any Contact Form 7 form by inserting the following tag in the form editor:"
 
-#: integrations/contact-form-7/class-contact-form-7.php:297
+#: integrations/contact-form-7/class-contact-form-7.php:308
 msgid "Sign me up for the newsletter"
 msgstr "Sign me up for the newsletter"
-
-#: integrations/contact-form-7/class-contact-form-7.php:302
-msgid "Replace the `group:` attribute with the slug of the group you want sign-ups to land in. The quoted text becomes the visible checkbox label. The form must include an email field — that's where the subscriber's address comes from."
-msgstr "Replace the `group:` attribute with the slug of the group you want sign-ups to land in. The quoted text becomes the visible checkbox label. The form must include an email field — that's where the subscriber's address comes from."
 
 #: integrations/woocommerce/class-woocommerce.php:64
 #: integrations/woocommerce/class-woocommerce.php:73
@@ -1333,6 +1323,7 @@ msgstr "Tick groups you want to offer at checkout as optional sign-ups, and prov
 msgid "Intro paragraph (1–2 sentences)"
 msgstr "Intro paragraph (1–2 sentences)"
 
+#: admin-templates/dashboard.php:133
 #: integrations/woocommerce/class-woocommerce.php:348
 msgid "Group"
 msgstr "Group"
@@ -1405,3 +1396,193 @@ msgstr "One click removes you from every group and flags your record so future i
 #: public-templates/manage-comms.php:221
 msgid "Unsubscribe me from everything"
 msgstr "Unsubscribe me from everything"
+
+#. translators: 1: failure rate percent, 2: number of days, 3: failed count, 4: completed count.
+#: admin-templates/dashboard.php:37
+#, php-format
+msgid "%1$s%% of emails failed in the last %2$d days (%3$s of %4$s attempted). Check Settings &rarr; Sending for your From: address and mail provider."
+msgstr "%1$s%% of emails failed in the last %2$d days (%3$s of %4$s attempted). Check Settings &rarr; Sending for your From: address and mail provider."
+
+#. translators: %d: number of days in the rolling window.
+#: admin-templates/dashboard.php:50
+#, php-format
+msgid "Overview of the last %d days."
+msgstr "Overview of the last %d days."
+
+#: admin-templates/dashboard.php:59
+msgid "Send health"
+msgstr "Send health"
+
+#: admin-templates/dashboard.php:68
+msgid "delivery success rate"
+msgstr "delivery success rate"
+
+#. translators: %s: number of newsletters (sends).
+#: admin-templates/dashboard.php:74
+#, php-format
+msgid "Newsletters sent: %s"
+msgstr "Newsletters sent: %s"
+
+#. translators: %s: number of individual emails delivered.
+#: admin-templates/dashboard.php:79
+#, php-format
+msgid "Emails delivered: %s"
+msgstr "Emails delivered: %s"
+
+#. translators: %s: number of individual emails that failed.
+#: admin-templates/dashboard.php:84
+#, php-format
+msgid "Emails failed: %s"
+msgstr "Emails failed: %s"
+
+#: admin-templates/dashboard.php:91
+msgid "A send is queued or in progress. Rates appear once recipients have been attempted."
+msgstr "A send is queued or in progress. Rates appear once recipients have been attempted."
+
+#: admin-templates/dashboard.php:96
+msgid "No newsletters sent in this window."
+msgstr "No newsletters sent in this window."
+
+#: admin-templates/dashboard.php:104
+msgid "Audience"
+msgstr "Audience"
+
+#: admin-templates/dashboard.php:108
+msgid "active subscribers"
+msgstr "active subscribers"
+
+#. translators: 1: number of unsubscribes, 2: number of days.
+#: admin-templates/dashboard.php:114
+#, php-format
+msgid "Account unsubscribes (last %2$d days): %1$s"
+msgstr "Account unsubscribes (last %2$d days): %1$s"
+
+#: admin-templates/dashboard.php:129
+msgid "No groups yet."
+msgstr "No groups yet."
+
+#: admin-templates/dashboard.php:134
+msgid "Active members"
+msgstr "Active members"
+
+#. translators: %d: number of days.
+#: admin-templates/dashboard.php:139
+#, php-format
+msgid "Joined (%dd)"
+msgstr "Joined (%dd)"
+
+#. translators: %d: number of days.
+#: admin-templates/dashboard.php:147
+#, php-format
+msgid "Left (%dd)"
+msgstr "Left (%dd)"
+
+#: admin-templates/dashboard.php:167
+msgid "Recent send failures"
+msgstr "Recent send failures"
+
+#: admin-templates/dashboard.php:172
+msgid "No send failures recorded — everything delivered cleanly."
+msgstr "No send failures recorded — everything delivered cleanly."
+
+#: admin-templates/dashboard.php:188
+msgid "(no error recorded)"
+msgstr "(no error recorded)"
+
+#: admin-templates/group-edit.php:92
+msgid "Slug:"
+msgstr "Slug:"
+
+#: admin-templates/group-edit.php:96
+msgid "Set the slug manually"
+msgstr "Set the slug manually"
+
+#: admin-templates/group-edit.php:121
+msgid "Plain text only — any HTML tags are stripped when the group is saved. A short sentence or two describing who belongs in this group is plenty."
+msgstr "Plain text only — any HTML tags are stripped when the group is saved. A short sentence or two describing who belongs in this group is plenty."
+
+#: admin-templates/group-edit.php:138
+msgid "Allow autonomous send"
+msgstr "Allow autonomous send"
+
+#: admin-templates/group-edit.php:140
+msgid "Let an agent autonomously send drafts targeting this group"
+msgstr "Let an agent autonomously send drafts targeting this group"
+
+#: admin-templates/group-edit.php:141
+msgid "When ticked, a trusted agent may trigger a send to this group via the REST API without a human pressing Send. A send is only allowed when EVERY group on the draft has this ticked AND the master switch on Settings → Sending is on. Leave off for any large or general audience."
+msgstr "When ticked, a trusted agent may trigger a send to this group via the REST API without a human pressing Send. A send is only allowed when EVERY group on the draft has this ticked AND the master switch on Settings → Sending is on. Leave off for any large or general audience."
+
+#: admin-templates/groups-list.php:124
+msgctxt "groups list marker: group is enabled for autonomous sending"
+msgid "Auto-send"
+msgstr "Auto-send"
+
+#: admin-templates/sent-log-list.php:33
+msgctxt "sent-log column: how the send was started"
+msgid "Trigger"
+msgstr "Trigger"
+
+#: admin-templates/sent-log-list.php:57
+msgctxt "send trigger: automated, via the REST API"
+msgid "Auto"
+msgstr "Auto"
+
+#: admin-templates/sent-log-list.php:58
+msgctxt "send trigger: a human pressed Send"
+msgid "Manual"
+msgstr "Manual"
+
+#. translators: %d: number of subscribers deleted.
+#: admin-templates/subscribers-list.php:99
+#, php-format
+msgid "%d subscriber deleted."
+msgid_plural "%d subscribers deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin-templates/subscribers-list.php:143
+msgid "Apply this bulk action to the selected subscribers? Deleting is permanent and cannot be undone. Marking as \"never contact\" is sticky — future imports will skip these rows."
+msgstr "Apply this bulk action to the selected subscribers? Deleting is permanent and cannot be undone. Marking as \"never contact\" is sticky — future imports will skip these rows."
+
+#: admin-templates/tab-sending.php:53
+msgid "Autonomous sending"
+msgstr "Autonomous sending"
+
+#: admin-templates/tab-sending.php:56
+msgid "Master switch for the REST trigger-send route, which lets a trusted agent send a draft without a human pressing Send. Off by default. Even when this is on, an autonomous send only proceeds if every group the draft targets has \"Allow autonomous send\" ticked on the group — so this switch and the per-group flags must both agree."
+msgstr "Master switch for the REST trigger-send route, which lets a trusted agent send a draft without a human pressing Send. Off by default. Even when this is on, an autonomous send only proceeds if every group the draft targets has \"Allow autonomous send\" ticked on the group — so this switch and the per-group flags must both agree."
+
+#: admin-templates/tab-sending.php:68
+msgid "Allow trigger-send via REST API"
+msgstr "Allow trigger-send via REST API"
+
+#: admin-templates/tab-sending.php:72
+msgid "Enable autonomous sends to automation-enabled groups"
+msgstr "Enable autonomous sends to automation-enabled groups"
+
+#: admin-templates/tab-sending.php:73
+msgid "Leave off unless an agent is configured to send. Turning this off revokes REST sending instantly, without changing any user roles."
+msgstr "Leave off unless an agent is configured to send. Turning this off revokes REST sending instantly, without changing any user roles."
+
+#: includes/class-sends-controller.php:203
+msgid "Autonomous sending is disabled. Enable \"Allow trigger-send via REST API\" on Settings → Sending."
+msgstr "Autonomous sending is disabled. Enable \"Allow trigger-send via REST API\" on Settings → Sending."
+
+#: includes/class-sends-controller.php:224
+msgid "This draft has already been sent or is currently sending. Autonomous re-sends are refused."
+msgstr "This draft has already been sent or is currently sending. Autonomous re-sends are refused."
+
+#: includes/class-sends-controller.php:234
+msgid "The draft targets no groups, so there is nothing to authorise."
+msgstr "The draft targets no groups, so there is nothing to authorise."
+
+#. translators: %s: comma-separated list of group slugs that are not automation-enabled.
+#: includes/class-sends-controller.php:256
+#, php-format
+msgid "Autonomous send refused: these target groups are not enabled for automated sending: %s. Tick \"Allow autonomous send\" on each group, or remove it from the draft."
+msgstr "Autonomous send refused: these target groups are not enabled for automated sending: %s. Tick \"Allow autonomous send\" on each group, or remove it from the draft."
+
+#: integrations/contact-form-7/class-contact-form-7.php:313
+msgid "Replace the `group:` attribute with the slug of the group you want sign-ups to land in. The quoted text becomes the visible checkbox label. The form must include an email field — that's where the subscriber's address comes from. Add `checked` to render the checkbox pre-ticked (e.g. on a dedicated sign-up form); the visitor can still untick it before submitting."
+msgstr "Replace the `group:` attribute with the slug of the group you want sign-ups to land in. The quoted text becomes the visible checkbox label. The form must include an email field — that's where the subscriber's address comes from. Add `checked` to render the checkbox pre-ticked (e.g. on a dedicated sign-up form); the visitor can still untick it before submitting."
