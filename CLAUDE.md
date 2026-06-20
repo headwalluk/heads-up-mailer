@@ -175,3 +175,89 @@ Namespaced constant groups (no extra prefix — namespace handles it):
   `docs:`, `style:`, `test:`. 50-char subject + bullet body
   explaining the *why*.
 - See `dev-notes/00-project-tracker.md` for what to pick up next.
+
+<!-- wp-translate:begin v=1.1.0 hash=2c4f10a0e186874bf421e0beb8a65a136290f9a51d0384675d0374a9d42d545b -->
+## Translating this plugin (wp-translate conventions)
+
+This plugin's `.po`/`.mo` files are generated from source by
+[wp-translate](https://github.com/headwalluk/wp-translate-tool), which
+machine-translates strings with DeepL. Machine translation is only as good as
+the strings you give it — follow these conventions when adding or editing
+user-facing text.
+
+### 1. Disambiguate short or ambiguous strings with `_x()`
+
+DeepL handles full sentences well but guesses badly on short, context-free
+labels. Give it context with `_x()` (or `esc_html_x()`, `_ex()`):
+
+```php
+// Ambiguous out of context — DeepL may read "Sent" as "late", "Folder" as "leaflet"
+__( 'Sent', 'heads-up-mailer' );
+
+// Disambiguated — the context is passed to the translator and to DeepL
+_x( 'Sent', 'email delivery status', 'heads-up-mailer' );
+_x( 'Folder', 'IMAP mailbox', 'heads-up-mailer' );
+_x( 'Open', 'verb; button label', 'heads-up-mailer' );
+```
+
+The context (2nd argument) is never shown to users. Use it whenever a string is a
+single word, a short label, or has more than one plausible meaning.
+
+### 2. Use placeholders, never concatenation
+
+Build dynamic text with `printf`/`sprintf` so the whole sentence translates as a
+unit, and add a `translators:` comment to explain each placeholder:
+
+```php
+/* translators: %s is the user's display name */
+printf( esc_html__( 'Welcome back, %s', 'heads-up-mailer' ), $name );
+```
+
+Never split a sentence across multiple translation calls — word order differs
+between languages.
+
+### 3. Acronyms and technical tokens
+
+wp-translate keeps common acronyms (`TLS`, `API`, `SMTP`, `URL`, `ID`, `UTC`, …)
+verbatim automatically. If you introduce an unusual acronym or product name that
+must not be translated, keep it as its own standalone string so it is recognised,
+or ask the maintainer to add it to the tool's acronym list.
+
+### 4. Don't translate dates — let WordPress localise them
+
+Never add month or day-of-week names (full or abbreviated) as translatable
+strings. DeepL frequently mistranslates short forms like `Mon`, `Tue`, `Jan`,
+`Feb` even with context hints. WordPress already ships locale-aware names — use
+`$wp_locale`:
+
+```php
+global $wp_locale;
+$wp_locale->get_month( $month_number );        // "January" (1-based)
+$wp_locale->get_month_abbrev( $month_name );   // "Jan"
+$wp_locale->get_weekday( $weekday_number );     // "Monday" (0 = Sunday)
+$wp_locale->get_weekday_abbrev( $weekday_name ); // "Mon"
+```
+
+For formatted dates, prefer `wp_date()` / `date_i18n()`, which localise month and
+day names automatically.
+
+### 5. English source dialect
+
+Write source strings in standard English. wp-translate handles English targets
+locally (no DeepL): `en`/`en_US` use the source as-is, and `en_GB`/`en_AU`/… get
+American spellings converted to British automatically (`color` → `colour`).
+
+### Running wp-translate
+
+After changing strings, regenerate translations:
+
+```bash
+wp-translate /path/to/this-plugin              # auto-detect locales from languages/
+wp-translate /path/to/this-plugin en_GB,fr_FR  # explicit locales
+wp-translate /path/to/this-plugin --dry-run    # preview; no API calls, no writes
+```
+
+Requires WP-CLI (`wp`) and a DeepL API key at `~/.config/deepl.env`. The tool
+regenerates the `.pot` from source, translates new/changed strings for each
+locale, and compiles the `.mo` files.
+<!-- wp-translate:end -->
