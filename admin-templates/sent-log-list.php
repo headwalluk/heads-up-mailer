@@ -30,6 +30,7 @@ if ( empty( $sends ) ) {
 printf( '<table class="wp-list-table widefat fixed striped"><thead><tr>' );
 printf( '<th scope="col">%s</th>', esc_html__( 'ID', 'heads-up-mailer' ) );
 printf( '<th scope="col">%s</th>', esc_html__( 'Subject', 'heads-up-mailer' ) );
+printf( '<th scope="col">%s</th>', esc_html__( 'Trigger', 'heads-up-mailer' ) );
 printf( '<th scope="col">%s</th>', esc_html__( 'Status', 'heads-up-mailer' ) );
 printf( '<th scope="col">%s</th>', esc_html__( 'Sent / Total', 'heads-up-mailer' ) );
 printf( '<th scope="col">%s</th>', esc_html__( 'Failed', 'heads-up-mailer' ) );
@@ -50,6 +51,11 @@ foreach ( $sends as $row ) {
 	$in_progress   = $pending_count + $running_count;
 	$started_at    = (string) ( $row->started_at ?? '' );
 	$finished_at   = (string) ( $row->finished_at ?? '' );
+	$is_automated  = ! empty( $row->is_automated );
+
+	$trigger_label = $is_automated
+		? __( 'Auto', 'heads-up-mailer' )
+		: __( 'Manual', 'heads-up-mailer' );
 
 	$detail_url = add_query_arg(
 		array(
@@ -64,10 +70,11 @@ foreach ( $sends as $row ) {
 		: $draft_subject;
 
 	printf(
-		'<tr><td>%d</td><td><a href="%s"><strong>%s</strong></a></td><td><span class="hum-status hum-status-%s">%s</span></td><td>%d / %d</td><td>%d</td><td>%d</td><td>%s</td><td>%s</td></tr>',
+		'<tr><td>%d</td><td><a href="%s"><strong>%s</strong></a></td><td>%s</td><td><span class="hum-status hum-status-%s">%s</span></td><td>%d / %d</td><td>%d</td><td>%d</td><td>%s</td><td>%s</td></tr>',
 		(int) $send_id,
 		esc_url( $detail_url ),
 		esc_html( $subject_display ),
+		esc_html( $trigger_label ),
 		esc_attr( $draft_status ),
 		esc_html( $draft_status ),
 		(int) $sent_count,

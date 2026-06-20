@@ -3,7 +3,7 @@
  * Plugin Name: Heads Up Mailer
  * Plugin URI: https://headgit.net/headwall/heads-up-mailer
  * Description: In-house newsletter sender for headwall-hosting.com. Async send queue, RFC-8058 one-click unsubscribe, IMAP poll for mailto unsubscribes.
- * Version: 1.4.0
+ * Version: 1.5.0
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: Paul Faulkner
@@ -18,7 +18,7 @@
 
 defined( 'ABSPATH' ) || die();
 
-define( 'HUM_VERSION', '1.4.0' );
+define( 'HUM_VERSION', '1.5.0' );
 define( 'HUM_FILE', __FILE__ );
 define( 'HUM_PATH', plugin_dir_path( __FILE__ ) );
 define( 'HUM_URL', plugin_dir_url( __FILE__ ) );
@@ -99,16 +99,32 @@ register_activation_hook( __FILE__, 'hum_activate' );
  * Editor (so a dedicated AI-agent user can operate at Editor level
  * without Administrator role inflation).
  *
+ * Grants both `hum_create_drafts` (draft via REST) and, since
+ * 1.5.0, `hum_send_newsletters` (trigger an autonomous send via
+ * REST). The two are separate caps so send rights can be revoked
+ * independently of drafting.
+ *
  * @since 1.1.0
  */
 function hum_ensure_caps(): void {
 	$role_slugs = array( 'administrator', 'editor' );
+	$caps       = array(
+		Heads_Up_Mailer\CAP_CREATE_DRAFTS,
+		Heads_Up_Mailer\CAP_SEND_NEWSLETTERS,
+	);
 
 	foreach ( $role_slugs as $role_slug ) {
 		$role = get_role( $role_slug );
 
-		if ( null !== $role && ! $role->has_cap( Heads_Up_Mailer\CAP_CREATE_DRAFTS ) ) {
-			$role->add_cap( Heads_Up_Mailer\CAP_CREATE_DRAFTS );
+		if ( null === $role ) {
+			// no action: role not present on this install (e.g. editor removed).
+			continue;
+		}
+
+		foreach ( $caps as $cap ) {
+			if ( ! $role->has_cap( $cap ) ) {
+				$role->add_cap( $cap );
+			}
 		}
 	}
 }

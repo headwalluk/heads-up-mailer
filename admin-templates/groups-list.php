@@ -118,6 +118,12 @@ if ( empty( $groups ) ) {
 			? __( 'Private', 'heads-up-mailer' )
 			: __( 'Public', 'heads-up-mailer' );
 
+		// Surface the autonomous-send opt-in inline with visibility so
+		// the primary safety gate is visible at a glance from the list.
+		if ( ! empty( $group->allow_automated_send ) ) {
+			$visibility .= ' · ' . __( 'Auto-send', 'heads-up-mailer' );
+		}
+
 		printf(
 			'<tr><td><strong>%s</strong></td><td><code>%s</code></td><td>%s</td><td>%s</td><td><a href="%s">%s</a> | <a href="%s" class="hum-delete-link" data-hum-confirm="%s">%s</a></td></tr>',
 			esc_html( $group->name ),

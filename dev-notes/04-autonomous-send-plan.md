@@ -1,9 +1,16 @@
 # Planning: autonomous draft → send (daily security email)
 
-**Status:** 📋 Planning — soak test starting; build not yet scoped.
+**Status:** ✅ Scoped 2026-06-20 → **Milestone 14** in
+`00-project-tracker.md`. Phase 0 soak test runs in parallel; Phase 1
+build is ready once the soak bar is met.
 **Created:** 2026-06-17
-**Next step:** 2026-06-18 — turn the Phase 1 design below into a
-numbered milestone in `00-project-tracker.md` with concrete tasks.
+**v1 cut (locked 2026-06-20):** new cap `hum_send_newsletters` on the
+agent's Editor role; two gates only — global `hum_autonomous_send_enabled`
+(default OFF) + per-group `allow_automated_send` (default OFF);
+`POST /drafts/{id}/send`; status-based idempotency; 403 for a
+non-enabled group, 409 for already-sent/sending. Recipient ceiling,
+threshold, daily cap, send-window, idempotency key, and service
+account are all **deferred** (documented below as later options).
 
 ---
 

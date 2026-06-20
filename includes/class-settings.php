@@ -113,6 +113,16 @@ class Settings {
 
 		register_setting(
 			self::GROUP,
+			OPTION_AUTONOMOUS_SEND_ENABLED,
+			array(
+				'type'              => 'boolean',
+				'sanitize_callback' => array( $this, 'sanitize_boolean' ),
+				'default'           => DEF_AUTONOMOUS_SEND_ENABLED,
+			)
+		);
+
+		register_setting(
+			self::GROUP,
 			OPTION_MAILBOX_POLL_ENABLED,
 			array(
 				'type'              => 'boolean',

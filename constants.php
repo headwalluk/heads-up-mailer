@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || die();
  *
  * @since 0.1.0
  */
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 /**
  * Custom table name suffixes (after `$wpdb->prefix`).
@@ -49,6 +49,19 @@ const OPTION_FROM_NAME   = 'hum_from_name';
 const OPTION_FROM_EMAIL  = 'hum_from_email';
 const OPTION_FOOTER_HTML = 'hum_footer_html';
 const OPTION_MANAGE_SLUG = 'hum_manage_slug';
+
+/**
+ * Autonomous send master switch.
+ *
+ * Global on/off for the REST trigger-send route, independent of the
+ * `hum_send_newsletters` capability so REST sending can be revoked
+ * instantly without touching roles. Dangerous default is OFF: with
+ * this disabled the send route always refuses, regardless of the
+ * per-group `allow_automated_send` flags.
+ *
+ * @since 1.5.0
+ */
+const OPTION_AUTONOMOUS_SEND_ENABLED = 'hum_autonomous_send_enabled';
 
 /**
  * Mailbox (IMAP) settings.
@@ -216,19 +229,20 @@ const MAILBOX_STALE_THRESHOLD_SECONDS = 2 * HOUR_IN_SECONDS;
  *
  * @since 0.1.0
  */
-const DEF_BATCH_SIZE            = 10;
-const DEF_TICK_MINUTES          = 5;
-const DEF_MAILBOX_POLL_ENABLED  = true;
-const DEF_MAILBOX_PORT          = 993;
-const DEF_MAILBOX_USER          = 'unsub@headwall-hosting.com';
-const DEF_MAILBOX_FOLDER        = 'INBOX';
-const DEF_MAILBOX_TLS           = true;
-const DEF_MAILBOX_VALIDATE_CERT = true;
-const DEF_MAILBOX_INTERVAL      = 5;
-const DEF_DRAFT_SUBJECT_MAX     = 200;
-const DEF_FROM_NAME             = '';
-const DEF_FROM_EMAIL            = '';
-const DEF_MANAGE_SLUG           = 'manage-comms';
+const DEF_BATCH_SIZE              = 10;
+const DEF_TICK_MINUTES            = 5;
+const DEF_MAILBOX_POLL_ENABLED    = true;
+const DEF_MAILBOX_PORT            = 993;
+const DEF_MAILBOX_USER            = 'unsub@headwall-hosting.com';
+const DEF_MAILBOX_FOLDER          = 'INBOX';
+const DEF_MAILBOX_TLS             = true;
+const DEF_MAILBOX_VALIDATE_CERT   = true;
+const DEF_MAILBOX_INTERVAL        = 5;
+const DEF_DRAFT_SUBJECT_MAX       = 200;
+const DEF_FROM_NAME               = '';
+const DEF_FROM_EMAIL              = '';
+const DEF_MANAGE_SLUG             = 'manage-comms';
+const DEF_AUTONOMOUS_SEND_ENABLED = false;
 
 /**
  * Default footer HTML. The worker replaces `{{unsubscribe_url}}`
@@ -260,3 +274,14 @@ const REST_NAMESPACE = 'heads-up-mailer/v1';
  * @since 1.1.0
  */
 const CAP_CREATE_DRAFTS = 'hum_create_drafts';
+
+/**
+ * Capability gating the REST trigger-send route
+ * (`POST /drafts/{id}/send`). Separate from `hum_create_drafts` so
+ * "can draft" and "can blast the list" are independently grantable
+ * and revocable. Granted to Administrator + Editor on activation /
+ * first-run alongside `hum_create_drafts`.
+ *
+ * @since 1.5.0
+ */
+const CAP_SEND_NEWSLETTERS = 'hum_send_newsletters';

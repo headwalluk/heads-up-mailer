@@ -51,6 +51,7 @@ class Sent_Log_Controller {
 				"SELECT
 					s.id,
 					s.draft_id,
+					s.is_automated,
 					s.started_at,
 					s.finished_at,
 					d.subject AS draft_subject,
@@ -96,6 +97,7 @@ class Sent_Log_Controller {
 				"SELECT
 					s.id,
 					s.draft_id,
+					s.is_automated,
 					s.started_at,
 					s.finished_at,
 					d.subject AS draft_subject,

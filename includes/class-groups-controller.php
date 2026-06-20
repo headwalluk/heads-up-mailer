@@ -132,7 +132,7 @@ class Groups_Controller {
 		$inserted = $wpdb->insert(
 			$this->table(),
 			$validated,
-			array( '%s', '%s', '%s', '%d' )
+			array( '%s', '%s', '%s', '%d', '%d' )
 		);
 
 		$result = ( false === $inserted )
@@ -184,7 +184,7 @@ class Groups_Controller {
 			$this->table(),
 			$validated,
 			array( 'id' => $id ),
-			array( '%s', '%s', '%s', '%d' ),
+			array( '%s', '%s', '%s', '%d', '%d' ),
 			array( '%d' )
 		);
 
@@ -270,10 +270,11 @@ class Groups_Controller {
 	 * @return array<string,string>|\WP_Error Sanitised fields or error.
 	 */
 	private function validate( array $data ): array|\WP_Error {
-		$slug        = isset( $data['slug'] ) ? sanitize_title( wp_unslash( $data['slug'] ) ) : '';
-		$name        = isset( $data['name'] ) ? sanitize_text_field( wp_unslash( $data['name'] ) ) : '';
-		$description = isset( $data['description'] ) ? sanitize_textarea_field( wp_unslash( $data['description'] ) ) : '';
-		$is_private  = ! empty( $data['is_private'] ) ? 1 : 0;
+		$slug                 = isset( $data['slug'] ) ? sanitize_title( wp_unslash( $data['slug'] ) ) : '';
+		$name                 = isset( $data['name'] ) ? sanitize_text_field( wp_unslash( $data['name'] ) ) : '';
+		$description          = isset( $data['description'] ) ? sanitize_textarea_field( wp_unslash( $data['description'] ) ) : '';
+		$is_private           = ! empty( $data['is_private'] ) ? 1 : 0;
+		$allow_automated_send = ! empty( $data['allow_automated_send'] ) ? 1 : 0;
 
 		if ( '' === $slug ) {
 			return new \WP_Error(
@@ -290,10 +291,11 @@ class Groups_Controller {
 		}
 
 		return array(
-			'slug'        => $slug,
-			'name'        => $name,
-			'description' => $description,
-			'is_private'  => $is_private,
+			'slug'                 => $slug,
+			'name'                 => $name,
+			'description'          => $description,
+			'is_private'           => $is_private,
+			'allow_automated_send' => $allow_automated_send,
 		);
 	}
 }

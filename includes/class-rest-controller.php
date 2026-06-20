@@ -59,18 +59,41 @@ class REST_Controller {
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_draft' ),
 					'permission_callback' => array( $this, 'check_permission' ),
-					'args'                => array(
-						'id' => array(
-							'type'              => 'integer',
-							'required'          => true,
-							'sanitize_callback' => 'absint',
-							'validate_callback' => static function ( $value ): bool {
-								return is_numeric( $value ) && (int) $value > 0;
-							},
-						),
-					),
+					'args'                => $this->id_arg(),
 				),
 			)
+		);
+
+		register_rest_route(
+			REST_NAMESPACE,
+			'/drafts/(?P<id>\d+)/send',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'send_draft' ),
+					'permission_callback' => array( $this, 'check_send_permission' ),
+					'args'                => $this->id_arg(),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Shared `args` schema for the `{id}` path segment.
+	 *
+	 * @since 1.5.0
+	 * @return array<string,array<string,mixed>>
+	 */
+	private function id_arg(): array {
+		return array(
+			'id' => array(
+				'type'              => 'integer',
+				'required'          => true,
+				'sanitize_callback' => 'absint',
+				'validate_callback' => static function ( $value ): bool {
+					return is_numeric( $value ) && (int) $value > 0;
+				},
+			),
 		);
 	}
 
@@ -81,6 +104,19 @@ class REST_Controller {
 	 */
 	public function check_permission(): bool {
 		return current_user_can( CAP_CREATE_DRAFTS );
+	}
+
+	/**
+	 * Capability gate for the trigger-send route.
+	 *
+	 * Separate from `check_permission()` so the send right
+	 * (`hum_send_newsletters`) is independent of the draft right
+	 * (`hum_create_drafts`).
+	 *
+	 * @since 1.5.0
+	 */
+	public function check_send_permission(): bool {
+		return current_user_can( CAP_SEND_NEWSLETTERS );
 	}
 
 	/**
@@ -165,6 +201,51 @@ class REST_Controller {
 	}
 
 	/**
+	 * POST /drafts/{id}/send — trigger an autonomous send.
+	 *
+	 * Thin wrapper: the autonomy gates (master switch, idempotency,
+	 * per-group allowlist) live in `Sends_Controller::autonomous_gate()`,
+	 * and the shared pre-flight + transactional insert live in
+	 * `queue()`. Both refusals and successes are audited. The send row
+	 * is flagged `is_automated` so the Sent log can tell agent-triggered
+	 * sends apart from human ones.
+	 *
+	 * @since 1.5.0
+	 * @param \WP_REST_Request $request Incoming request.
+	 */
+	public function send_draft( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
+		$draft_id = (int) $request->get_param( 'id' );
+		$user_id  = get_current_user_id();
+		$sends    = new Sends_Controller();
+
+		$gate = $sends->autonomous_gate( $draft_id );
+
+		if ( is_wp_error( $gate ) ) {
+			audit_autonomous_send( 'refused', $user_id, $draft_id, 'reason=' . $gate->get_error_code() );
+			$result = $gate;
+		} else {
+			$queued = $sends->queue( $draft_id, true );
+
+			if ( is_wp_error( $queued ) ) {
+				audit_autonomous_send( 'refused', $user_id, $draft_id, 'reason=' . $queued->get_error_code() );
+				$result = $this->send_error_to_rest( $queued );
+			} else {
+				audit_autonomous_send( 'queued', $user_id, $draft_id, 'send_id=' . (int) $queued );
+				$result = new \WP_REST_Response(
+					array(
+						'send_id'  => (int) $queued,
+						'draft_id' => $draft_id,
+						'status'   => 'queued',
+					),
+					200
+				);
+			}
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Shape a draft row into the public REST payload.
 	 *
 	 * @since 0.3.0
@@ -200,6 +281,35 @@ class REST_Controller {
 		}
 
 		$data['status'] = 400;
+		$error->add_data( $data );
+
+		return $error;
+	}
+
+	/**
+	 * Attach an HTTP status to a `queue()` `WP_Error` for the send route.
+	 *
+	 * `queue()` pre-flight failures (missing From: identity, no groups,
+	 * no recipients) are well-formed-but-unprocessable → 422. The two
+	 * insert/update failures are server faults → 500. A status already
+	 * set upstream is left untouched.
+	 *
+	 * @since 1.5.0
+	 * @param \WP_Error $error Error from `Sends_Controller::queue()`.
+	 */
+	private function send_error_to_rest( \WP_Error $error ): \WP_Error {
+		$server_fault_codes = array( 'hum_send_insert_failed', 'hum_send_update_failed' );
+
+		$data = $error->get_error_data();
+
+		if ( ! is_array( $data ) ) {
+			$data = array();
+		}
+
+		if ( empty( $data['status'] ) ) {
+			$data['status'] = in_array( $error->get_error_code(), $server_fault_codes, true ) ? 500 : 422;
+		}
+
 		$error->add_data( $data );
 
 		return $error;

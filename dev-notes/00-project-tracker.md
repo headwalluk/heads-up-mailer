@@ -3,8 +3,9 @@
 **Status:** Shipping post-1.0.0 increments — dashboard + per-group activity log live (1.3.0)
 **Current Version:** 1.3.0
 **Current Phase:** Post-v1 admin polish and observability
-**Last Updated:** 17 June 2026
-**Progress:** 13 of 13 milestones complete (5 items deferred to post-1.0.0)
+**Last Updated:** 20 June 2026
+**Progress:** 13 of 13 milestones complete; Milestone 14 (autonomous
+draft → send) scoped and ready to build (5 items deferred to post-1.0.0)
 
 ---
 
@@ -756,6 +757,160 @@ below, pending the `wp-translate-tool` review.
 
 ---
 
+## Milestone 14: Autonomous draft → send (daily security email)
+
+**Goal:** Let a trusted AI agent trigger a send end-to-end via REST,
+without a human pressing Send — scoped so it can only ever reach
+groups that have been explicitly, per-group, opted into automation.
+The use case is a daily security email going to one small, managed
+group; the design guarantees the agent can never autonomously email
+the general customer list.
+
+**Status:** 🛠️ Built 2026-06-20 (1.5.0, on `master`, uncommitted) —
+schema, gates, REST route, and admin UI done and verified on the dev
+DB; docs + release pending. Phase 0 soak test (agent drafts, human
+sends) runs in parallel; **do not enable the master switch in
+production** until the soak bar in `04-autonomous-send-plan.md` is met
+(the switch ships OFF, so this is safe by default).
+**Dependencies:** Send pipeline (M5), REST drafts API (M4 / 1.1.0),
+groups (M2).
+**Design source:** `dev-notes/04-autonomous-send-plan.md` (full
+rationale + phased rollout). This milestone is the agreed v1 cut.
+
+### Decisions (locked 2026-06-20)
+
+- **Auth model:** one new capability `CAP_SEND_NEWSLETTERS`
+  (`hum_send_newsletters`), granted to the **same Editor role** the
+  agent already uses for `CAP_CREATE_DRAFTS`. One identity drafts and
+  sends; the send right is a separate, independently-revocable cap.
+  No dedicated service account in v1.
+- **Two control layers only** (dangerous default is OFF for both):
+  1. **Global setting** `hum_autonomous_send_enabled` (Settings API,
+     one option, **default OFF**) — master enable for REST-triggered
+     autonomous sending. Off ⇒ the route always refuses, independent
+     of the capability, so autonomy is revocable instantly without
+     touching roles.
+  2. **Per-group `allow_automated_send` flag** (new column on
+     `hum_groups`, **default 0**) — the primary, data-level gate.
+     The route refuses unless **every** group the draft targets is
+     flagged. One unflagged group in the set blocks the whole send.
+- **No recipient ceiling, subscriber-count threshold, daily cap, or
+  send-window enforcement in v1.** The small managed group plus the
+  two gates above are sufficient. These remain documented in
+  `04-autonomous-send-plan.md` as later options if the audience grows.
+- **Route shape:** `POST /heads-up-mailer/v1/drafts/{id}/send` — a
+  thin wrapper over `Sends_Controller::queue()`, which already does
+  all the existing pre-flight.
+- **Idempotency (machine-level, required):** the route refuses a
+  draft already `sent` or `sending`. There is no machine "Send
+  AGAIN" — that human confirm in the admin UI does not exist over
+  REST. (Agent-supplied idempotency key is a deferred stretch, not
+  v1.)
+- **HTTP status map:**
+  - `200` — queued; body returns the new `send_id`.
+  - `403 Forbidden` — master setting OFF, **or** a targeted group is
+    not automation-enabled. (Missing capability is handled by the
+    `permission_callback` as usual.)
+  - `409 Conflict` — draft already `sent` or `sending`.
+  - `404` — draft not found.
+  - `422` — `queue()` pre-flight failure (no groups, no recipients,
+    From: not configured). Map the existing `WP_Error` codes.
+
+### Tasks — schema & constants (DB_VERSION 3 → 4) ✅
+
+- [x] `allow_automated_send tinyint(1) unsigned NOT NULL DEFAULT 0`
+      column on `hum_groups`, alongside `is_private`. Auto-migrates
+      via `Plugin::check_first_run()`. Verified on dev DB.
+- [x] `is_automated tinyint(1) unsigned NOT NULL DEFAULT 0` column on
+      `hum_sends`, so the Sent log can distinguish autonomous from
+      human-pressed sends. Written in the same transaction as the send
+      row (threaded through `queue()` → `commit_queue()` →
+      `insert_send_atomic()` via a `bool $is_automated = false` param,
+      so the human Send path is unchanged).
+- [x] Bump `DB_VERSION` to `4`; constants `CAP_SEND_NEWSLETTERS`,
+      `OPTION_AUTONOMOUS_SEND_ENABLED`, `DEF_AUTONOMOUS_SEND_ENABLED`.
+      (No new `EVENT_*` type — see audit note below.)
+
+### Tasks — capability ✅
+
+- [x] `CAP_SEND_NEWSLETTERS` registered and granted to Administrator +
+      Editor in `hum_ensure_caps()` (the same choke-point as
+      `CAP_CREATE_DRAFTS`, fires on activation + version-change).
+      Verified: editor + administrator have it, author does not;
+      removable independently of `hum_create_drafts`.
+
+### Tasks — global setting (admin) ✅
+
+- [x] `hum_autonomous_send_enabled` registered via Settings API
+      (boolean, `sanitize_boolean`, default OFF). Gate reads it with
+      the `filter_var( … FILTER_VALIDATE_BOOLEAN )` idiom.
+- [x] Surfaced on Settings → Sending under an "Autonomous sending"
+      section with a warning that ON + per-group flags both required.
+
+### Tasks — per-group flag (admin) ✅
+
+- [x] "Allow autonomous send" checkbox on the group add/edit screen
+      (hidden-0 sibling + checkbox), sanitized in `Groups_Controller::validate()`
+      and read in `handle_save_group()`. Default unchecked.
+- [x] Groups list shows an "· Auto-send" marker in the Visibility cell
+      for automation-enabled groups.
+- [x] **Drafting is unaffected** — `POST /drafts` and group assignment
+      are untouched; the flag gates only the new send route.
+
+### Tasks — REST send route ✅
+
+- [x] `POST /drafts/{id}/send` registered in `REST_Controller`,
+      `permission_callback` → `check_send_permission()` →
+      `current_user_can( CAP_SEND_NEWSLETTERS )`.
+- [x] Gates live in `Sends_Controller::autonomous_gate()`: master ON →
+      draft not `sent`/`sending` (409) → draft targets groups →
+      **every** group `allow_automated_send` (else 403, naming the
+      blocked slugs) → then `queue( $id, true )`; `queue()` `WP_Error`s
+      map to 422 (pre-flight) / 500 (insert faults) via
+      `send_error_to_rest()`.
+- [x] Each refusal returns a descriptive message identifying which
+      gate failed / which group(s) blocked it. Gate matrix verified on
+      dev DB (master-off 403, missing 404, already-sent 409, all-off
+      403, partial-off 403, all-on ALLOW).
+
+### Tasks — audit & observability ✅
+
+- [x] **Audit approach (revised from the scoping note):** `hum_events`
+      was rejected — its schema is per-group membership only
+      (`event_type`/`subscriber_id`/`group_id`), and `record()` hard-
+      rejects unknown types, so an autonomous-send trigger (draft_id,
+      multiple groups, recipient count, result/reason) does not fit.
+      Instead: every successful autonomous send is durably flagged
+      in-DB via `hum_sends.is_automated`, and every trigger — queued
+      **or** refused — is written to the PHP error log via
+      `audit_autonomous_send()` (user, draft, outcome, reason/send_id).
+      No new schema, security-relevant action still leaves a trail.
+- [x] Sent log distinguishes agent-triggered sends via a new "Trigger"
+      column (Auto / Manual), backed by `hum_sends.is_automated`.
+
+### Tasks — docs & release
+
+- [x] `phpcs` clean across all touched files; migration + gate matrix
+      + `is_automated` write verified on the dev DB (queued then torn
+      down before the worker could drain — no test email sent).
+- [ ] Document the agent send flow + the two gates in `docs/`
+      (host/admin facing), and update the REST section.
+- [ ] Commit (conventional `feat:`) and ship as 1.5.0 (bundles the
+      unreleased bulk-delete change). New strings fold into the
+      pending `wp-translate-tool` pass like the 1.3.0 batch.
+
+### Open items deliberately deferred (not v1)
+
+- Agent-supplied idempotency key (status-based refusal covers v1).
+- Recipient ceiling, subscriber-count threshold, daily cap,
+  send-window enforcement, hold/abort window — all in
+  `04-autonomous-send-plan.md` if the audience ever outgrows the
+  two-gate model.
+- Dedicated service account for the send right (revisit if the
+  Editor-role grant proves too broad).
+
+---
+
 ## Planned: public sign-up hardening (double opt-in + rate limiting)
 
 **Goal:** Make public, self-service sign-ups safe to expose on a
@@ -813,7 +968,7 @@ protects *send reputation* by stopping the submission upstream. Hence
       dashboard's active counts already filter `status = 'subscribed'`,
       so a pending row is inert for free.
 - [ ] Stash the intended group IDs on the pending row
-      (`pending_groups` column on `hum_subscribers`; DB_VERSION 3 → 4,
+      (`pending_groups` column on `hum_subscribers`; DB_VERSION 4 → 5,
       auto-migrates via `check_first_run()`). Memberships and the
       dashboard `group_join` events are created only on confirmation,
       so `subscriber_groups` and the per-group stats reflect confirmed
@@ -845,8 +1000,8 @@ protects *send reputation* by stopping the submission upstream. Hence
 2. (Owner) Add the CF7-layer gate — Turnstile addon + honeypot, or
    CF7 reCAPTCHA — and verify bots bounce before submission.
 3. (Plugin) Rate-limit backstop, then the double opt-in feature set
-   above. Versioned as a minor release with the DB_VERSION 4
-   migration.
+   above. Versioned as a minor release with the DB_VERSION 5
+   migration (4 is taken by Milestone 14, which ships first).
 
 ---
 

@@ -14,10 +14,11 @@ namespace Heads_Up_Mailer;
 
 defined( 'ABSPATH' ) || die();
 
-$from_name   = (string) get_option( OPTION_FROM_NAME, DEF_FROM_NAME );
-$from_email  = (string) get_option( OPTION_FROM_EMAIL, DEF_FROM_EMAIL );
-$footer_html = (string) get_option( OPTION_FOOTER_HTML, DEF_FOOTER_HTML );
-$manage_slug = (string) get_option( OPTION_MANAGE_SLUG, DEF_MANAGE_SLUG );
+$from_name       = (string) get_option( OPTION_FROM_NAME, DEF_FROM_NAME );
+$from_email      = (string) get_option( OPTION_FROM_EMAIL, DEF_FROM_EMAIL );
+$footer_html     = (string) get_option( OPTION_FOOTER_HTML, DEF_FOOTER_HTML );
+$manage_slug     = (string) get_option( OPTION_MANAGE_SLUG, DEF_MANAGE_SLUG );
+$autonomous_send = filter_var( get_option( OPTION_AUTONOMOUS_SEND_ENABLED, DEF_AUTONOMOUS_SEND_ENABLED ), FILTER_VALIDATE_BOOLEAN );
 
 $manage_url_example = home_url( '/' . $manage_slug . '/' );
 
@@ -45,6 +46,31 @@ printf(
 	esc_attr( OPTION_FROM_EMAIL ),
 	esc_attr( $from_email ),
 	esc_html__( 'Must be an address your outbound mail provider is authorised to send as (SPF / DKIM aligned).', 'heads-up-mailer' )
+);
+
+printf( '</tbody></table>' );
+
+printf( '<h2>%s</h2>', esc_html__( 'Autonomous sending', 'heads-up-mailer' ) );
+printf(
+	'<p>%s</p>',
+	esc_html__(
+		'Master switch for the REST trigger-send route, which lets a trusted agent send a draft without a human pressing Send. Off by default. Even when this is on, an autonomous send only proceeds if every group the draft targets has "Allow autonomous send" ticked on the group — so this switch and the per-group flags must both agree.',
+		'heads-up-mailer'
+	)
+);
+
+printf( '<table class="form-table" role="presentation"><tbody>' );
+
+// Hidden value="0" sibling before the checkbox so an unchecked box
+// still posts a value the Settings API sanitiser can read.
+printf(
+	'<tr><th scope="row"><label for="hum-autonomous-send">%s</label></th><td><input type="hidden" name="%s" value="0" /><label><input name="%s" id="hum-autonomous-send" type="checkbox" value="1"%s /> %s</label><p class="description">%s</p></td></tr>',
+	esc_html__( 'Allow trigger-send via REST API', 'heads-up-mailer' ),
+	esc_attr( OPTION_AUTONOMOUS_SEND_ENABLED ),
+	esc_attr( OPTION_AUTONOMOUS_SEND_ENABLED ),
+	checked( $autonomous_send, true, false ),
+	esc_html__( 'Enable autonomous sends to automation-enabled groups', 'heads-up-mailer' ),
+	esc_html__( 'Leave off unless an agent is configured to send. Turning this off revokes REST sending instantly, without changing any user roles.', 'heads-up-mailer' )
 );
 
 printf( '</tbody></table>' );

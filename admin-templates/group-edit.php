@@ -14,12 +14,13 @@ namespace Heads_Up_Mailer;
 
 defined( 'ABSPATH' ) || die();
 
-$is_edit    = ( null !== $group );
-$group_id   = $is_edit ? (int) $group->id : 0;
-$slug       = $is_edit ? (string) $group->slug : '';
-$name       = $is_edit ? (string) $group->name : '';
-$desc       = $is_edit ? (string) $group->description : '';
-$is_private = $is_edit && ! empty( $group->is_private );
+$is_edit              = ( null !== $group );
+$group_id             = $is_edit ? (int) $group->id : 0;
+$slug                 = $is_edit ? (string) $group->slug : '';
+$name                 = $is_edit ? (string) $group->name : '';
+$desc                 = $is_edit ? (string) $group->description : '';
+$is_private           = $is_edit && ! empty( $group->is_private );
+$allow_automated_send = $is_edit && ! empty( $group->allow_automated_send );
 
 $page_title = $is_edit
 	? __( 'Edit group', 'heads-up-mailer' )
@@ -128,6 +129,16 @@ printf(
 	checked( $is_private, true, false ),
 	esc_html__( 'Hide this group from the public preferences page for non-members.', 'heads-up-mailer' ),
 	esc_html__( 'Private groups never appear as a sign-up option on /manage-comms/. Existing members still see it (so they can unsubscribe), but anyone else does not. Useful for internal / test groups and one-off targeted lists.', 'heads-up-mailer' )
+);
+
+// Hidden value="0" sibling before the checkbox so an unchecked
+// box still posts a value the handler can read.
+printf(
+	'<tr><th scope="row"><label for="hum-group-automated">%s</label></th><td><input type="hidden" name="allow_automated_send" value="0" /><label><input name="allow_automated_send" id="hum-group-automated" type="checkbox" value="1"%s /> %s</label><p class="description">%s</p></td></tr>',
+	esc_html__( 'Allow autonomous send', 'heads-up-mailer' ),
+	checked( $allow_automated_send, true, false ),
+	esc_html__( 'Let an agent autonomously send drafts targeting this group', 'heads-up-mailer' ),
+	esc_html__( 'When ticked, a trusted agent may trigger a send to this group via the REST API without a human pressing Send. A send is only allowed when EVERY group on the draft has this ticked AND the master switch on Settings → Sending is on. Leave off for any large or general audience.', 'heads-up-mailer' )
 );
 
 printf( '</tbody></table>' );

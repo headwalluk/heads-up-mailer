@@ -64,6 +64,7 @@ class Database {
 				name varchar(255) NOT NULL,
 				description text NOT NULL,
 				is_private tinyint(1) unsigned NOT NULL DEFAULT 0,
+				allow_automated_send tinyint(1) unsigned NOT NULL DEFAULT 0,
 				PRIMARY KEY  (id),
 				UNIQUE KEY slug (slug)
 			) {$charset_collate}",
@@ -91,6 +92,7 @@ class Database {
 				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 				draft_id bigint(20) unsigned NOT NULL,
 				group_ids_json text NOT NULL,
+				is_automated tinyint(1) unsigned NOT NULL DEFAULT 0,
 				started_at varchar(30) NOT NULL DEFAULT '',
 				finished_at varchar(30) NOT NULL DEFAULT '',
 				attempted int(11) unsigned NOT NULL DEFAULT 0,
