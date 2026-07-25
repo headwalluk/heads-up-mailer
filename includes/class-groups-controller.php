@@ -107,6 +107,84 @@ class Groups_Controller {
 	}
 
 	/**
+	 * Total membership rows for one group, regardless of subscriber
+	 * status.
+	 *
+	 * This is the "is the group empty?" test used by the REST delete
+	 * guard. Deliberately status-blind: a group holding only
+	 * unsubscribed or never-contact members is still **not** empty,
+	 * because deleting it would silently destroy those membership
+	 * rows. Clearing them is a human job in the admin UI.
+	 *
+	 * @since 1.6.0
+	 * @param int $id Group ID.
+	 * @return int Membership row count.
+	 */
+	public function count_members( int $id ): int {
+		global $wpdb;
+		$table = $wpdb->prefix . TABLE_SUBSCRIBER_GROUPS;
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom-table read; table from prefix, value placeholder is prepared.
+		$total = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE group_id = %d", $id ) );
+
+		return (int) $total;
+	}
+
+	/**
+	 * Membership counts for every group, keyed by group ID.
+	 *
+	 * Two counts per group, because they differ and callers need
+	 * both:
+	 *
+	 * - `members` — every membership row (see `count_members()`).
+	 * - `subscribed` — rows whose subscriber is `STATUS_SUBSCRIBED`,
+	 *   i.e. what a send to this group would actually reach. Mirrors
+	 *   the join in `Sends_Controller::compute_recipient_ids()`.
+	 *
+	 * Batched into one query so the REST list route doesn't fire N+1
+	 * counts. Groups with no members are absent from the result —
+	 * callers should default to zero.
+	 *
+	 * `LEFT JOIN`, not `INNER`, so `members` counts raw junction rows
+	 * and therefore always agrees with `count_members()`. An inner
+	 * join would hide an orphaned membership row, and a group could
+	 * then report zero members here while the delete guard refused it.
+	 *
+	 * @since 1.6.0
+	 * @return array<int, array{members:int, subscribed:int}>
+	 */
+	public function member_counts(): array {
+		global $wpdb;
+		$subs_table   = $wpdb->prefix . TABLE_SUBSCRIBERS;
+		$groups_table = $wpdb->prefix . TABLE_SUBSCRIBER_GROUPS;
+		$result       = array();
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Table names from prefix; status is a placeholder.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT sg.group_id AS group_id,
+				        COUNT(*) AS members,
+				        SUM( CASE WHEN s.status = %s THEN 1 ELSE 0 END ) AS subscribed
+				 FROM {$groups_table} sg
+				 LEFT JOIN {$subs_table} s ON s.id = sg.subscriber_id
+				 GROUP BY sg.group_id",
+				STATUS_SUBSCRIBED
+			)
+		);
+
+		if ( is_array( $rows ) ) {
+			foreach ( $rows as $row ) {
+				$result[ (int) $row->group_id ] = array(
+					'members'    => (int) $row->members,
+					'subscribed' => (int) $row->subscribed,
+				);
+			}
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Create a group.
 	 *
 	 * @since 0.1.0
@@ -287,6 +365,42 @@ class Groups_Controller {
 			return new \WP_Error(
 				'hum_group_invalid_name',
 				__( 'Group name is required.', 'heads-up-mailer' )
+			);
+		}
+
+		// Length guards mirror the column widths. Checked after
+		// sanitising, because sanitize_title() percent-encodes
+		// non-ASCII and can grow the slug well past its input length.
+		if ( strlen( $slug ) > MAX_GROUP_SLUG_LENGTH ) {
+			return new \WP_Error(
+				'hum_group_slug_too_long',
+				sprintf(
+					/* translators: %d is the maximum number of characters allowed in a group slug */
+					__( 'Group slug is too long (maximum %d characters).', 'heads-up-mailer' ),
+					MAX_GROUP_SLUG_LENGTH
+				)
+			);
+		}
+
+		if ( mb_strlen( $name ) > MAX_GROUP_NAME_LENGTH ) {
+			return new \WP_Error(
+				'hum_group_name_too_long',
+				sprintf(
+					/* translators: %d is the maximum number of characters allowed in a group name */
+					__( 'Group name is too long (maximum %d characters).', 'heads-up-mailer' ),
+					MAX_GROUP_NAME_LENGTH
+				)
+			);
+		}
+
+		if ( strlen( $description ) > MAX_GROUP_DESCRIPTION_LENGTH ) {
+			return new \WP_Error(
+				'hum_group_description_too_long',
+				sprintf(
+					/* translators: %d is the maximum number of characters allowed in a group description */
+					__( 'Group description is too long (maximum %d characters).', 'heads-up-mailer' ),
+					MAX_GROUP_DESCRIPTION_LENGTH
+				)
 			);
 		}
 

@@ -16,8 +16,8 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #: heads-up-mailer.php
-#: includes/class-plugin.php:259
-#: includes/class-plugin.php:260
+#: includes/class-plugin.php:273
+#: includes/class-plugin.php:274
 msgid "Heads Up Mailer"
 msgstr "Ενημερωτικό δελτίο Heads Up"
 
@@ -77,8 +77,8 @@ msgstr "Ένα ή περισσότερα ονόματα ομάδων είναι 
 #: admin-templates/drafts-list.php:75
 #: includes/class-drafts-controller.php:137
 #: includes/class-drafts-controller.php:182
-#: includes/class-plugin.php:1089
-#: includes/class-rest-controller.php:193
+#: includes/class-plugin.php:1103
+#: includes/class-rest-controller.php:304
 #: includes/class-sends-controller.php:133
 #: includes/class-sends-controller.php:214
 msgid "Draft not found."
@@ -138,7 +138,7 @@ msgstr "Δεν είναι δυνατή η επεξεργασία ενός προ
 
 #: admin-templates/draft-edit.php:66
 #: admin-templates/drafts-list.php:86
-#: admin-templates/group-edit.php:53
+#: admin-templates/group-edit.php:68
 #: admin-templates/groups-list.php:68
 #: admin-templates/subscriber-edit.php:54
 #: admin-templates/subscribers-list.php:121
@@ -176,7 +176,7 @@ msgid "Save draft"
 msgstr "Αποθήκευση πρόχειρου"
 
 #: admin-templates/draft-edit.php:136
-#: admin-templates/group-edit.php:151
+#: admin-templates/group-edit.php:166
 #: admin-templates/subscriber-edit.php:166
 #: admin-templates/subscriber-import.php:75
 msgid "Cancel"
@@ -242,8 +242,8 @@ msgid "Draft preview"
 msgstr "Προεπισκόπηση του σχεδίου"
 
 #: admin-templates/drafts-list.php:30
-#: includes/class-plugin.php:297
-#: includes/class-plugin.php:298
+#: includes/class-plugin.php:311
+#: includes/class-plugin.php:312
 msgid "Drafts"
 msgstr "Πρόχειρα"
 
@@ -314,8 +314,8 @@ msgstr "Κατάσταση"
 #: admin-templates/groups-list.php:28
 #: admin-templates/subscriber-edit.php:140
 #: admin-templates/subscribers-list.php:179
-#: includes/class-plugin.php:288
-#: includes/class-plugin.php:289
+#: includes/class-plugin.php:302
+#: includes/class-plugin.php:303
 msgid "Groups"
 msgstr "Ομάδες"
 
@@ -362,79 +362,80 @@ msgstr "Προσθήκη ομάδας"
 
 #: admin-templates/group-edit.php:43
 #: admin-templates/groups-list.php:57
-#: includes/class-groups-controller.php:126
-#: includes/class-groups-controller.php:177
+#: includes/class-groups-controller.php:204
+#: includes/class-groups-controller.php:255
 msgid "A group with that slug already exists."
 msgstr "Υπάρχει ήδη μια ομάδα με αυτό το όνομα."
 
 #: admin-templates/group-edit.php:44
 #: admin-templates/groups-list.php:58
-#: includes/class-groups-controller.php:282
+#: includes/class-groups-controller.php:360
 msgid "A valid slug is required."
 msgstr "Απαιτείται έγκυρο slug."
 
 #: admin-templates/group-edit.php:45
 #: admin-templates/groups-list.php:59
-#: includes/class-groups-controller.php:289
+#: includes/class-groups-controller.php:367
 msgid "Group name is required."
 msgstr "Το όνομα της ομάδας είναι υποχρεωτικό."
 
-#: admin-templates/group-edit.php:46
+#: admin-templates/group-edit.php:61
 #: admin-templates/groups-list.php:60
-#: includes/class-groups-controller.php:159
-#: includes/class-groups-controller.php:209
+#: includes/class-groups-controller.php:237
+#: includes/class-groups-controller.php:287
+#: includes/class-rest-controller.php:591
 msgid "Group not found."
 msgstr "Δεν βρέθηκε ομάδα."
 
-#: admin-templates/group-edit.php:47
+#: admin-templates/group-edit.php:62
 #: admin-templates/groups-list.php:61
-#: includes/class-groups-controller.php:139
+#: includes/class-groups-controller.php:217
 msgid "Failed to insert group."
 msgstr "Δεν κατέστη δυνατή η εισαγωγή της ομάδας."
 
-#: admin-templates/group-edit.php:48
+#: admin-templates/group-edit.php:63
 #: admin-templates/groups-list.php:62
-#: includes/class-groups-controller.php:192
+#: includes/class-groups-controller.php:270
 msgid "Failed to update group."
 msgstr "Δεν κατέστη δυνατή η ενημέρωση της ομάδας."
 
-#: admin-templates/group-edit.php:111
+#: admin-templates/group-edit.php:126
 #: admin-templates/groups-list.php:86
 #: admin-templates/tab-sending.php:116
 msgid "Slug"
 msgstr "Slug"
 
-#: admin-templates/group-edit.php:100
-#: admin-templates/group-edit.php:113
+#: admin-templates/group-edit.php:115
+#: admin-templates/group-edit.php:128
 msgid "Lowercase letters, numbers, and hyphens. Used in REST and the database."
 msgstr "Μικρά γράμματα, αριθμοί και παύλες. Χρησιμοποιείται στο REST και στη βάση δεδομένων."
 
-#: admin-templates/group-edit.php:78
+#: admin-templates/group-edit.php:93
 #: admin-templates/groups-list.php:85
 #: admin-templates/subscriber-edit.php:87
 #: admin-templates/subscribers-list.php:177
 msgid "Name"
 msgstr "Όνομα"
 
-#: admin-templates/group-edit.php:119
+#: admin-templates/group-edit.php:134
 #: admin-templates/groups-list.php:88
 msgid "Description"
 msgstr "Περιγραφή"
 
-#: admin-templates/group-edit.php:128
+#: admin-templates/group-edit.php:143
 #: admin-templates/groups-list.php:118
 msgid "Private"
 msgstr "Ιδιωτικό"
 
-#: admin-templates/group-edit.php:130
+#: admin-templates/group-edit.php:145
 msgid "Hide this group from the public preferences page for non-members."
 msgstr "Απόκρυψη αυτής της ομάδας από τη σελίδα προτιμήσεων για το κοινό που δεν είναι μέλη."
 
-#: admin-templates/group-edit.php:131
+#: admin-templates/group-edit.php:146
 msgid "Private groups never appear as a sign-up option on /manage-comms/. Existing members still see it (so they can unsubscribe), but anyone else does not. Useful for internal / test groups and one-off targeted lists."
 msgstr "Οι ιδιωτικές ομάδες δεν εμφανίζονται ποτέ ως επιλογή εγγραφής στη σελίδα /manage-comms/. Τα υπάρχοντα μέλη εξακολουθούν να τη βλέπουν (ώστε να μπορούν να διαγραφούν), αλλά κανένας άλλος δεν τη βλέπει. Χρήσιμο για εσωτερικές ή δοκιμαστικές ομάδες και για εφάπαξ στοχευμένες λίστες."
 
-#: admin-templates/group-edit.php:149
+#: admin-templates/group-edit.php:164
 msgid "Save group"
 msgstr "Αποθήκευση ομάδας"
 
@@ -447,7 +448,7 @@ msgid "Group deleted."
 msgstr "Η ομάδα διαγράφηκε."
 
 #: admin-templates/groups-list.php:63
-#: includes/class-groups-controller.php:229
+#: includes/class-groups-controller.php:307
 msgid "Failed to delete group."
 msgstr "Δεν κατέστη δυνατή η διαγραφή της ομάδας."
 
@@ -471,8 +472,8 @@ msgstr "Δημόσιο"
 
 #: admin-templates/sent-log-detail.php:30
 #: admin-templates/sent-log-list.php:19
-#: includes/class-plugin.php:306
-#: includes/class-plugin.php:307
+#: includes/class-plugin.php:320
+#: includes/class-plugin.php:321
 msgid "Sent log"
 msgstr "Αρχείο απεσταλμένων"
 
@@ -801,8 +802,8 @@ msgid "Import another file"
 msgstr "Εισαγωγή άλλου αρχείου"
 
 #: admin-templates/subscribers-list.php:38
-#: includes/class-plugin.php:279
-#: includes/class-plugin.php:280
+#: includes/class-plugin.php:293
+#: includes/class-plugin.php:294
 msgid "Subscribers"
 msgstr "Συνδρομητές"
 
@@ -1110,19 +1111,19 @@ msgstr "Το θέμα πρέπει να έχει %d χαρακτήρες ή λι
 msgid "Unknown group slugs: %s."
 msgstr "Άγνωστες ομάδες: %s."
 
-#: includes/class-groups-controller.php:248
+#: includes/class-groups-controller.php:326
 msgid "Hosting customers"
 msgstr "Πελάτες φιλοξενίας"
 
-#: includes/class-groups-controller.php:249
+#: includes/class-groups-controller.php:327
 msgid "Active hosting customers."
 msgstr "Ενεργοί πελάτες φιλοξενίας."
 
-#: includes/class-groups-controller.php:253
+#: includes/class-groups-controller.php:331
 msgid "Web designers"
 msgstr "Σχεδιαστές ιστοσελίδων"
 
-#: includes/class-groups-controller.php:254
+#: includes/class-groups-controller.php:332
 msgid "Web designers and agencies who refer hosting customers."
 msgstr "Σχεδιαστές ιστοσελίδων και εταιρείες που μας προωθούν πελάτες φιλοξενίας."
 
@@ -1131,7 +1132,7 @@ msgid "Heads Up Mailer mailbox poll"
 msgstr "Δημοσκόπηση του Heads Up Mailer"
 
 #: includes/class-mailbox-poller.php:183
-#: includes/class-plugin.php:790
+#: includes/class-plugin.php:804
 msgid "The PHP imap extension is not loaded on this host."
 msgstr "Η επέκταση IMAP της PHP δεν έχει φορτωθεί σε αυτόν τον διακομιστή."
 
@@ -1144,7 +1145,7 @@ msgid "Another poll is already in progress. Try again in a moment."
 msgstr "Μια άλλη ψηφοφορία βρίσκεται ήδη σε εξέλιξη. Δοκιμάστε ξανά σε λίγο."
 
 #: includes/class-mailbox-poller.php:270
-#: includes/class-plugin.php:835
+#: includes/class-plugin.php:849
 msgid "Failed to open IMAP connection."
 msgstr "Δεν κατέστη δυνατό το άνοιγμα της σύνδεσης IMAP."
 
@@ -1154,106 +1155,106 @@ msgstr "Δεν κατέστη δυνατό το άνοιγμα της σύνδε
 msgid "Poll OK — %1$d processed, %2$d errored."
 msgstr "Η ψηφοφορία ολοκληρώθηκε — %1$d ψηφοφορίες επεξεργάστηκαν, %2$d παρουσίασαν σφάλμα."
 
-#: includes/class-plugin.php:201
+#: includes/class-plugin.php:215
 msgid "Heads Up Mailer: PHP imap extension missing."
 msgstr "Ειδοποίηση: Λείπει η επέκταση PHP imap."
 
-#: includes/class-plugin.php:202
+#: includes/class-plugin.php:216
 msgid "The mailbox poller used for mailto-form unsubscribes requires the PHP imap extension. Sending still works without it."
 msgstr "Το πρόγραμμα παρακολούθησης του γραμματοκιβωτίου που χρησιμοποιείται για τη διαγραφή μέσω της φόρμας «mailto» απαιτεί την επέκταση IMAP της PHP. Η αποστολή μηνυμάτων εξακολουθεί να λειτουργεί και χωρίς αυτήν."
 
 #. translators: 1: error message from imap_errors(), 2: relative time since the error.
-#: includes/class-plugin.php:239
+#: includes/class-plugin.php:253
 #, php-format
 msgid "Last attempt failed: %1$s (%2$s)."
 msgstr "Η τελευταία προσπάθεια απέτυχε: %1$s (%2$s)."
 
-#: includes/class-plugin.php:243
+#: includes/class-plugin.php:257
 msgid "No successful poll on record yet. Check IMAP credentials and the cron schedule."
 msgstr "Δεν έχει καταγραφεί ακόμη καμία επιτυχημένη ψηφοφορία. Ελέγξτε τα διαπιστευτήρια IMAP και το πρόγραμμα cron."
 
-#: includes/class-plugin.php:247
+#: includes/class-plugin.php:261
 msgid "Heads Up Mailer: mailbox poller is stale."
 msgstr "Σημαντική ειδοποίηση για το Mailer: το πρόγραμμα παρακολούθησης του γραμματοκιβωτίου είναι παλιό."
 
-#: includes/class-plugin.php:270
-#: includes/class-plugin.php:271
+#: includes/class-plugin.php:284
+#: includes/class-plugin.php:285
 msgid "Dashboard"
 msgstr "Πίνακας ελέγχου"
 
-#: includes/class-plugin.php:315
-#: includes/class-plugin.php:316
+#: includes/class-plugin.php:329
+#: includes/class-plugin.php:330
 msgid "Settings"
 msgstr "Ρυθμίσεις"
 
-#: includes/class-plugin.php:378
-#: includes/class-plugin.php:391
-#: includes/class-plugin.php:407
-#: includes/class-plugin.php:480
-#: includes/class-plugin.php:884
-#: includes/class-plugin.php:923
+#: includes/class-plugin.php:392
+#: includes/class-plugin.php:405
+#: includes/class-plugin.php:421
+#: includes/class-plugin.php:494
+#: includes/class-plugin.php:898
+#: includes/class-plugin.php:937
 msgid "You do not have permission to access this page."
 msgstr "Δεν έχετε δικαίωμα πρόσβασης σε αυτή τη σελίδα."
 
-#: includes/class-plugin.php:434
-#: includes/class-plugin.php:537
-#: includes/class-plugin.php:587
-#: includes/class-plugin.php:618
-#: includes/class-plugin.php:653
-#: includes/class-plugin.php:716
-#: includes/class-plugin.php:962
-#: includes/class-plugin.php:1013
-#: includes/class-plugin.php:1046
-#: includes/class-plugin.php:1079
-#: includes/class-plugin.php:1103
+#: includes/class-plugin.php:448
+#: includes/class-plugin.php:551
+#: includes/class-plugin.php:601
+#: includes/class-plugin.php:632
+#: includes/class-plugin.php:667
+#: includes/class-plugin.php:730
+#: includes/class-plugin.php:976
+#: includes/class-plugin.php:1027
+#: includes/class-plugin.php:1060
+#: includes/class-plugin.php:1093
+#: includes/class-plugin.php:1117
 msgid "You do not have permission."
 msgstr "Δεν έχετε δικαιώματα πρόσβασης."
 
-#: includes/class-plugin.php:733
+#: includes/class-plugin.php:747
 msgid "No file was uploaded."
 msgstr "Δεν μεταφορτώθηκε κανένα αρχείο."
 
-#: includes/class-plugin.php:738
+#: includes/class-plugin.php:752
 msgid "File upload failed."
 msgstr "Η αποστολή του αρχείου απέτυχε."
 
-#: includes/class-plugin.php:740
+#: includes/class-plugin.php:754
 msgid "Uploaded file is not a valid upload."
 msgstr "Το αρχείο που ανεβάσατε δεν είναι έγκυρο."
 
-#: includes/class-plugin.php:786
-#: includes/class-plugin.php:864
+#: includes/class-plugin.php:800
+#: includes/class-plugin.php:878
 msgid "Insufficient permissions."
 msgstr "Ανεπαρκή δικαιώματα."
 
-#: includes/class-plugin.php:809
+#: includes/class-plugin.php:823
 msgid "Host, port, username, and password are all required."
 msgstr "Απαιτούνται ο διακομιστής, η θύρα, το όνομα χρήστη και ο κωδικός πρόσβασης."
 
 #. translators: %s: folder name on the IMAP server.
-#: includes/class-plugin.php:845
+#: includes/class-plugin.php:859
 #, php-format
 msgid "Connection successful — folder \"%s\" is reachable."
 msgstr "Η σύνδεση ολοκληρώθηκε με επιτυχία — ο φάκελος \"%s\" είναι προσβάσιμος."
 
-#: includes/class-public-controller.php:190
+#: includes/class-public-controller.php:204
 msgid "Bad request."
 msgstr "Λανθασμένο αίτημα."
 
-#: includes/class-public-controller.php:214
-#: includes/class-public-controller.php:277
+#: includes/class-public-controller.php:228
+#: includes/class-public-controller.php:291
 msgid "Security check failed. Please reload the page and try again."
 msgstr "Ο έλεγχος ασφαλείας απέτυχε. Ανανεώστε τη σελίδα και δοκιμάστε ξανά."
 
-#: includes/class-public-controller.php:255
+#: includes/class-public-controller.php:269
 msgid "Thanks. You have been unsubscribed."
 msgstr "Ευχαριστούμε. Η εγγραφή σας ακυρώθηκε."
 
-#: includes/class-public-controller.php:428
+#: includes/class-public-controller.php:505
 msgid "This unsubscribe link is invalid or has expired. Please contact the sender for a fresh link."
 msgstr "Αυτός ο σύνδεσμος διαγραφής δεν είναι έγκυρος ή έχει λήξει. Παρακαλούμε επικοινωνήστε με τον αποστολέα για να λάβετε έναν νέο σύνδεσμο."
 
-#: includes/class-public-controller.php:440
+#: includes/class-public-controller.php:517
 msgid "Too many requests. Please try again later."
 msgstr "Υπάρχουν πάρα πολλά αιτήματα. Παρακαλώ δοκιμάστε ξανά αργότερα."
 
@@ -1489,27 +1490,27 @@ msgstr "Δεν καταγράφηκαν αποτυχίες αποστολής �
 msgid "(no error recorded)"
 msgstr "(δεν καταγράφηκε σφάλμα)"
 
-#: admin-templates/group-edit.php:92
+#: admin-templates/group-edit.php:107
 msgid "Slug:"
 msgstr "Slug:"
 
-#: admin-templates/group-edit.php:96
+#: admin-templates/group-edit.php:111
 msgid "Set the slug manually"
 msgstr "Ορίστε το slug χειροκίνητα"
 
-#: admin-templates/group-edit.php:121
+#: admin-templates/group-edit.php:136
 msgid "Plain text only — any HTML tags are stripped when the group is saved. A short sentence or two describing who belongs in this group is plenty."
 msgstr "Μόνο απλό κείμενο — τυχόν ετικέτες HTML αφαιρούνται κατά την αποθήκευση της ομάδας. Αρκεί μια-δυο σύντομες προτάσεις που περιγράφουν ποιοι ανήκουν σε αυτή την ομάδα."
 
-#: admin-templates/group-edit.php:138
+#: admin-templates/group-edit.php:153
 msgid "Allow autonomous send"
 msgstr "Να επιτρέπεται η αυτόνομη αποστολή"
 
-#: admin-templates/group-edit.php:140
+#: admin-templates/group-edit.php:155
 msgid "Let an agent autonomously send drafts targeting this group"
 msgstr "Ας αφήσουμε έναν πράκτορα να στείλει αυτόνομα προσχέδια που απευθύνονται σε αυτή την ομάδα"
 
-#: admin-templates/group-edit.php:141
+#: admin-templates/group-edit.php:156
 msgid "When ticked, a trusted agent may trigger a send to this group via the REST API without a human pressing Send. A send is only allowed when EVERY group on the draft has this ticked AND the master switch on Settings → Sending is on. Leave off for any large or general audience."
 msgstr "Όταν είναι επιλεγμένο, ένας αξιόπιστος πράκτορας μπορεί να ενεργοποιήσει την αποστολή σε αυτήν την ομάδα μέσω του REST API χωρίς να χρειαστεί κάποιος χρήστης να πατήσει το κουμπί «Αποστολή». Η αποστολή επιτρέπεται μόνο όταν ΟΛΕΣ οι ομάδες στο πρόχειρο έχουν αυτό το πλαίσιο επιλεγμένο ΚΑΙ ο κεντρικός διακόπτης στις Ρυθμίσεις → Αποστολή είναι ενεργοποιημένος. Αφήστε το απενεργοποιημένο για οποιοδήποτε μεγάλο ή γενικό κοινό."
 
@@ -1586,3 +1587,40 @@ msgstr "Απόρριψη αυτόνομης αποστολής: αυτές οι 
 #: integrations/contact-form-7/class-contact-form-7.php:313
 msgid "Replace the `group:` attribute with the slug of the group you want sign-ups to land in. The quoted text becomes the visible checkbox label. The form must include an email field — that's where the subscriber's address comes from. Add `checked` to render the checkbox pre-ticked (e.g. on a dedicated sign-up form); the visitor can still untick it before submitting."
 msgstr "Αντικαταστήστε το χαρακτηριστικό `group:` με το slug της ομάδας στην οποία θέλετε να καταχωρίζονται οι εγγραφές. Το κείμενο που βρίσκεται μέσα σε εισαγωγικά θα γίνει η ορατή ετικέτα του πλαισίου επιλογής. Η φόρμα πρέπει να περιλαμβάνει ένα πεδίο email — από εκεί προέρχεται η διεύθυνση του συνδρομητή. Προσθέστε το `checked` για να εμφανιστεί το πλαίσιο επιλογής ήδη επιλεγμένο (π.χ. σε μια ειδική φόρμα εγγραφής)· ο επισκέπτης μπορεί ακόμα να το αποεπιλέξει πριν από την υποβολή."
+
+#. translators: %d is the maximum number of characters allowed in a group slug
+#: admin-templates/group-edit.php:48
+#: includes/class-groups-controller.php:379
+#, php-format
+msgid "Group slug is too long (maximum %d characters)."
+msgstr "Το slug της ομάδας είναι πολύ μεγάλο (μέγιστος αριθμός χαρακτήρων: %d)."
+
+#. translators: %d is the maximum number of characters allowed in a group name
+#: admin-templates/group-edit.php:53
+#: includes/class-groups-controller.php:390
+#, php-format
+msgid "Group name is too long (maximum %d characters)."
+msgstr "Το όνομα της ομάδας είναι πολύ μεγάλο (μέγιστος αριθμός χαρακτήρων: %d)."
+
+#. translators: %d is the maximum number of characters allowed in a group description
+#: admin-templates/group-edit.php:58
+#: includes/class-groups-controller.php:401
+#, php-format
+msgid "Group description is too long (maximum %d characters)."
+msgstr "Η περιγραφή της ομάδας είναι πολύ μεγάλη (μέγιστος αριθμός χαρακτήρων: %d)."
+
+#: includes/class-plugin.php:205
+msgid "Heads Up Mailer: AUTH_KEY is missing or insecure."
+msgstr "Προειδοποίηση Mailer: Το AUTH_KEY λείπει ή δεν είναι ασφαλές."
+
+#: includes/class-plugin.php:206
+msgid "Mailbox credentials cannot be encrypted, so they will not be saved. Set a unique AUTH_KEY in wp-config.php (use the WordPress salt generator), then re-enter the mailbox password."
+msgstr "Τα διαπιστευτήρια του λογαριασμού ηλεκτρονικού ταχυδρομείου δεν μπορούν να κρυπτογραφηθούν, επομένως δεν θα αποθηκευτούν. Ορίστε ένα μοναδικό AUTH_KEY στο αρχείο wp-config.php (χρησιμοποιήστε τη γεννήτρια salt του WordPress) και, στη συνέχεια, εισαγάγετε ξανά τον κωδικό πρόσβασης του λογαριασμού ηλεκτρονικού ταχυδρομείου."
+
+#. translators: %d is the number of subscribers still in the group
+#: includes/class-rest-controller.php:520
+#, php-format
+msgid "Group still has %d member and cannot be deleted. Remove its members first."
+msgid_plural "Group still has %d members and cannot be deleted. Remove its members first."
+msgstr[0] ""
+msgstr[1] ""

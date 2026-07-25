@@ -7,12 +7,109 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] — 2026-07-25
+
+### Added
+
+- **Groups REST API.** An agent can now discover and maintain groups
+  instead of being told slugs out of band. Previously `POST /drafts`
+  accepted `suggested_groups` as slug strings with no way to enumerate
+  valid ones, so a typo silently produced a draft targeting nothing.
+  - `GET /heads-up-mailer/v1/groups` — list every group, including
+    private ones.
+  - `GET /heads-up-mailer/v1/groups/{id}` — single group.
+  - `POST /heads-up-mailer/v1/groups` — create. `201` on success,
+    `409` duplicate slug, `400` invalid or over-long field.
+  - `PATCH /heads-up-mailer/v1/groups/{id}` — partial update; omitted
+    fields keep their stored values.
+  - `DELETE /heads-up-mailer/v1/groups/{id}` — **refuses a group that
+    still has members** with `409`, reporting the count. Any
+    membership row counts, whatever the subscriber's status, so
+    deleting a group can never quietly discard memberships. Clearing
+    them stays a human action in the admin UI, where bulk delete
+    continues to cascade as before.
+  - Each group reports `member_count` (all memberships) and
+    `subscribed_count` (what a send would actually reach) — the two
+    differ, and both are useful.
+- **Two new capabilities**, deliberately split so reading and mutating
+  are independently grantable:
+  - `hum_read_groups` — the read routes. Granted to Administrator +
+    Editor on upgrade, alongside the existing caps. Cheap to grant: an
+    identity that could already target groups gains no new reach from
+    being able to list them.
+  - `hum_manage_groups` — create / update / delete. **Administrator
+    only** on upgrade, so an existing Editor-level agent does not
+    silently gain the ability to destroy segments. Grant it
+    deliberately if you want an agent maintaining groups.
+- `bin/check-sql-interpolation.sh` — maintainer check asserting that
+  every variable interpolated into a SQL string is a table identifier
+  or a generated placeholder list. Dev tooling; not shipped.
+
+### Security
+
+Hardening pass over the whole plugin, prompted by the new REST surface.
+No evidence of exploitation, and none of these were reachable by an
+unauthenticated attacker on their own — but all are worth having.
+
+- **Draft preview is now sandboxed by the response itself**, via a
+  `Content-Security-Policy: sandbox` header, rather than relying only
+  on the parent iframe's `sandbox` attribute. Draft HTML is stored
+  unsanitised on purpose (so MJML output and conditional comments
+  survive), and an iframe attribute only applies while the document is
+  embedded — so it did nothing if the preview URL was opened directly.
+  Images and inline styles are unaffected; previews render as before.
+- **Public `/manage-comms/` throttling reworked.** The old counter
+  could be sidestepped, and could be made to create unbounded cache
+  entries. Verification now happens first; successful requests are
+  throttled per subscriber and failures per client IP. A legitimate
+  unsubscribe is never IP-throttled, so the compliance path can't be
+  blocked by someone else's abuse.
+- **Credential encryption now fails closed.** Deriving the key from
+  `AUTH_KEY` no longer falls back to a value that is public knowledge
+  when `AUTH_KEY` is absent, too short, or still the `wp-config-sample`
+  placeholder. A new admin notice explains the state, because the
+  visible symptom would otherwise be a mailbox password that silently
+  refuses to save. If a site was affected, re-enter the password after
+  setting a proper `AUTH_KEY`.
+- **Non-runtime files are no longer served over HTTP.** `.htaccess`
+  deny rules plus `index.php` guards across every directory that
+  WordPress only ever reads from disk, and a plugin-root rule covering
+  loose repo files and all dot-paths — notably `.git/`, which a
+  deployment from repo source would otherwise expose. `assets/` stays
+  web-readable, as the admin CSS/JS is enqueued over HTTP.
+- Local AI-agent config (`.claude/`) is excluded from release zips; it
+  was untracked but the zip is built from the working tree.
+
 ### Changed
 
+- Group `slug`, `name`, and `description` are now length-checked
+  against their column widths before the write, in the shared
+  validation used by both the REST routes and the admin UI. Over-long
+  input previously reached MySQL and surfaced as an opaque failure.
+- Length failures use their own error codes
+  (`hum_group_slug_too_long`, `…_name_too_long`,
+  `…_description_too_long`) with matching admin messages, rather than
+  reusing the "a valid slug is required" wording, which misdescribed a
+  slug that was valid but simply too long.
 - Groups list table: the Slug, Visibility, and Actions columns no
   longer wrap, so a long group Description can't squeeze them onto
   multiple lines. CSS-only (new reusable `.hum-nowrap` class), no
   behaviour change.
+
+### Fixed
+
+- Creating or updating a group with an over-long slug or name returned
+  a `500`-class insert failure instead of a `400` naming the problem.
+
+### Notes
+
+- **No schema change.** Database version stays at 4; nothing migrates.
+- The per-group `allow_automated_send` flag is **read-only over REST**
+  and remains settable only by a human in the admin UI. It is reported
+  in group payloads so an agent can see why a send was refused, but
+  the write routes ignore it — otherwise an identity holding both
+  `hum_manage_groups` and `hum_send_newsletters` could grant itself
+  permission to mail any group.
 
 ## [1.5.0] — 2026-06-20
 

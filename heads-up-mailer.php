@@ -3,7 +3,7 @@
  * Plugin Name: Heads Up Mailer
  * Plugin URI: https://headgit.net/headwall/heads-up-mailer
  * Description: In-house newsletter sender for headwall-hosting.com. Async send queue, RFC-8058 one-click unsubscribe, IMAP poll for mailto unsubscribes.
- * Version: 1.5.0
+ * Version: 1.6.0
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author: Paul Faulkner
@@ -18,7 +18,7 @@
 
 defined( 'ABSPATH' ) || die();
 
-define( 'HUM_VERSION', '1.5.0' );
+define( 'HUM_VERSION', '1.6.0' );
 define( 'HUM_FILE', __FILE__ );
 define( 'HUM_PATH', plugin_dir_path( __FILE__ ) );
 define( 'HUM_URL', plugin_dir_url( __FILE__ ) );
@@ -99,21 +99,39 @@ register_activation_hook( __FILE__, 'hum_activate' );
  * Editor (so a dedicated AI-agent user can operate at Editor level
  * without Administrator role inflation).
  *
- * Grants both `hum_create_drafts` (draft via REST) and, since
- * 1.5.0, `hum_send_newsletters` (trigger an autonomous send via
- * REST). The two are separate caps so send rights can be revoked
- * independently of drafting.
+ * Grants are per-role, not one list applied to every role, because
+ * the group-mutation right is deliberately narrower than the rest:
+ *
+ * - `hum_create_drafts` (1.1.0) — draft via REST.
+ * - `hum_send_newsletters` (1.5.0) — trigger an autonomous send.
+ * - `hum_read_groups` (1.6.0) — enumerate groups so the agent can
+ *   discover valid `suggested_groups` slugs.
+ * - `hum_manage_groups` (1.6.0) — **Administrator only.** Create /
+ *   update / delete groups. Withheld from Editor so an existing
+ *   agent identity does not gain segment mutation rights on
+ *   upgrade; the owner grants it deliberately.
+ *
+ * Each cap is separately grantable and revocable, so any one right
+ * can be withdrawn without touching the others.
  *
  * @since 1.1.0
  */
 function hum_ensure_caps(): void {
-	$role_slugs = array( 'administrator', 'editor' );
-	$caps       = array(
-		Heads_Up_Mailer\CAP_CREATE_DRAFTS,
-		Heads_Up_Mailer\CAP_SEND_NEWSLETTERS,
+	$caps_by_role = array(
+		'administrator' => array(
+			Heads_Up_Mailer\CAP_CREATE_DRAFTS,
+			Heads_Up_Mailer\CAP_SEND_NEWSLETTERS,
+			Heads_Up_Mailer\CAP_READ_GROUPS,
+			Heads_Up_Mailer\CAP_MANAGE_GROUPS,
+		),
+		'editor'        => array(
+			Heads_Up_Mailer\CAP_CREATE_DRAFTS,
+			Heads_Up_Mailer\CAP_SEND_NEWSLETTERS,
+			Heads_Up_Mailer\CAP_READ_GROUPS,
+		),
 	);
 
-	foreach ( $role_slugs as $role_slug ) {
+	foreach ( $caps_by_role as $role_slug => $caps ) {
 		$role = get_role( $role_slug );
 
 		if ( null === $role ) {

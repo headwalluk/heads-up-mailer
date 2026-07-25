@@ -24,7 +24,21 @@ header( 'Content-Type: text/html; charset=utf-8' );
 header( 'X-Frame-Options: SAMEORIGIN' );
 header( 'X-Content-Type-Options: nosniff' );
 
-// XSS-safe because the parent iframe is rendered with `sandbox=""`
-// (no allow-list) — scripts, forms, and same-origin DOM access are
-// all disabled regardless of body content.
-echo $draft->html_body; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sandboxed iframe; raw HTML is the point of the preview.
+// The body is echoed unescaped — raw HTML is the whole point of a
+// preview, and `html_body` is deliberately stored unsanitised so MJML
+// output and conditional comments survive.
+//
+// The `sandbox` CSP directive (empty value = deny everything: scripts,
+// forms, plugins, same-origin DOM access, top-level navigation) is what
+// makes that safe. It MUST be sent as a header rather than relying only
+// on the parent's `sandbox=""` iframe attribute: an iframe attribute is
+// a property of the embedding context, so it does nothing when this URL
+// is loaded as a top-level document — which any admin can do via the
+// browser's "Open Frame in New Tab". The header travels with the
+// response and therefore applies in both cases.
+//
+// Images and inline `<style>` are unaffected, so the preview still
+// renders faithfully.
+header( 'Content-Security-Policy: sandbox' );
+
+echo $draft->html_body; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Neutralised by the `Content-Security-Policy: sandbox` header above; raw HTML is the point of the preview.

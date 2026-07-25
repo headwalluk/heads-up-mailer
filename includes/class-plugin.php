@@ -195,6 +195,20 @@ class Plugin {
 			return;
 		}
 
+		// Credential encryption fails closed when AUTH_KEY is missing,
+		// too short, or still the wp-config sample placeholder. Without
+		// this notice the symptom would be a mailbox password that
+		// silently refuses to save.
+		if ( ! Crypto::has_usable_key_material() ) {
+			printf(
+				'<div class="notice notice-error"><p><strong>%s</strong> %s</p></div>',
+				esc_html__( 'Heads Up Mailer: AUTH_KEY is missing or insecure.', 'heads-up-mailer' ),
+				esc_html__( 'Mailbox credentials cannot be encrypted, so they will not be saved. Set a unique AUTH_KEY in wp-config.php (use the WordPress salt generator), then re-enter the mailbox password.', 'heads-up-mailer' )
+			);
+
+			return;
+		}
+
 		if ( ! extension_loaded( 'imap' ) ) {
 			printf(
 				'<div class="notice notice-error"><p><strong>%s</strong> %s</p></div>',

@@ -111,22 +111,36 @@ class Public_Controller {
 			return;
 		}
 
-		if ( ! $this->within_rate_limit( $token ) ) {
-			$this->render_rate_limited();
-			return;
-		}
-
+		// Verify BEFORE throttling. The throttle bucket used to be keyed
+		// on the token itself, which meant every distinct token — including
+		// millions of bogus ones — minted its own counter. That made the
+		// control useless against an attacker (vary the token, get a fresh
+		// budget every time) while letting unauthenticated requests create
+		// unbounded cache keys. Verifying first means a bogus token costs
+		// one indexed SELECT and creates nothing.
 		$subscriber_id = ( new Tokens() )->verify( $token );
-
-		if ( null === $subscriber_id ) {
-			$this->render_invalid_token();
-			return;
-		}
-
-		$subscriber = ( new Subscribers_Controller() )->get( $subscriber_id );
+		$subscriber    = ( null === $subscriber_id )
+			? null
+			: ( new Subscribers_Controller() )->get( $subscriber_id );
 
 		if ( null === $subscriber ) {
+			// Failed attempts are throttled per client IP — the only
+			// identifier available when the token resolves to nothing.
+			if ( ! $this->within_failed_attempt_limit() ) {
+				$this->render_rate_limited();
+				return;
+			}
+
 			$this->render_invalid_token();
+			return;
+		}
+
+		// Valid token: throttle per subscriber. The token is a deterministic
+		// HMAC of the subscriber ID, so one subscriber has exactly one token
+		// and therefore exactly one bucket — the key space is bounded by the
+		// subscriber table, not by attacker input.
+		if ( ! $this->within_rate_limit( (int) $subscriber->id ) ) {
+			$this->render_rate_limited();
 			return;
 		}
 
@@ -353,28 +367,91 @@ class Public_Controller {
 	}
 
 	/**
-	 * Check + increment the per-token rate-limit counter.
+	 * Check + increment the per-subscriber rate-limit counter.
 	 *
-	 * 20 requests/hour/token. Sliding window — each request bumps
-	 * the TTL — which is generous on purpose: legitimate users
-	 * never approach the limit, and an attacker hammering the
-	 * endpoint stays bottled.
+	 * 20 requests/hour/subscriber. Sliding window — each request bumps
+	 * the TTL. Only reached once a token has verified, so the key space
+	 * is bounded by the subscriber table and cannot be inflated by
+	 * unauthenticated input.
+	 *
+	 * Keyed on the subscriber ID rather than the token: the token is a
+	 * deterministic HMAC of that ID, so the two are equivalent, and the
+	 * ID makes the bucket's identity obvious.
 	 *
 	 * @since 0.5.0
-	 * @param string $token Raw token (already alphabet-restricted).
+	 * @param int $subscriber_id Verified subscriber ID.
 	 * @return bool True if the request is within the limit.
 	 */
-	private function within_rate_limit( string $token ): bool {
-		$key   = TRANSIENT_RATE_LIMIT . md5( $token );
-		$count = (int) get_transient( $key );
+	private function within_rate_limit( int $subscriber_id ): bool {
+		return $this->consume_budget(
+			TRANSIENT_RATE_LIMIT . $subscriber_id,
+			RATE_LIMIT_MANAGE_PER_HOUR
+		);
+	}
 
-		if ( $count >= RATE_LIMIT_MANAGE_PER_HOUR ) {
-			return false;
+	/**
+	 * Check + increment the failed-verification counter for this client
+	 * IP.
+	 *
+	 * Only failed attempts land here, so a legitimate token holder is
+	 * never IP-throttled. That matters when the endpoint is a
+	 * compliance surface: blocking a real unsubscribe would be worse
+	 * than the abuse this guards against.
+	 *
+	 * Uses `REMOTE_ADDR` only. `X-Forwarded-For` is attacker-controlled
+	 * unless a trusted proxy is known to rewrite it, and honouring it
+	 * blindly would hand out a fresh budget per spoofed header — the
+	 * exact bypass this replaces. Behind a CDN that terminates
+	 * connections, `REMOTE_ADDR` is the edge node, so all failures
+	 * share one bucket; the limit is generous enough that this degrades
+	 * to a global failure brake rather than breaking anything.
+	 *
+	 * @since 1.6.0
+	 * @return bool True if the request is within the limit.
+	 */
+	private function within_failed_attempt_limit(): bool {
+		$remote_addr = isset( $_SERVER['REMOTE_ADDR'] )
+			? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) )
+			: '';
+		$client_ip   = filter_var( $remote_addr, FILTER_VALIDATE_IP );
+
+		if ( false === $client_ip ) {
+			// no action: unparseable REMOTE_ADDR (CLI, odd SAPI). Fall
+			// back to a single shared bucket rather than skipping the
+			// brake entirely.
+			$client_ip = 'unknown';
 		}
 
-		set_transient( $key, $count + 1, HOUR_IN_SECONDS );
+		return $this->consume_budget(
+			TRANSIENT_RATE_LIMIT_FAILED . md5( $client_ip ),
+			RATE_LIMIT_MANAGE_FAILED_PER_HOUR
+		);
+	}
 
-		return true;
+	/**
+	 * Shared sliding-window counter used by both rate limits.
+	 *
+	 * Read-then-write is not atomic, so concurrent requests can
+	 * overshoot the ceiling by roughly the number of in-flight
+	 * requests. That is acceptable for a coarse abuse brake and is
+	 * preferred over `wp_cache_incr`, which would only be atomic on
+	 * installs that happen to have a persistent object cache and would
+	 * silently lose the limit entirely on those that don't.
+	 *
+	 * @since 1.6.0
+	 * @param string $key     Fully-qualified transient key.
+	 * @param int    $ceiling Maximum requests allowed per hour.
+	 * @return bool True if the request is within the limit.
+	 */
+	private function consume_budget( string $key, int $ceiling ): bool {
+		$count  = (int) get_transient( $key );
+		$result = ( $count < $ceiling );
+
+		if ( $result ) {
+			set_transient( $key, $count + 1, HOUR_IN_SECONDS );
+		}
+
+		return $result;
 	}
 
 	/**

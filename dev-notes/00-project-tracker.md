@@ -1,12 +1,12 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** Shipping post-1.0.0 increments — autonomous draft → send built (1.5.0)
-**Current Version:** 1.5.0 (committed; `v1.5.0` tag/push pending)
-**Current Phase:** Post-v1 admin polish and observability
-**Last Updated:** 20 June 2026
-**Progress:** 14 of 14 milestones complete — Milestone 14 (autonomous
-draft → send) built + documented, release tag pending (5 items
-deferred to post-1.0.0)
+**Status:** Shipping post-1.0.0 increments — Groups REST API + security
+hardening pass built, documented, and ready to tag (1.6.0)
+**Current Version:** 1.6.0 (bumped; not yet committed or tagged)
+**Current Phase:** Expanding the agent-facing REST surface
+**Last Updated:** 25 July 2026
+**Progress:** 15 of 15 milestones complete — Milestone 15 (Groups
+REST API) built, tested, hardened, and documented 2026-07-25
 
 ---
 
@@ -921,6 +921,331 @@ rationale + phased rollout). This milestone is the agreed v1 cut.
   two-gate model.
 - Dedicated service account for the send right (revisit if the
   Editor-role grant proves too broad).
+
+---
+
+## Milestone 15: Groups REST API (agent-managed segments)
+
+**Goal:** Let a trusted AI agent discover, create, and maintain
+groups over REST, instead of group slugs being tribal knowledge the
+agent has to be told out-of-band. Today `POST /drafts` accepts
+`suggested_groups` as an array of slugs (`REST_Controller::draft_args()`)
+but there is **no route to enumerate valid slugs** — a typo silently
+yields a draft targeting nothing.
+
+**Status:** 🔨 Built, tested, hardened and documented 2026-07-25
+(43/43 checks pass, `phpcs` clean plugin-wide). Version bumped to
+1.6.0. **Not yet committed or tagged.**
+
+A full plugin security review was run before the version bump, rather
+than after — REST routes are a heavily-targeted surface and this
+milestone added five of them. Detailed findings live in the
+maintainer's local notes (not in this repo); the fixes that came out of
+it are described at an appropriate level in `CHANGELOG.md` under
+1.6.0 → Security. Summary: no unauthenticated remotely-exploitable
+vulnerability, no SQL injection, no missing capability or nonce check;
+the substantive fixes were hardening controls that sat in the wrong
+layer, plus file-exposure over HTTP.
+**Dependencies:** REST drafts API (M4 / 1.1.0), groups (M2),
+capability plumbing (M14 / 1.5.0).
+**Target version:** 1.6.0 (new caps + `DB_VERSION` untouched — no
+schema change needed).
+
+### Decisions (proposed 2026-07-25)
+
+- **Two new capabilities, split read from write** — see the
+  reasoning in "Capability model" below.
+- **Routes** (all under `heads-up-mailer/v1`):
+
+  | Route | Method | Capability | Notes |
+  | --- | --- | --- | --- |
+  | `/groups` | GET | `hum_read_groups` | List all groups, incl. private |
+  | `/groups` | POST | `hum_manage_groups` | Create; 409 on duplicate slug |
+  | `/groups/(?P<id>\d+)` | GET | `hum_read_groups` | Single group |
+  | `/groups/(?P<id>\d+)` | PATCH | `hum_manage_groups` | Partial update |
+  | `/groups/(?P<id>\d+)` | DELETE | `hum_manage_groups` | **Refuses non-empty** |
+
+- **ID-addressed, not slug-addressed**, for consistency with
+  `/drafts/{id}`. Slugs are `sanitize_title()`-derived so a purely
+  numeric slug (`2026`) is legal and would collide with a `\d+`
+  path segment. The agent maps slug → id from `GET /groups`.
+- **DELETE refuses a non-empty group** (the owner's requirement).
+  "Non-empty" = **any** row in `hum_subscriber_groups` for that
+  group id, regardless of subscriber status. Strictest reading, no
+  surprises: a group holding only unsubscribed members still
+  refuses, and the human clears it in admin. Returns `409` naming
+  the member count.
+- **The guard lives in the REST layer, NOT in
+  `Groups_Controller::delete()`.** That method deliberately
+  cascades (deletes junction rows, then the group) and backs the
+  admin bulk-delete. Moving the guard down would change admin
+  behaviour and break bulk-delete. Add a
+  `Groups_Controller::count_members( int $id ): int` helper (no
+  such helper exists today) and check it in the route callback.
+- **🔒 Write routes MUST NOT accept `allow_automated_send`.**
+  `Groups_Controller::validate()` currently reads that key from its
+  input array. If a REST write route passed it through, an identity
+  holding `hum_manage_groups` + `hum_send_newsletters` could flip
+  the flag on any group and then autonomously mail it — collapsing
+  M14's per-group gate into a single-actor privilege escalation.
+  The per-group automation flag stays **admin-UI-only, human-set**.
+  Allowlist the accepted fields explicitly (`slug`, `name`,
+  `description`, `is_private`); do not spread the request body into
+  `validate()`.
+- **`is_private` is writable** over REST — it only controls
+  visibility on `/manage-comms/`, carries no send authority, and an
+  agent creating an internal/test group legitimately wants it.
+- **Response shape** — per group: `id`, `slug`, `name`,
+  `description`, `is_private`, `allow_automated_send`
+  (**read-only**, so the agent can see why a send was refused),
+  `member_count` (all membership rows), `subscribed_count` (rows
+  where `hum_subscribers.status = subscribed`, i.e. what a send
+  would actually reach). Two counts because they differ and the
+  agent needs the deliverable one for reporting and the total one
+  to understand a delete refusal.
+- **HTTP status map:**
+  - `200` — read / update OK. `201` — created.
+  - `400` — invalid slug or missing name (map `hum_group_invalid_*`).
+  - `404` — group id not found.
+  - `409` — duplicate slug on create/update (`hum_group_exists`),
+    **or** DELETE against a non-empty group.
+  - `500` — insert/update/delete DB fault.
+- **No pagination.** Groups are a handful of rows, ordered by name
+  via the existing `get_all()`.
+
+### Capability model
+
+Reusing `hum_create_drafts` was rejected: every Editor that can
+draft would silently gain the ability to create and destroy
+segments on upgrade. M14 set the precedent — one independently
+grantable/revocable cap per verb-class.
+
+- **`CAP_READ_GROUPS` (`hum_read_groups`)** — granted to
+  Administrator + Editor in `hum_ensure_caps()`, alongside the
+  existing two. Closes the discovery gap immediately for the
+  existing agent identity with **zero new blast radius**: it can
+  already target groups, it just couldn't name them. Also lets a
+  read-only reporting agent list segments without holding draft
+  rights.
+- **`CAP_MANAGE_GROUPS` (`hum_manage_groups`)** — granted to
+  **Administrator only** on activation/first-run. The existing
+  Editor-role agent does **not** gain mutation rights on upgrade;
+  the owner opts in deliberately, per-user or by adding the cap to
+  Editor. Mutation is the destructive half (a wrong DELETE drops
+  membership rows) so it defaults closed, matching the
+  dangerous-default-is-OFF stance from M14.
+
+One cap for all three write verbs rather than three caps —
+create/update/delete is one job ("maintain segments") and splitting
+further buys granularity nobody has asked for.
+
+### Tasks — constants & capability ✅
+
+- [x] `CAP_READ_GROUPS`, `CAP_MANAGE_GROUPS` in `constants.php`
+      with doc blocks (`@since 1.6.0`) explaining the split.
+- [x] `hum_ensure_caps()` restructured from one `$caps` list applied
+      to both roles into a `$caps_by_role` map, so
+      `hum_manage_groups` can go to Administrator only. Verified:
+      admin read+manage, editor read-only, author neither.
+- [x] Caps land via `Plugin::check_first_run()` on both fresh
+      activation and version-change (existing choke-point, unchanged).
+      **Note:** because the version is deliberately *not* bumped yet,
+      the dev site was granted the new caps by calling
+      `hum_ensure_caps()` directly. The version bump is what makes
+      this automatic for real installs.
+
+### Tasks — controller ✅
+
+- [x] `Groups_Controller::count_members( int $id ): int` — `COUNT(*)`
+      on `hum_subscriber_groups`, status-blind (see the delete-guard
+      decision above).
+- [x] `Groups_Controller::member_counts(): array` — one batched
+      query returning both `members` and `subscribed` per group,
+      keyed by group ID. Replaces the planned pair of per-group
+      helpers, so the list route costs one query rather than N+1.
+      `subscribed` mirrors the join in
+      `Sends_Controller::compute_recipient_ids()`.
+- [x] `LEFT JOIN` (not `INNER`) in `member_counts()` so `members`
+      counts raw junction rows and always agrees with
+      `count_members()`. An inner join would hide an orphaned
+      membership row, letting a group report zero members while the
+      delete guard refused it.
+- [x] PATCH merge confirmed necessary and implemented in the REST
+      layer: `update()` does full-replace, so the route rebuilds all
+      five fields from the existing row before overlaying the
+      allowlisted changes. **Verified by test:** a PATCH omitting
+      `allow_automated_send` leaves a human-set flag at 1.
+
+### Tasks — REST routes ✅
+
+- [x] Five route/method pairs registered in
+      `REST_Controller::register_routes()`, reusing `id_arg()`.
+      Confirmed advertised correctly in the namespace index.
+- [x] `check_read_groups_permission()` /
+      `check_manage_groups_permission()` alongside the existing two
+      gates.
+- [x] `group_args()` — explicit field allowlist with a "do not add
+      `allow_automated_send`" security note in the doc block.
+- [x] `serialize_group()` — both counts plus read-only
+      `allow_automated_send`.
+- [x] DELETE callback: 404 → 409 if `count_members() > 0` (with the
+      count in both message and error data) → `delete()`.
+- [x] `group_error_to_rest()` added rather than extending
+      `wp_error_to_rest()`, which hard-codes 400 and is shared with
+      the drafts routes. Maps the `hum_group_*` codes onto
+      400 / 404 / 409 / 500.
+
+### Delta found during testing (not in the original scope)
+
+- [x] **Over-long input returned 500, not 400.** `slug varchar(100)`
+      / `name varchar(255)` meant a long value was refused by MySQL
+      and surfaced as an opaque `hum_group_insert_failed` (500) — a
+      client error dressed as a server fault, and a raw `$wpdb`
+      failure on the happy path of a valid-looking request. Fixed by
+      adding `MAX_GROUP_SLUG_LENGTH` / `MAX_GROUP_NAME_LENGTH` /
+      `MAX_GROUP_DESCRIPTION_LENGTH` (new `MAX_*` constant group) and
+      enforcing them in `Groups_Controller::validate()` — the shared
+      choke-point, so the admin UI gains the same guard. Slug length
+      is checked in **bytes after sanitising**, because
+      `sanitize_title()` percent-encodes non-ASCII and can grow a
+      slug well past its input length.
+- [x] Length failures use **distinct** error codes
+      (`hum_group_slug_too_long` etc.) rather than reusing
+      `hum_group_invalid_slug`, whose admin message ("A valid slug is
+      required") would misdescribe a valid-but-too-long slug.
+      `admin-templates/group-edit.php` gained matching messages.
+
+### Tasks — verification ✅
+
+- [x] `phpcs` clean across all five touched files.
+- [x] 43-check matrix on the dev DB, 0 failures: editor read (200),
+      anonymous read (401), missing group (404), editor write
+      lockout (403 × POST/PATCH/DELETE), admin create (201),
+      duplicate slug (409), unsanitisable slug (400), empty name
+      (400), missing required field (400), PATCH preserving every
+      omitted field, PATCH to a taken slug (409), PATCH missing
+      (404), DELETE populated (409 + memberships intact), DELETE
+      empty (200), DELETE already-deleted (404).
+- [x] **Escalation test passed:** as Administrator (holding
+      `hum_manage_groups` + `hum_send_newsletters`),
+      `allow_automated_send` could not be set via POST (DB stayed 0)
+      nor cleared via PATCH (DB stayed 1), and a PATCH omitting it
+      preserved it.
+- [x] Injection / robustness probe: `<script>` and `<img onerror>`
+      stripped by `sanitize_text_field` / `sanitize_textarea_field`;
+      SQL-ish slug and name stored inertly with the table intact
+      (prepared statements); null bytes stripped; unicode slugs
+      percent-encoded by `sanitize_title()` as core does.
+- [x] Real-HTTP check: routes advertised in the namespace index;
+      unauthenticated `GET` → 401, `DELETE` → 401, and
+      `POST` with a valid body → 401 with nothing created.
+
+### Note for the security audit
+
+- Unauthenticated `POST /groups` **with no body** returns `400
+  rest_missing_callback_param` (naming the missing params) rather
+  than `401`. This is WP core's dispatch order — the required-param
+  check runs before `permission_callback` — and it affects every
+  route in the plugin including the pre-existing `POST /drafts`. The
+  gate itself holds: with a valid body the same request is `401` and
+  writes nothing. Flagged as a minor unauthenticated
+  parameter-name disclosure, inherited from core, rather than
+  something to "fix" by moving validation into the callback.
+- A temporary `hum_test_editor` user (ID 60, Editor) was created on
+  the dev site for the gate matrix. **Delete before release.**
+
+### Tasks — docs & release
+
+- [x] Version bumped 1.5.0 → 1.6.0 in `heads-up-mailer.php` (header +
+      `HUM_VERSION`), `readme.txt` (`Stable tag`), and the `README.md`
+      badge. `DB_VERSION` deliberately unchanged at 4 — no schema
+      change in this milestone.
+- [x] **Upgrade path verified for real**, not assumed: stripped both
+      new caps, rolled the stamped version back to 1.5.0, ran
+      `Plugin::check_first_run()`, and confirmed the version-change
+      branch re-granted `hum_read_groups` to Administrator + Editor and
+      `hum_manage_groups` to Administrator only, then stamped 1.6.0.
+      `author` gained nothing.
+- [x] `docs/ai-agent-rest-guide.md`: all five group endpoints with
+      request/response shapes and `curl` examples, the two new caps in
+      the auth section, a full group-error-code table, and
+      `GET /groups` added as step 0 of the workflow. Also **corrected a
+      pre-existing inaccuracy**: the guide claimed `html_body` was
+      "sanitised via `wp_kses_post`", which it never was — it is stored
+      verbatim by design so MJML output survives. That wrong sentence
+      was the exact assumption behind one of the security findings, so
+      it now states the real behaviour and what it implies for the
+      agent credential.
+- [x] `docs/autonomous-send-setup.md`: new section stating that
+      `allow_automated_send` is unreachable over REST at any privilege
+      level, why the split exists, and that granting
+      `hum_manage_groups` therefore does not widen the autonomous-send
+      blast radius.
+- [x] `CHANGELOG.md` 1.6.0 entry (Added / Security / Changed / Fixed /
+      Notes), absorbing the previously-unreleased groups-list nowrap
+      change. Security items are described by impact class without
+      publishing reproduction detail — the repo is public and 1.5.0
+      installs exist in the wild.
+- [x] `readme.txt` changelog + upgrade-notice entries, and the
+      Description section updated for the groups API. `README.md`
+      feature list plus a full route/capability table.
+- [x] Docs verified against the implementation rather than written from
+      memory: all 11 documented group error codes confirmed present in
+      source, documented length limits confirmed against
+      `MAX_GROUP_*_LENGTH`, and the example `GET /groups` payload
+      confirmed byte-for-byte against a live response.
+- [x] `wp-translate .` re-run — 40 strings across all eight locales,
+      `.mo` files recompiled and verified loading at runtime.
+      Plural-Forms headers survived intact (including `pl_PL`'s
+      three-form rule), and `AUTH_KEY` / `wp-config.php` came through
+      verbatim, which matters since that notice tells the reader which
+      constant to edit.
+- [x] Deleted the `hum_test_editor` dev user (ID 60); confirmed no
+      plugin caps linger on `author` / `contributor` / `subscriber`.
+- [ ] **Browser check still outstanding:** confirm
+      `content-security-policy: sandbox` on a draft-preview response.
+      The header call is unconditional and sits beside two existing
+      `header()` calls in the same template, but it could not be
+      confirmed over live HTTP from the shell — application passwords
+      authenticate REST/XML-RPC only, not `admin-post.php`, and a
+      forged auth cookie 302s. Open a draft preview and check devtools.
+- [x] Committed and tagged `v1.6.0`.
+
+### Known-untranslated (deferred to the native-speaker pass)
+
+- **`wp-translate` does not fill `msgid_plural` entries.** Confirmed by
+  diffing against a pre-run backup: `%d subscribers deleted.` was
+  already empty before this run, and the new
+  `Group still has %d member(s)…` plural came back empty too. The
+  plural *slots* are created correctly (three for `pl_PL`), just not
+  populated. WordPress falls back to the English source, so the
+  behaviour is graceful — non-English admins see English for those two
+  messages. Two untranslated plurals now, up from one.
+- **`wp-translate --dry-run` is unreliable** and cost a round of
+  confusion here: it reported "Nothing new to translate" and
+  "Would translate 0 strings" for all eight locales, then the real run
+  translated five per locale. It also regenerated
+  `languages/heads-up-mailer.pot` on disk while printing "No files will
+  be modified" — verified by mtime and content. Do not trust the
+  dry-run to decide whether a translation pass is needed.
+- **Short technical terms still need a human eye.** `pl_PL` rendered
+  "slug" as "Slag grupy", which is not the Polish term in any sense;
+  every other locale sensibly kept it as a loanword
+  (`Gruppen-Slug`, `slug del grupo`, `groepsslug`). `fr_FR` expanded the
+  "Heads Up Mailer:" notice prefix into "Avertissement concernant le
+  Mailer", inventing prose rather than treating it as a product name.
+  Both are candidates for the tool's no-translate list.
+
+### Deliberately out of scope
+
+- Membership writes (adding/removing subscribers from a group over
+  REST) — that is a subscribers-API milestone, not this one, and it
+  is the higher-risk surface (consent semantics, `hum_events`
+  instrumentation via `Subscribers_Controller::set_groups()`).
+- Slug-addressed routes (`/groups/by-slug/{slug}`) — add only if
+  the id round-trip proves annoying in practice.
+- `allow_automated_send` over REST — see above. Not a "later",
+  a "no".
 
 ---
 

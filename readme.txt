@@ -4,7 +4,7 @@ Tags: newsletter, email, subscribers, mailer, unsubscribe
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 1.5.0
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,6 +17,8 @@ Heads Up Mailer is a lightweight in-house newsletter plugin built to replace Mai
 Drafts are authored by an AI agent via REST. The administrator reviews and edits them in the WordPress admin, then sends to one or more customer groups. Sends are queued in custom tables and drained by WP-Cron in configurable batches — never inline with the admin POST.
 
 Sending stays a human action by default. Optionally (since 1.5.0), a trusted agent can trigger a send autonomously over REST — but only when a site-wide master switch is on AND every target group has been individually opted in. Both ship OFF, so automation can never reach a group an admin has not deliberately flagged.
+
+Since 1.6.0, an agent can also discover and maintain groups over REST rather than being handed slugs out of band. Read and write access are separate capabilities: `hum_read_groups` goes to Administrator and Editor, while `hum_manage_groups` — create, update, delete — is Administrator-only unless you grant it deliberately. Deleting a group that still has members is refused outright, so memberships are never discarded as a side effect. The per-group autonomous-send flag is deliberately read-only over REST and stays a human decision in the admin UI.
 
 Privacy-positive by design:
 
@@ -68,6 +70,9 @@ Add `add_filter( 'hum_updater_enabled', '__return_false' );` to your site's `fun
 
 == Changelog ==
 
+= 1.6.0 =
+Adds a Groups REST API so an agent can discover and maintain groups instead of being told slugs out of band: list, read, create, partial-update, and delete. Deleting a group that still has members is refused with a 409 reporting the count, so memberships can never be quietly discarded — clearing them stays a human action in the admin UI. Two new capabilities, split so reading and mutating are independently grantable: `hum_read_groups` (Administrator + Editor on upgrade) and `hum_manage_groups` (Administrator only, so an existing Editor-level agent does not silently gain the power to destroy segments). Also a security-hardening pass across the whole plugin: the draft preview is now sandboxed by its own response header rather than relying on the embedding iframe, public-endpoint throttling has been reworked so it can't be sidestepped and can't block a legitimate unsubscribe, credential encryption fails closed instead of falling back to public key material, and non-runtime files are no longer served over HTTP. No schema change. See `CHANGELOG.md` for the full entry.
+
 = 1.5.0 =
 Adds optional autonomous sending: a new REST route lets a trusted agent trigger a send without a human pressing Send. It is gated by two fail-safe controls that both default OFF — a site-wide master switch (Settings → Sending) and a per-group "Allow autonomous send" flag — so a send only proceeds when the switch is on and every target group is opted in. A separate `hum_send_newsletters` capability keeps send rights revocable independently of drafting; the Sent log gains an Auto/Manual "Trigger" column. Also promotes the bulk Delete action on the Subscribers list. Schema version 4 (auto-migrates; no behaviour change until you opt a group in). Bundled translations refreshed for all eight locales (machine-translated; a native-speaker polish of the short labels is still pending). See `CHANGELOG.md` for the full entry.
 
@@ -93,6 +98,9 @@ New custom capability `hum_create_drafts`, granted to Administrator and Editor o
 First stable release. Replaces MailerLite at headwall-hosting.com. Stack covers: drafts via REST → admin review → async send queue → RFC 8058 unsubscribe → public `/manage-comms/` page → IMAP poll for mailto unsubscribes → sent log → never-contact status → Contact Form 7 + WooCommerce integrations → in-plugin GitHub auto-updater. See `CHANGELOG.md` in the plugin folder for the detailed per-feature history (0.1.0 through 0.10.1).
 
 == Upgrade Notice ==
+
+= 1.6.0 =
+Recommended. Adds a Groups REST API plus a security-hardening pass across the plugin. Two new capabilities are granted on upgrade: `hum_read_groups` to Administrator and Editor, and `hum_manage_groups` to Administrator only — so no existing account gains the ability to create or delete groups unless you grant it. No schema change and no action required. If your site has no proper `AUTH_KEY` set in wp-config.php, mailbox credentials will now refuse to save rather than being encrypted with a guessable key; an admin notice explains it, and re-entering the password once a real `AUTH_KEY` is in place resolves it.
 
 = 1.5.0 =
 Optional autonomous sending over REST, plus schema version 4 (migrates automatically on upgrade). Both new gates ship OFF, so nothing sends autonomously until you enable the master switch and opt a group in. No action required to upgrade.

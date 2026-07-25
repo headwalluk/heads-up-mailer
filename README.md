@@ -1,6 +1,6 @@
 # Heads Up Mailer
 
-![Status](https://img.shields.io/badge/status-1.5.0-brightgreen)
+![Status](https://img.shields.io/badge/status-1.6.0-brightgreen)
 ![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b?logo=wordpress&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-8.0%2B-777bb4?logo=php&logoColor=white)
 ![License](https://img.shields.io/badge/license-GPLv2%2B-blue)
@@ -43,6 +43,13 @@ marketing-automation suite.
   proceeds when every target group is opted in, so the general list
   can never be auto-mailed. Drafting is unaffected; the Sent log
   flags Auto vs Manual sends.
+- **Groups REST API** — an agent can list, read, create, update and
+  delete groups instead of being handed slugs out of band. Read
+  (`hum_read_groups`) and write (`hum_manage_groups`) are separate
+  capabilities; write is Administrator-only by default. Deleting a
+  group that still has members is refused, so memberships are never
+  discarded as a side effect, and the per-group autonomous-send flag
+  is read-only over REST — it stays a human decision.
 - **Send queue + worker** — async drain on a configurable WP-Cron
   interval, per-recipient optimistic claim against
   `UNIQUE(send_id, subscriber_id)`, wall-clock budget per tick.
@@ -92,11 +99,24 @@ follow-up; the in-admin tab descriptions cover day-to-day use.
 
 ## REST API
 
-AI agents post drafts via the `heads-up-mailer/v1` namespace
-with WordPress application-password auth — `POST /drafts`,
-`GET /drafts/{id}`, and the gated `POST /drafts/{id}/send`. See the
+AI agents work through the `heads-up-mailer/v1` namespace with
+WordPress application-password auth:
+
+| Route | Method | Capability |
+| --- | --- | --- |
+| `/drafts` | POST | `hum_create_drafts` |
+| `/drafts/{id}` | GET | `hum_create_drafts` |
+| `/drafts/{id}/send` | POST | `hum_send_newsletters` |
+| `/groups` | GET | `hum_read_groups` |
+| `/groups` | POST | `hum_manage_groups` |
+| `/groups/{id}` | GET | `hum_read_groups` |
+| `/groups/{id}` | PATCH | `hum_manage_groups` |
+| `/groups/{id}` | DELETE | `hum_manage_groups` |
+
+Each capability is granted and revoked independently, so an agent can
+be given exactly the rights it needs. See the
 [REST API reference](https://github.com/headwalluk/heads-up-mailer/blob/master/docs/ai-agent-rest-guide.md)
-for endpoints, request / response shapes, and `curl` examples.
+for request / response shapes, error codes, and `curl` examples.
 
 ## Updates
 

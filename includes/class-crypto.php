@@ -49,7 +49,7 @@ class Crypto {
 	public static function encrypt( string $plaintext ): string {
 		$result = '';
 
-		if ( '' !== $plaintext ) {
+		if ( '' !== $plaintext && self::has_usable_key_material() ) {
 			$nonce  = random_bytes( SODIUM_CRYPTO_SECRETBOX_NONCEBYTES );
 			$cipher = sodium_crypto_secretbox( $plaintext, $nonce, self::derive_key() );
 			$result = base64_encode( $nonce . $cipher ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Encoding for storage, not obfuscation.
@@ -73,7 +73,7 @@ class Crypto {
 	public static function decrypt( string $encoded ): string {
 		$result = '';
 
-		if ( '' !== $encoded ) {
+		if ( '' !== $encoded && self::has_usable_key_material() ) {
 			$bin = base64_decode( $encoded, true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Decoding storage envelope.
 
 			if ( false !== $bin && strlen( $bin ) > SODIUM_CRYPTO_SECRETBOX_NONCEBYTES ) {
@@ -91,20 +91,57 @@ class Crypto {
 	}
 
 	/**
-	 * Derive a 32-byte key from `AUTH_KEY` (or the site URL as
-	 * fallback) via HKDF-SHA256 with a plugin-specific `info` binding.
+	 * Minimum plausible length for real `AUTH_KEY` material. WordPress
+	 * generates 64 characters; anything under this is a hand-edited
+	 * stub rather than a salt.
+	 *
+	 * @since 1.6.0
+	 */
+	private const MIN_KEY_MATERIAL_LENGTH = 32;
+
+	/**
+	 * Whether `AUTH_KEY` is strong enough to derive a key from.
+	 *
+	 * This used to fall back to `get_option( 'siteurl' )` when
+	 * `AUTH_KEY` was missing. That silently downgraded the mailbox
+	 * password to being encrypted under a *publicly known* value —
+	 * anyone able to read the database (leaked backup, shared hosting,
+	 * SQL injection elsewhere) could recover it. Failing closed is the
+	 * only honest option: no key material means no ciphertext.
+	 *
+	 * Also rejects the shipped `wp-config-sample.php` placeholder,
+	 * which is non-empty and so passed the old check while being just
+	 * as public as the site URL.
+	 *
+	 * @since 1.6.0
+	 */
+	public static function has_usable_key_material(): bool {
+		$result = false;
+
+		if ( defined( 'AUTH_KEY' ) ) {
+			$material    = (string) AUTH_KEY;
+			$placeholder = ( false !== stripos( $material, 'put your unique phrase here' ) );
+
+			$result = ( strlen( $material ) >= self::MIN_KEY_MATERIAL_LENGTH ) && ! $placeholder;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Derive a 32-byte key from `AUTH_KEY` via HKDF-SHA256 with a
+	 * plugin-specific `info` binding.
+	 *
+	 * Callers must gate on `has_usable_key_material()` first — there is
+	 * deliberately no fallback material.
 	 *
 	 * @since 0.2.0
 	 * @return string Raw 32-byte key suitable for `sodium_crypto_secretbox`.
 	 */
 	private static function derive_key(): string {
-		$material = defined( 'AUTH_KEY' ) && '' !== (string) AUTH_KEY
-			? (string) AUTH_KEY
-			: (string) get_option( 'siteurl' );
-
 		return hash_hkdf(
 			'sha256',
-			$material,
+			(string) AUTH_KEY,
 			SODIUM_CRYPTO_SECRETBOX_KEYBYTES,
 			self::KEY_INFO
 		);

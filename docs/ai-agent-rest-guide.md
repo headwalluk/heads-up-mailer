@@ -29,6 +29,24 @@ Every route uses **HTTP Basic auth** with a WordPress
    1.5.0, so an Editor account has both. The two caps are separate
    so an admin can let the agent draft but not send, simply by
    removing the send cap.
+
+   Since 1.6.0 there are two further caps for the group routes:
+
+   | Capability | Grants | Granted on upgrade to |
+   | --- | --- | --- |
+   | `hum_read_groups` | `GET /groups`, `GET /groups/{id}` | Administrator + Editor |
+   | `hum_manage_groups` | `POST` / `PATCH` / `DELETE` on groups | **Administrator only** |
+
+   So an Editor-role agent account can *discover* groups out of the
+   box, but cannot create or delete them. That is deliberate: reading
+   the group list gives an agent no reach it did not already have,
+   whereas a mistaken `DELETE` is destructive. If you want an agent
+   maintaining groups, grant `hum_manage_groups` to that user
+   explicitly (or to the Editor role, accepting that it applies to
+   every Editor).
+
+   All four caps are independent — revoke any one without disturbing
+   the others.
 2. Scroll to **Application Passwords**, enter a label (e.g.
    "newsletter-agent"), and click **Add new application password**.
 3. WordPress shows a 24-character credential like
@@ -55,8 +73,17 @@ Submits a newsletter draft for an admin to review and send.
 | Field              | Type     | Required | Notes                                                |
 | ------------------ | -------- | -------- | ---------------------------------------------------- |
 | `subject`          | string   | yes      | ≤ 200 characters. Stripped of HTML.                  |
-| `html_body`        | string   | yes      | Newsletter HTML. Sanitised via `wp_kses_post`.       |
+| `html_body`        | string   | yes      | Newsletter HTML. Stored **verbatim** — see below.    |
 | `suggested_groups` | string[] | no       | Array of group **slugs** (not IDs). Default `[]`.    |
+
+`html_body` is deliberately **not** run through `wp_kses_post`: email
+HTML is usually a full document, and kses strips the conditional
+comments and wrapper markup that MJML-style output depends on. The
+trade-off is that the agent's HTML is trusted content — the admin
+preview renders it under a `Content-Security-Policy: sandbox` response
+header so scripts in it cannot execute, but an agent credential is
+still effectively "may store arbitrary HTML on this site". Treat that
+credential accordingly.
 
 **Response** — `201 Created`:
 
@@ -157,6 +184,131 @@ curl -u "newsletter-agent:AbCd EfGh IjKl MnOp QrSt UvWx" \
 draft is a deliberate human action in the admin. Post a fresh draft
 for each send.
 
+### `GET /groups` — list every group
+
+*Since 1.6.0. Requires `hum_read_groups`.*
+
+Use this to discover valid `suggested_groups` slugs rather than
+hard-coding them. Includes private groups — "private" only hides a
+group from the public preferences page, and this route is
+capability-gated.
+
+**Response** — `200 OK`:
+
+```json
+{
+  "groups": [
+    {
+      "id": 1,
+      "slug": "hosting-customers",
+      "name": "Hosting customers",
+      "description": "Active hosting customers.",
+      "is_private": false,
+      "allow_automated_send": false,
+      "member_count": 136,
+      "subscribed_count": 135
+    }
+  ]
+}
+```
+
+Two counts, because they differ and both matter:
+
+- `member_count` — every membership row, whatever the subscriber's
+  status. This is the number that governs whether the group can be
+  deleted.
+- `subscribed_count` — members a send would actually reach. Use this
+  one for reporting audience size.
+
+`allow_automated_send` is **read-only**. It tells you whether
+`POST /drafts/{id}/send` can reach this group, so a refusal is
+diagnosable — but the write routes ignore the field entirely. Only a
+human can change it, in the admin UI.
+
+No pagination — groups are a handful of rows, ordered by name.
+
+```bash
+curl -u "newsletter-agent:AbCd EfGh IjKl MnOp QrSt UvWx" \
+     https://devx.headwall.tech/wp-json/heads-up-mailer/v1/groups
+```
+
+### `GET /groups/{id}` — read one group
+
+*Requires `hum_read_groups`.* Same object shape as a list entry.
+`404` if the id is unknown.
+
+### `POST /groups` — create a group
+
+*Requires `hum_manage_groups` (Administrator by default).*
+
+| Field         | Type    | Required | Notes                                        |
+| ------------- | ------- | -------- | -------------------------------------------- |
+| `slug`        | string  | yes      | Passed through `sanitize_title()`. ≤ 100 bytes after sanitising. Must be unique. |
+| `name`        | string  | yes      | ≤ 255 characters.                            |
+| `description` | string  | no       | Plain text. ≤ 65535 bytes.                   |
+| `is_private`  | boolean | no       | Hides the group from the public preferences page. Default `false`. |
+
+Any other field is ignored — notably `allow_automated_send`, which
+cannot be set over REST at any privilege level. A group created here
+always starts with autonomous sending off.
+
+Non-ASCII slugs are percent-encoded by `sanitize_title()`, as
+elsewhere in WordPress, which can make the stored slug considerably
+longer than what you sent. Prefer ASCII slugs.
+
+**Response** — `201 Created`, returning the created group in the same
+shape as `GET /groups/{id}`.
+
+```bash
+curl -u "newsletter-agent:AbCd EfGh IjKl MnOp QrSt UvWx" \
+     -H "Content-Type: application/json" \
+     -X POST \
+     -d '{"slug":"security-bulletin","name":"Security bulletin","description":"Daily security digest."}' \
+     https://devx.headwall.tech/wp-json/heads-up-mailer/v1/groups
+```
+
+### `PATCH /groups/{id}` — partial update
+
+*Requires `hum_manage_groups`.*
+
+Send only the fields you want changed; anything omitted keeps its
+stored value. Accepts the same four fields as `POST /groups`.
+
+```bash
+curl -u "newsletter-agent:AbCd EfGh IjKl MnOp QrSt UvWx" \
+     -H "Content-Type: application/json" \
+     -X PATCH \
+     -d '{"description":"Daily security digest for managed hosting."}' \
+     https://devx.headwall.tech/wp-json/heads-up-mailer/v1/groups/5
+```
+
+### `DELETE /groups/{id}` — delete an empty group
+
+*Requires `hum_manage_groups`.*
+
+**Refuses any group that still has members**, with `409` and the count
+in both the message and `data.member_count`:
+
+```json
+{
+  "code": "hum_group_not_empty",
+  "message": "Group still has 136 members and cannot be deleted. Remove its members first.",
+  "data": { "status": 409, "member_count": 136 }
+}
+```
+
+"Has members" means *any* membership row, including subscribers who
+are unsubscribed or never-contact. Deleting a group also deletes its
+membership rows, so this guard exists to stop that happening as an
+invisible side effect of an agent tidying up. Clearing a populated
+group is a deliberate human action in the admin UI.
+
+**Response** — `200 OK` on success:
+
+```json
+{ "deleted": true, "id": 5 }
+```
+
 ## Group slugs
 
 `suggested_groups` accepts a list of slugs. Two are seeded on
@@ -165,9 +317,9 @@ install:
 - `hosting-customers`
 - `web-designers`
 
-Admins can add more on the **Heads Up Mailer → Groups** page; the
-slug is shown in the list. There is no REST endpoint for groups
-yet — confirm new slugs with the admin out-of-band.
+Since 1.6.0, call `GET /groups` to discover the current set rather
+than assuming — admins can add, rename, and remove groups on the
+**Heads Up Mailer → Groups** page.
 
 If you pass an unknown slug, the request fails with
 `hum_draft_unknown_groups` (HTTP 400) and the body lists the
@@ -210,12 +362,38 @@ All errors return a JSON envelope shaped like:
 | `hum_send_no_recipients`      | 422  | No subscribed recipients in the target groups.                         |
 | `hum_send_from_email_missing` | 422  | No From: identity configured (*Settings → Sending*).                   |
 
+### Group-route codes
+
+| Code                             | HTTP | Meaning                                                             |
+| -------------------------------- | ---- | ------------------------------------------------------------------- |
+| `rest_forbidden`                 | 401/403 | Missing / wrong credentials, or the user lacks `hum_read_groups` (read routes) or `hum_manage_groups` (write routes). |
+| `hum_group_not_found`            | 404  | No group with that id.                                              |
+| `hum_group_exists`               | 409  | A group with that slug already exists.                              |
+| `hum_group_not_empty`            | 409  | `DELETE` against a group that still has members. See `data.member_count`. |
+| `hum_group_invalid_slug`         | 400  | Slug missing or empty after `sanitize_title()`.                     |
+| `hum_group_invalid_name`         | 400  | Name missing or empty after sanitising.                             |
+| `hum_group_slug_too_long`        | 400  | Slug over 100 bytes after sanitising.                               |
+| `hum_group_name_too_long`        | 400  | Name over 255 characters.                                           |
+| `hum_group_description_too_long` | 400  | Description over 65535 bytes.                                       |
+| `hum_group_insert_failed`        | 500  | Database write failed. Retry or escalate.                           |
+| `hum_group_update_failed`        | 500  | Database write failed. Retry or escalate.                           |
+| `hum_group_delete_failed`        | 500  | Database write failed. Retry or escalate.                           |
+
+One quirk inherited from WordPress core: a `POST` with **no body at
+all** returns `400 rest_missing_callback_param` (naming the missing
+fields) rather than `401`, because core checks required parameters
+before the capability callback. Send valid credentials and a valid body
+and the capability gate behaves normally.
+
 ## Workflow
 
 The plugin supports two modes. Which one applies depends entirely on
 admin configuration — the agent uses the same first two steps either
 way.
 
+0. Optional but recommended: `GET /groups` to resolve the slugs you
+   intend to target. Cheap, and it turns a silent "draft targeting
+   nothing" into a decision you make deliberately.
 1. `POST /drafts` — submit the draft. Capture the returned `id`.
 2. Optional: `GET /drafts/{id}` later to confirm edits or check
    status (`draft → sending → sent`, or `cancelled`).
@@ -241,5 +419,10 @@ way.
   `Y-m-d H:i:s UTC`.
 - Field names are lower-snake-case.
 - `id`s are positive integers; treat them as opaque.
-- The API is single-tenant, single-version. There is no pagination
-  yet — only single-draft `GET` is exposed.
+- The API is single-tenant, single-version. There is no pagination:
+  drafts are fetched one at a time, and `GET /groups` returns the full
+  (small) set.
+- Group routes are addressed by numeric `id`, not slug, for
+  consistency with the draft routes. `sanitize_title()` permits a
+  purely numeric slug, which would be ambiguous in a path segment. Map
+  slug → id via `GET /groups`.

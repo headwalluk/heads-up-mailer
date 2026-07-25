@@ -35,6 +35,31 @@ There is also a capability gate: the agent's WordPress user needs
 upgrade). Remove that cap to stop the agent sending while still
 letting it draft.
 
+## The per-group flag is not reachable over REST
+
+*Since 1.6.0.* An agent can manage groups over REST — create, rename,
+delete — if you grant it `hum_manage_groups`. **It still cannot change
+`allow_automated_send` on any group, at any privilege level.** The
+write routes ignore the field entirely; only a human ticking the
+checkbox in the admin UI can set it.
+
+This is the point of keeping the two controls separate. If the flag
+were writable over REST, an identity holding both `hum_manage_groups`
+and `hum_send_newsletters` could flag a group and then mail it —
+turning a two-key control into something one compromised credential
+could operate on its own. Splitting it means an attacker who steals the
+agent's credential still cannot widen the audience: they are confined
+to whatever groups you flagged by hand.
+
+The flag *is* reported (read-only) in `GET /groups` responses, so the
+agent can tell why a send was refused rather than guessing. That is
+information it could obtain anyway by attempting a send and reading the
+403, so it gives nothing away.
+
+Practical consequence: granting `hum_manage_groups` does not widen the
+autonomous-send blast radius. A new group created by an agent starts
+with autonomous sending **off**, and stays off until you tick the box.
+
 ## Turning it on
 
 1. **Pick the audience.** Autonomous send is meant for a small,

@@ -1,0 +1,23 @@
+# Deny all web access to this directory.
+#
+# Public /manage-comms/ templates, required by Public_Controller.
+#
+# Nothing here is ever fetched over HTTP — WordPress loads it from the
+# filesystem — so denying web access costs nothing and removes the files
+# from an attacker's reach on any host that doesn't already block them.
+# An Apache deny does not affect PHP's own include/require.
+#
+# Two branches so the rule survives either module set: mod_authz_core is
+# the Apache 2.4 form, and the Order/Deny form is 2.2 (present on 2.4
+# only while mod_access_compat is enabled). Guarding both means
+# disabling mod_access_compat can't turn this into a 500 for the
+# directory.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    <Files *>
+        Order Allow,Deny
+        Deny from all
+    </Files>
+</IfModule>

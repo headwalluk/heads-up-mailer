@@ -177,6 +177,19 @@ const TRANSIENT_POLL_LOCK  = 'hum_poll_lock';
 const TRANSIENT_RATE_LIMIT = 'hum_rate_limit_';
 
 /**
+ * Failed-token-attempt counter, keyed by client IP.
+ *
+ * Separate from `TRANSIENT_RATE_LIMIT` (keyed by subscriber) so the
+ * two buckets can't starve each other. Only *failed* verifications
+ * count toward this one, so a legitimate unsubscribe is never
+ * IP-throttled — important, because wrongly blocking an unsubscribe
+ * is a compliance problem, not just an annoyance.
+ *
+ * @since 1.6.0
+ */
+const TRANSIENT_RATE_LIMIT_FAILED = 'hum_rate_fail_';
+
+/**
  * GitHub auto-updater.
  *
  * Configuration the updater needs at runtime — repo slug to
@@ -207,11 +220,31 @@ const CRON_INTERVAL_MAILBOX_TICK = 'hum_mailbox_tick';
 const QUERY_VAR_MANAGE = 'hum_manage';
 
 /**
- * Public-endpoint rate limit.
+ * Public-endpoint rate limit — successful token holders, keyed by
+ * subscriber. Stops someone hammering the endpoint with a token they
+ * legitimately hold.
  *
  * @since 0.5.0
  */
 const RATE_LIMIT_MANAGE_PER_HOUR = 20;
+
+/**
+ * Public-endpoint rate limit — *failed* token verifications, keyed by
+ * client IP.
+ *
+ * The per-subscriber bucket above cannot throttle an attacker, because
+ * a bucket can only be identified once the token resolves to a real
+ * subscriber. Bogus tokens therefore need their own control, and the
+ * only stable identifier available is the client IP.
+ *
+ * Deliberately generous: this is an abuse brake, not an
+ * authentication control (the token MAC is 256-bit and not
+ * brute-forceable). Its real job is to stop unbounded cache-key
+ * creation and pointless DB reads.
+ *
+ * @since 1.6.0
+ */
+const RATE_LIMIT_MANAGE_FAILED_PER_HOUR = 30;
 
 /**
  * Mailbox poller — folders that processed and failed messages
@@ -266,6 +299,28 @@ const DEF_FOOTER_HTML = '<hr style="border:none;border-top:1px solid #ddd;margin
 const REST_NAMESPACE = 'heads-up-mailer/v1';
 
 /**
+ * Maximum stored lengths for group fields, mirroring the column
+ * widths in `Database::create_tables()` (`slug varchar(100)`,
+ * `name varchar(255)`, `description text`).
+ *
+ * Enforced in `Groups_Controller::validate()` so over-long input is
+ * rejected as a client error before it reaches `$wpdb`. Without
+ * these, MySQL refuses the write and the REST layer can only report
+ * an opaque insert failure. Truncating instead of rejecting is not an
+ * option for `slug` — a silently shortened slug could collide with
+ * another group.
+ *
+ * `MAX_GROUP_SLUG_LENGTH` is measured in bytes: `sanitize_title()`
+ * percent-encodes non-ASCII, so the stored slug is always ASCII and
+ * can be longer than the string the caller supplied.
+ *
+ * @since 1.6.0
+ */
+const MAX_GROUP_SLUG_LENGTH        = 100;
+const MAX_GROUP_NAME_LENGTH        = 255;
+const MAX_GROUP_DESCRIPTION_LENGTH = 65535;
+
+/**
  * Custom capabilities granted to WordPress roles on activation /
  * first-run, and checked by the REST permission callback. Granted
  * to Administrator + Editor so the AI agent can operate without
@@ -285,3 +340,34 @@ const CAP_CREATE_DRAFTS = 'hum_create_drafts';
  * @since 1.5.0
  */
 const CAP_SEND_NEWSLETTERS = 'hum_send_newsletters';
+
+/**
+ * Capability gating the read-only groups routes
+ * (`GET /groups`, `GET /groups/{id}`). Granted to Administrator +
+ * Editor on activation / first-run, alongside `hum_create_drafts`.
+ *
+ * Read is deliberately cheap to grant: an identity that can already
+ * target groups via `suggested_groups` gains no new reach by being
+ * able to enumerate them, and a read-only reporting agent can list
+ * segments without holding drafting rights.
+ *
+ * @since 1.6.0
+ */
+const CAP_READ_GROUPS = 'hum_read_groups';
+
+/**
+ * Capability gating the groups write routes (`POST /groups`,
+ * `PATCH /groups/{id}`, `DELETE /groups/{id}`).
+ *
+ * Granted to **Administrator only** on activation / first-run, so
+ * the existing Editor-level agent does not silently gain segment
+ * mutation rights on upgrade. Mutation is the destructive half — a
+ * wrong DELETE drops membership rows — so it defaults closed and is
+ * opted into deliberately, per-user or by adding the cap to Editor.
+ *
+ * One cap covers create + update + delete: maintaining segments is a
+ * single job, and finer granularity buys nothing v1 needs.
+ *
+ * @since 1.6.0
+ */
+const CAP_MANAGE_GROUPS = 'hum_manage_groups';

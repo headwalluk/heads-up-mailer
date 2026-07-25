@@ -40,12 +40,27 @@ $error_code = isset( $_GET['error'] ) ? sanitize_key( wp_unslash( $_GET['error']
 
 if ( '' !== $error_code ) {
 	$error_messages = array(
-		'hum_group_exists'        => __( 'A group with that slug already exists.', 'heads-up-mailer' ),
-		'hum_group_invalid_slug'  => __( 'A valid slug is required.', 'heads-up-mailer' ),
-		'hum_group_invalid_name'  => __( 'Group name is required.', 'heads-up-mailer' ),
-		'hum_group_not_found'     => __( 'Group not found.', 'heads-up-mailer' ),
-		'hum_group_insert_failed' => __( 'Failed to insert group.', 'heads-up-mailer' ),
-		'hum_group_update_failed' => __( 'Failed to update group.', 'heads-up-mailer' ),
+		'hum_group_exists'               => __( 'A group with that slug already exists.', 'heads-up-mailer' ),
+		'hum_group_invalid_slug'         => __( 'A valid slug is required.', 'heads-up-mailer' ),
+		'hum_group_invalid_name'         => __( 'Group name is required.', 'heads-up-mailer' ),
+		'hum_group_slug_too_long'        => sprintf(
+			/* translators: %d is the maximum number of characters allowed in a group slug */
+			__( 'Group slug is too long (maximum %d characters).', 'heads-up-mailer' ),
+			MAX_GROUP_SLUG_LENGTH
+		),
+		'hum_group_name_too_long'        => sprintf(
+			/* translators: %d is the maximum number of characters allowed in a group name */
+			__( 'Group name is too long (maximum %d characters).', 'heads-up-mailer' ),
+			MAX_GROUP_NAME_LENGTH
+		),
+		'hum_group_description_too_long' => sprintf(
+			/* translators: %d is the maximum number of characters allowed in a group description */
+			__( 'Group description is too long (maximum %d characters).', 'heads-up-mailer' ),
+			MAX_GROUP_DESCRIPTION_LENGTH
+		),
+		'hum_group_not_found'            => __( 'Group not found.', 'heads-up-mailer' ),
+		'hum_group_insert_failed'        => __( 'Failed to insert group.', 'heads-up-mailer' ),
+		'hum_group_update_failed'        => __( 'Failed to update group.', 'heads-up-mailer' ),
 	);
 
 	$msg = isset( $error_messages[ $error_code ] )

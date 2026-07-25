@@ -1,0 +1,8 @@
+# Local-only working notes. Anything matching this pattern stays on the
+# maintainer's machine and is never published to the public repository.
+# Use the `-private.md` suffix for any dev-note that should not ship.
+dev-notes/*-private.md
+
+# Local AI-agent config — machine-specific paths and permission
+# allowlists. Already untracked; listed so `git add -A` can't stage it.
+.claude/

@@ -16,8 +16,8 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #: heads-up-mailer.php
-#: includes/class-plugin.php:259
-#: includes/class-plugin.php:260
+#: includes/class-plugin.php:273
+#: includes/class-plugin.php:274
 msgid "Heads Up Mailer"
 msgstr "Uwaga: wiadomość e-mail"
 
@@ -77,8 +77,8 @@ msgstr "Nie znamy nazwy jednej lub kilku grup."
 #: admin-templates/drafts-list.php:75
 #: includes/class-drafts-controller.php:137
 #: includes/class-drafts-controller.php:182
-#: includes/class-plugin.php:1089
-#: includes/class-rest-controller.php:193
+#: includes/class-plugin.php:1103
+#: includes/class-rest-controller.php:304
 #: includes/class-sends-controller.php:133
 #: includes/class-sends-controller.php:214
 msgid "Draft not found."
@@ -138,7 +138,7 @@ msgstr "Nie można edytować wersji roboczej w trakcie jej wysyłania."
 
 #: admin-templates/draft-edit.php:66
 #: admin-templates/drafts-list.php:86
-#: admin-templates/group-edit.php:53
+#: admin-templates/group-edit.php:68
 #: admin-templates/groups-list.php:68
 #: admin-templates/subscriber-edit.php:54
 #: admin-templates/subscribers-list.php:121
@@ -176,7 +176,7 @@ msgid "Save draft"
 msgstr "Zapisz wersję roboczą"
 
 #: admin-templates/draft-edit.php:136
-#: admin-templates/group-edit.php:151
+#: admin-templates/group-edit.php:166
 #: admin-templates/subscriber-edit.php:166
 #: admin-templates/subscriber-import.php:75
 msgid "Cancel"
@@ -242,8 +242,8 @@ msgid "Draft preview"
 msgstr "Podgląd projektu"
 
 #: admin-templates/drafts-list.php:30
-#: includes/class-plugin.php:297
-#: includes/class-plugin.php:298
+#: includes/class-plugin.php:311
+#: includes/class-plugin.php:312
 msgid "Drafts"
 msgstr "Wersje robocze"
 
@@ -314,8 +314,8 @@ msgstr "Status"
 #: admin-templates/groups-list.php:28
 #: admin-templates/subscriber-edit.php:140
 #: admin-templates/subscribers-list.php:179
-#: includes/class-plugin.php:288
-#: includes/class-plugin.php:289
+#: includes/class-plugin.php:302
+#: includes/class-plugin.php:303
 msgid "Groups"
 msgstr "Grupy"
 
@@ -362,79 +362,80 @@ msgstr "Dodaj grupę"
 
 #: admin-templates/group-edit.php:43
 #: admin-templates/groups-list.php:57
-#: includes/class-groups-controller.php:126
-#: includes/class-groups-controller.php:177
+#: includes/class-groups-controller.php:204
+#: includes/class-groups-controller.php:255
 msgid "A group with that slug already exists."
 msgstr "Grupa o tej nazwie już istnieje."
 
 #: admin-templates/group-edit.php:44
 #: admin-templates/groups-list.php:58
-#: includes/class-groups-controller.php:282
+#: includes/class-groups-controller.php:360
 msgid "A valid slug is required."
 msgstr "Wymagany jest prawidłowy slug."
 
 #: admin-templates/group-edit.php:45
 #: admin-templates/groups-list.php:59
-#: includes/class-groups-controller.php:289
+#: includes/class-groups-controller.php:367
 msgid "Group name is required."
 msgstr "Pole „Nazwa grupy” jest obowiązkowe."
 
-#: admin-templates/group-edit.php:46
+#: admin-templates/group-edit.php:61
 #: admin-templates/groups-list.php:60
-#: includes/class-groups-controller.php:159
-#: includes/class-groups-controller.php:209
+#: includes/class-groups-controller.php:237
+#: includes/class-groups-controller.php:287
+#: includes/class-rest-controller.php:591
 msgid "Group not found."
 msgstr "Nie znaleziono grupy."
 
-#: admin-templates/group-edit.php:47
+#: admin-templates/group-edit.php:62
 #: admin-templates/groups-list.php:61
-#: includes/class-groups-controller.php:139
+#: includes/class-groups-controller.php:217
 msgid "Failed to insert group."
 msgstr "Nie udało się dodać grupy."
 
-#: admin-templates/group-edit.php:48
+#: admin-templates/group-edit.php:63
 #: admin-templates/groups-list.php:62
-#: includes/class-groups-controller.php:192
+#: includes/class-groups-controller.php:270
 msgid "Failed to update group."
 msgstr "Nie udało się zaktualizować grupy."
 
-#: admin-templates/group-edit.php:111
+#: admin-templates/group-edit.php:126
 #: admin-templates/groups-list.php:86
 #: admin-templates/tab-sending.php:116
 msgid "Slug"
 msgstr "Slug"
 
-#: admin-templates/group-edit.php:100
-#: admin-templates/group-edit.php:113
+#: admin-templates/group-edit.php:115
+#: admin-templates/group-edit.php:128
 msgid "Lowercase letters, numbers, and hyphens. Used in REST and the database."
 msgstr "Małe litery, cyfry i łączniki. Stosowane w REST i bazie danych."
 
-#: admin-templates/group-edit.php:78
+#: admin-templates/group-edit.php:93
 #: admin-templates/groups-list.php:85
 #: admin-templates/subscriber-edit.php:87
 #: admin-templates/subscribers-list.php:177
 msgid "Name"
 msgstr "Imię"
 
-#: admin-templates/group-edit.php:119
+#: admin-templates/group-edit.php:134
 #: admin-templates/groups-list.php:88
 msgid "Description"
 msgstr "Opis"
 
-#: admin-templates/group-edit.php:128
+#: admin-templates/group-edit.php:143
 #: admin-templates/groups-list.php:118
 msgid "Private"
 msgstr "Prywatne"
 
-#: admin-templates/group-edit.php:130
+#: admin-templates/group-edit.php:145
 msgid "Hide this group from the public preferences page for non-members."
 msgstr "Ukryj tę grupę na stronie ustawień publicznych dla osób niebędących członkami."
 
-#: admin-templates/group-edit.php:131
+#: admin-templates/group-edit.php:146
 msgid "Private groups never appear as a sign-up option on /manage-comms/. Existing members still see it (so they can unsubscribe), but anyone else does not. Useful for internal / test groups and one-off targeted lists."
 msgstr "Grupy prywatne nigdy nie pojawiają się jako opcja zapisania się na stronie /manage-comms/. Obecni członkowie nadal mają do nich dostęp (aby mogli się wypisać), ale inne osoby nie. Jest to przydatne w przypadku grup wewnętrznych lub testowych oraz jednorazowych list adresowych."
 
-#: admin-templates/group-edit.php:149
+#: admin-templates/group-edit.php:164
 msgid "Save group"
 msgstr "Zapisz grupę"
 
@@ -447,7 +448,7 @@ msgid "Group deleted."
 msgstr "Grupa została usunięta."
 
 #: admin-templates/groups-list.php:63
-#: includes/class-groups-controller.php:229
+#: includes/class-groups-controller.php:307
 msgid "Failed to delete group."
 msgstr "Nie udało się usunąć grupy."
 
@@ -471,8 +472,8 @@ msgstr "Publiczne"
 
 #: admin-templates/sent-log-detail.php:30
 #: admin-templates/sent-log-list.php:19
-#: includes/class-plugin.php:306
-#: includes/class-plugin.php:307
+#: includes/class-plugin.php:320
+#: includes/class-plugin.php:321
 msgid "Sent log"
 msgstr "Rejestr wysłanych"
 
@@ -801,8 +802,8 @@ msgid "Import another file"
 msgstr "Zaimportuj inny plik"
 
 #: admin-templates/subscribers-list.php:38
-#: includes/class-plugin.php:279
-#: includes/class-plugin.php:280
+#: includes/class-plugin.php:293
+#: includes/class-plugin.php:294
 msgid "Subscribers"
 msgstr "Subskrybenci"
 
@@ -1111,19 +1112,19 @@ msgstr "Temat musi mieć maksymalnie %d znaków."
 msgid "Unknown group slugs: %s."
 msgstr "Nieznane nazwy grup: %s."
 
-#: includes/class-groups-controller.php:248
+#: includes/class-groups-controller.php:326
 msgid "Hosting customers"
 msgstr "Klienci usług hostingowych"
 
-#: includes/class-groups-controller.php:249
+#: includes/class-groups-controller.php:327
 msgid "Active hosting customers."
 msgstr "Aktywni klienci usług hostingowych."
 
-#: includes/class-groups-controller.php:253
+#: includes/class-groups-controller.php:331
 msgid "Web designers"
 msgstr "Projektanci stron internetowych"
 
-#: includes/class-groups-controller.php:254
+#: includes/class-groups-controller.php:332
 msgid "Web designers and agencies who refer hosting customers."
 msgstr "Projektanci stron internetowych i agencje, które kierują do nas klientów zainteresowanych hostingiem."
 
@@ -1132,7 +1133,7 @@ msgid "Heads Up Mailer mailbox poll"
 msgstr "Ankieta dotycząca skrzynki pocztowej Heads Up Mailer"
 
 #: includes/class-mailbox-poller.php:183
-#: includes/class-plugin.php:790
+#: includes/class-plugin.php:804
 msgid "The PHP imap extension is not loaded on this host."
 msgstr "Rozszerzenie PHP imap nie jest załadowane na tym serwerze."
 
@@ -1145,7 +1146,7 @@ msgid "Another poll is already in progress. Try again in a moment."
 msgstr "Trwa właśnie kolejna ankieta. Spróbuj ponownie za chwilę."
 
 #: includes/class-mailbox-poller.php:270
-#: includes/class-plugin.php:835
+#: includes/class-plugin.php:849
 msgid "Failed to open IMAP connection."
 msgstr "Nie udało się nawiązać połączenia IMAP."
 
@@ -1155,106 +1156,106 @@ msgstr "Nie udało się nawiązać połączenia IMAP."
 msgid "Poll OK — %1$d processed, %2$d errored."
 msgstr "Głosowanie zakończone — przetworzono %1$d, %2$d zakończyło się błędem."
 
-#: includes/class-plugin.php:201
+#: includes/class-plugin.php:215
 msgid "Heads Up Mailer: PHP imap extension missing."
 msgstr "Uwaga: Brakuje rozszerzenia PHP imap."
 
-#: includes/class-plugin.php:202
+#: includes/class-plugin.php:216
 msgid "The mailbox poller used for mailto-form unsubscribes requires the PHP imap extension. Sending still works without it."
 msgstr "Moduł sprawdzający skrzynkę pocztową, używany do rezygnacji z subskrypcji za pośrednictwem formularza „mailto”, wymaga rozszerzenia PHP imap. Wysyłanie wiadomości nadal działa bez niego."
 
 #. translators: 1: error message from imap_errors(), 2: relative time since the error.
-#: includes/class-plugin.php:239
+#: includes/class-plugin.php:253
 #, php-format
 msgid "Last attempt failed: %1$s (%2$s)."
 msgstr "Ostatnia próba zakończyła się niepowodzeniem: %1$s (%2$s)."
 
-#: includes/class-plugin.php:243
+#: includes/class-plugin.php:257
 msgid "No successful poll on record yet. Check IMAP credentials and the cron schedule."
 msgstr "Nie odnotowano jeszcze żadnego pomyślnego głosowania. Sprawdź dane logowania do serwera IMAP oraz harmonogram zadań cron."
 
-#: includes/class-plugin.php:247
+#: includes/class-plugin.php:261
 msgid "Heads Up Mailer: mailbox poller is stale."
 msgstr "Uwaga: moduł sprawdzający skrzynkę pocztową jest nieaktualny."
 
-#: includes/class-plugin.php:270
-#: includes/class-plugin.php:271
+#: includes/class-plugin.php:284
+#: includes/class-plugin.php:285
 msgid "Dashboard"
 msgstr "Pulpit nawigacyjny"
 
-#: includes/class-plugin.php:315
-#: includes/class-plugin.php:316
+#: includes/class-plugin.php:329
+#: includes/class-plugin.php:330
 msgid "Settings"
 msgstr "Ustawienia"
 
-#: includes/class-plugin.php:378
-#: includes/class-plugin.php:391
-#: includes/class-plugin.php:407
-#: includes/class-plugin.php:480
-#: includes/class-plugin.php:884
-#: includes/class-plugin.php:923
+#: includes/class-plugin.php:392
+#: includes/class-plugin.php:405
+#: includes/class-plugin.php:421
+#: includes/class-plugin.php:494
+#: includes/class-plugin.php:898
+#: includes/class-plugin.php:937
 msgid "You do not have permission to access this page."
 msgstr "Nie masz uprawnień dostępu do tej strony."
 
-#: includes/class-plugin.php:434
-#: includes/class-plugin.php:537
-#: includes/class-plugin.php:587
-#: includes/class-plugin.php:618
-#: includes/class-plugin.php:653
-#: includes/class-plugin.php:716
-#: includes/class-plugin.php:962
-#: includes/class-plugin.php:1013
-#: includes/class-plugin.php:1046
-#: includes/class-plugin.php:1079
-#: includes/class-plugin.php:1103
+#: includes/class-plugin.php:448
+#: includes/class-plugin.php:551
+#: includes/class-plugin.php:601
+#: includes/class-plugin.php:632
+#: includes/class-plugin.php:667
+#: includes/class-plugin.php:730
+#: includes/class-plugin.php:976
+#: includes/class-plugin.php:1027
+#: includes/class-plugin.php:1060
+#: includes/class-plugin.php:1093
+#: includes/class-plugin.php:1117
 msgid "You do not have permission."
 msgstr "Nie masz uprawnień."
 
-#: includes/class-plugin.php:733
+#: includes/class-plugin.php:747
 msgid "No file was uploaded."
 msgstr "Nie przesłano żadnego pliku."
 
-#: includes/class-plugin.php:738
+#: includes/class-plugin.php:752
 msgid "File upload failed."
 msgstr "Przesyłanie pliku nie powiodło się."
 
-#: includes/class-plugin.php:740
+#: includes/class-plugin.php:754
 msgid "Uploaded file is not a valid upload."
 msgstr "Przesłany plik nie jest prawidłowy."
 
-#: includes/class-plugin.php:786
-#: includes/class-plugin.php:864
+#: includes/class-plugin.php:800
+#: includes/class-plugin.php:878
 msgid "Insufficient permissions."
 msgstr "Brak odpowiednich uprawnień."
 
-#: includes/class-plugin.php:809
+#: includes/class-plugin.php:823
 msgid "Host, port, username, and password are all required."
 msgstr "Wymagane są: serwer, port, nazwa użytkownika i hasło."
 
 #. translators: %s: folder name on the IMAP server.
-#: includes/class-plugin.php:845
+#: includes/class-plugin.php:859
 #, php-format
 msgid "Connection successful — folder \"%s\" is reachable."
 msgstr "Połączenie nawiązano — folder „%s” jest dostępny."
 
-#: includes/class-public-controller.php:190
+#: includes/class-public-controller.php:204
 msgid "Bad request."
 msgstr "Nieprawidłowe żądanie."
 
-#: includes/class-public-controller.php:214
-#: includes/class-public-controller.php:277
+#: includes/class-public-controller.php:228
+#: includes/class-public-controller.php:291
 msgid "Security check failed. Please reload the page and try again."
 msgstr "Sprawdzenie bezpieczeństwa nie powiodło się. Proszę odświeżyć stronę i spróbować ponownie."
 
-#: includes/class-public-controller.php:255
+#: includes/class-public-controller.php:269
 msgid "Thanks. You have been unsubscribed."
 msgstr "Dziękujemy. Twoja subskrypcja została anulowana."
 
-#: includes/class-public-controller.php:428
+#: includes/class-public-controller.php:505
 msgid "This unsubscribe link is invalid or has expired. Please contact the sender for a fresh link."
 msgstr "Ten link do rezygnacji z subskrypcji jest nieprawidłowy lub stracił ważność. Skontaktuj się z nadawcą, aby otrzymać nowy link."
 
-#: includes/class-public-controller.php:440
+#: includes/class-public-controller.php:517
 msgid "Too many requests. Please try again later."
 msgstr "Zbyt wiele żądań. Spróbuj ponownie później."
 
@@ -1490,27 +1491,27 @@ msgstr "Nie odnotowano żadnych błędów wysyłki — wszystko zostało dostarc
 msgid "(no error recorded)"
 msgstr "(nie odnotowano żadnego błędu)"
 
-#: admin-templates/group-edit.php:92
+#: admin-templates/group-edit.php:107
 msgid "Slug:"
 msgstr "Slug:"
 
-#: admin-templates/group-edit.php:96
+#: admin-templates/group-edit.php:111
 msgid "Set the slug manually"
 msgstr "Ustaw nazwę skrótu ręcznie"
 
-#: admin-templates/group-edit.php:121
+#: admin-templates/group-edit.php:136
 msgid "Plain text only — any HTML tags are stripped when the group is saved. A short sentence or two describing who belongs in this group is plenty."
 msgstr "Tylko zwykły tekst — wszelkie tagi HTML są usuwane podczas zapisywania grupy. Wystarczy jedno lub dwa krótkie zdania opisujące, kto należy do tej grupy."
 
-#: admin-templates/group-edit.php:138
+#: admin-templates/group-edit.php:153
 msgid "Allow autonomous send"
 msgstr "Zezwól na autonomiczne wysyłanie"
 
-#: admin-templates/group-edit.php:140
+#: admin-templates/group-edit.php:155
 msgid "Let an agent autonomously send drafts targeting this group"
 msgstr "Niech agent samodzielnie wysyła wersje robocze skierowane do tej grupy"
 
-#: admin-templates/group-edit.php:141
+#: admin-templates/group-edit.php:156
 msgid "When ticked, a trusted agent may trigger a send to this group via the REST API without a human pressing Send. A send is only allowed when EVERY group on the draft has this ticked AND the master switch on Settings → Sending is on. Leave off for any large or general audience."
 msgstr "Po zaznaczeniu tej opcji zaufany agent może zainicjować wysłanie wiadomości do tej grupy za pośrednictwem interfejsu API REST bez konieczności ręcznego naciśnięcia przycisku „Wyślij”. Wysyłanie jest dozwolone tylko wtedy, gdy opcja ta jest zaznaczona dla KAŻDEJ grupy w projekcie ORAZ gdy główny przełącznik w sekcji Ustawienia → Wysyłanie jest włączony. Należy pozostawić tę opcję niezaznaczoną w przypadku dużych lub ogólnych grup odbiorców."
 
@@ -1588,3 +1589,41 @@ msgstr "Odrzucono wysyłkę autonomiczną: dla tych grup docelowych nie włączo
 #: integrations/contact-form-7/class-contact-form-7.php:313
 msgid "Replace the `group:` attribute with the slug of the group you want sign-ups to land in. The quoted text becomes the visible checkbox label. The form must include an email field — that's where the subscriber's address comes from. Add `checked` to render the checkbox pre-ticked (e.g. on a dedicated sign-up form); the visitor can still untick it before submitting."
 msgstr "Zastąp atrybut `group:` skrótem nazwy grupy, do której mają trafiać rejestracje. Tekst w cudzysłowie stanie się widoczną etykietą pola wyboru. Formularz musi zawierać pole na adres e-mail — to stamtąd pochodzi adres subskrybenta. Dodaj `checked`, aby pole wyboru było domyślnie zaznaczone (np. w dedykowanym formularzu rejestracyjnym); użytkownik nadal może je odznaczyć przed wysłaniem formularza."
+
+#. translators: %d is the maximum number of characters allowed in a group slug
+#: admin-templates/group-edit.php:48
+#: includes/class-groups-controller.php:379
+#, php-format
+msgid "Group slug is too long (maximum %d characters)."
+msgstr "Slag grupy jest zbyt długi (maksymalnie %d znaków)."
+
+#. translators: %d is the maximum number of characters allowed in a group name
+#: admin-templates/group-edit.php:53
+#: includes/class-groups-controller.php:390
+#, php-format
+msgid "Group name is too long (maximum %d characters)."
+msgstr "Nazwa grupy jest zbyt długa (maksymalnie %d znaków)."
+
+#. translators: %d is the maximum number of characters allowed in a group description
+#: admin-templates/group-edit.php:58
+#: includes/class-groups-controller.php:401
+#, php-format
+msgid "Group description is too long (maximum %d characters)."
+msgstr "Opis grupy jest zbyt długi (maksymalnie %d znaków)."
+
+#: includes/class-plugin.php:205
+msgid "Heads Up Mailer: AUTH_KEY is missing or insecure."
+msgstr "Ostrzeżenie dotyczące wiadomości e-mail: brakuje klucza AUTH_KEY lub jest on niebezpieczny."
+
+#: includes/class-plugin.php:206
+msgid "Mailbox credentials cannot be encrypted, so they will not be saved. Set a unique AUTH_KEY in wp-config.php (use the WordPress salt generator), then re-enter the mailbox password."
+msgstr "Dane logowania do skrzynki pocztowej nie mogą być szyfrowane, dlatego nie zostaną zapisane. Ustaw unikalny klucz AUTH_KEY w pliku wp-config.php (skorzystaj z generatora soli WordPressa), a następnie ponownie wprowadź hasło do skrzynki pocztowej."
+
+#. translators: %d is the number of subscribers still in the group
+#: includes/class-rest-controller.php:520
+#, php-format
+msgid "Group still has %d member and cannot be deleted. Remove its members first."
+msgid_plural "Group still has %d members and cannot be deleted. Remove its members first."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""

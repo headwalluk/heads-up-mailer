@@ -9,6 +9,12 @@
 .gitattributes
 .distignore
 
+# Local AI-agent config. Untracked, so it never reaches the repo — but
+# rsync copies the working tree, so without this it lands in every
+# release zip and publishes local filesystem paths and internal
+# hostnames.
+.claude
+
 # Build output / intermediates
 build
 node_modules
@@ -19,7 +25,13 @@ vendor
 CLAUDE.md
 docs
 
-# dev-notes/ ships (design notes + tracker), but not its screenshots
+# dev-notes/ ships (design notes + tracker), but never the local-only
+# `-private.md` notes. Those are git-ignored, so a CI build from a clean
+# checkout wouldn't see them anyway — but this rsync copies the working
+# tree, so a LOCAL build would otherwise pull them into a public zip.
+dev-notes/*-private.md
+
+# ...and not its screenshots
 dev-notes/*.png
 dev-notes/*.jpg
 dev-notes/*.jpeg
@@ -28,9 +40,11 @@ dev-notes/*.webp
 dev-notes/*.bmp
 dev-notes/*.tiff
 
-# Linting config — phpcs runs locally / in CI, not on installed sites
+# Linting config + dev-only check scripts — these run locally / in CI,
+# never on an installed site.
 phpcs.xml
 phpcs.xml.dist
+bin
 
 # IDE / editor scratch
 .idea

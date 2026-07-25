@@ -171,6 +171,14 @@ Namespaced constant groups (no extra prefix — namespace handles it):
 - Run `phpcs` before every commit, `phpcbf` to auto-fix, `phpcs`
   again to verify. Optional pre-commit hook in
   `.git/hooks/pre-commit`.
+- Run `bin/check-sql-interpolation.sh` alongside `phpcs`. `phpcs.xml`
+  has to exclude `WordPress.DB.PreparedSQL.InterpolatedNotPrepared`
+  (table names must be interpolated — `$wpdb->prepare()` can't
+  placeholder an identifier), which would otherwise let a genuine
+  `WHERE id = {$user_input}` through silently. The script restores that
+  one guarantee: every `{$var}` inside a SQL string must be a table
+  identifier or a generated placeholder list. Exit 1 = fix it or, if
+  the variable really is a table name, add it to `ALLOWED_PATTERN`.
 - Conventional commits: `feat:`, `fix:`, `chore:`, `refactor:`,
   `docs:`, `style:`, `test:`. 50-char subject + bullet body
   explaining the *why*.

@@ -1,0 +1,52 @@
+# Plugin-root hardening.
+#
+# Deliberately narrow: this file must not interfere with normal plugin
+# operation. PHP here is executed by WordPress from the filesystem, and
+# assets/ must stay web-readable because the admin CSS/JS is enqueued
+# over HTTP — so neither is touched.
+#
+# What it does cover is the material that per-directory .htaccess files
+# can't reach:
+#
+#   1. Loose repo files sitting at the plugin root (documentation,
+#      linter config, shell scripts). On a site deployed from repo
+#      source these are otherwise fetchable — phpcs.xml was returning
+#      200 before this file existed.
+#   2. Dot-directories and dotfiles, above all `.git/`. A repo-source
+#      deployment exposes the entire commit history at a guessable URL,
+#      and there is no way to ship a protective file *inside* .git —
+#      git does not track its own internals. It has to be handled from
+#      here.
+#
+# readme.txt and *.php are intentionally NOT denied: WordPress reads the
+# former from disk for the plugin screen, and denying the latter buys
+# nothing (they already execute to an empty response via their ABSPATH
+# guard).
+
+# 1. Loose non-runtime files at the plugin root.
+<FilesMatch "\.(md|xml|dist|sh|yml|yaml|lock)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Allow,Deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# 2. Any dot-path under the plugin directory (.git, .github, .claude,
+#    .distignore, .gitignore, and anything similar added later — a
+#    stray .env would be covered without needing an edit here).
+#
+#    mod_rewrite rather than RedirectMatch: in .htaccess a RewriteRule
+#    pattern is matched against the path RELATIVE to this directory, so
+#    the rule keeps working if the plugin folder is ever renamed. A
+#    RedirectMatch would need the absolute URL path hardcoded.
+#
+#    `(^|/)\.` anchors the dot to the start of a path segment. Matching
+#    a bare `\.` would catch every dotted filename in the tree —
+#    including assets/admin/*.css, which would 404 the admin styles.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule (^|/)\. - [F,L]
+</IfModule>
