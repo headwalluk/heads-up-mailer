@@ -1202,13 +1202,15 @@ further buys granularity nobody has asked for.
       constant to edit.
 - [x] Deleted the `hum_test_editor` dev user (ID 60); confirmed no
       plugin caps linger on `author` / `contributor` / `subscriber`.
-- [ ] **Browser check still outstanding:** confirm
-      `content-security-policy: sandbox` on a draft-preview response.
-      The header call is unconditional and sits beside two existing
-      `header()` calls in the same template, but it could not be
-      confirmed over live HTTP from the shell — application passwords
-      authenticate REST/XML-RPC only, not `admin-post.php`, and a
-      forged auth cookie 302s. Open a draft preview and check devtools.
+- [x] **Browser check done (2026-07-25)** — `content-security-policy:
+      sandbox` confirmed present on a live draft-preview response
+      (HTTP 200, Firefox devtools). Could not be verified from the
+      shell: application passwords authenticate REST/XML-RPC only, not
+      `admin-post.php`, and a forged auth cookie 302s — so this needed
+      a real browser session. The empty `sandbox` value applies the
+      full restriction set, so scripts in agent-supplied draft HTML are
+      inert even when the preview URL is opened as a top-level
+      document.
 - [x] Committed and tagged `v1.6.0`.
 
 ### Known-untranslated (deferred to the native-speaker pass)
