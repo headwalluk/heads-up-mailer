@@ -4,7 +4,7 @@ Tags: newsletter, email, subscribers, mailer, unsubscribe
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 1.6.0
+Stable tag: 1.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,7 +56,7 @@ Yes. Heads Up Mailer sends via `wp_mail()`, so whatever you configure as the Wor
 
 = Does the WooCommerce integration work with Block checkout? =
 
-Not in 1.0.0. The integration hooks `woocommerce_after_checkout_billing_form`, which only fires under classic / shortcode checkout. Block checkout support is tracked as a follow-up. The auto-enrol-customers-to-a-group flow IS Block-compatible (it hooks `woocommerce_checkout_order_processed`); only the per-group opt-in checkboxes need the additional Blocks code path.
+Partly. The per-group opt-in checkboxes hook `woocommerce_after_checkout_billing_form`, which only fires under classic / shortcode checkout — Block support for those is tracked as a follow-up. The auto-enrol-customers-to-a-group flow IS Block-compatible: since 1.7.0 it hooks `woocommerce_payment_complete` and `woocommerce_order_status_changed`, neither of which is tied to a particular checkout front-end.
 
 = How do I disable auto-updates? =
 
@@ -69,6 +69,9 @@ Add `add_filter( 'hum_updater_enabled', '__return_false' );` to your site's `fun
 * [REST API reference for AI agents](https://github.com/headwalluk/heads-up-mailer/blob/master/docs/ai-agent-rest-guide.md) — lives in the GitHub repo, not in the installed zip.
 
 == Changelog ==
+
+= 1.7.0 =
+Fixes a real-world problem with the WooCommerce integration: customers were enrolled the moment an order was created, before any payment was attempted, so card-testing bots added themselves to the mailing list even though the card was declined. Enrolment now happens only once an order is actually paid (WooCommerce's `processing` or `completed`), so declined, failed, cancelled and abandoned orders enrol nobody. The customer's ticked opt-in choices are still captured at checkout and applied when payment lands, and bank-transfer orders enrol when an admin marks them paid. Also: the subscribers list is now paginated at 25 rows per page, no longer issues one database query per row (a 25-row page costs 5 queries, down from 144 for the whole list), and shows a dashicon linking through to the WordPress user account for subscribers who have one. No schema change. See `CHANGELOG.md` for the full entry.
 
 = 1.6.0 =
 Adds a Groups REST API so an agent can discover and maintain groups instead of being told slugs out of band: list, read, create, partial-update, and delete. Deleting a group that still has members is refused with a 409 reporting the count, so memberships can never be quietly discarded — clearing them stays a human action in the admin UI. Two new capabilities, split so reading and mutating are independently grantable: `hum_read_groups` (Administrator + Editor on upgrade) and `hum_manage_groups` (Administrator only, so an existing Editor-level agent does not silently gain the power to destroy segments). Also a security-hardening pass across the whole plugin: the draft preview is now sandboxed by its own response header rather than relying on the embedding iframe, public-endpoint throttling has been reworked so it can't be sidestepped and can't block a legitimate unsubscribe, credential encryption fails closed instead of falling back to public key material, and non-runtime files are no longer served over HTTP. No schema change. See `CHANGELOG.md` for the full entry.
@@ -98,6 +101,9 @@ New custom capability `hum_create_drafts`, granted to Administrator and Editor o
 First stable release. Replaces MailerLite at headwall-hosting.com. Stack covers: drafts via REST → admin review → async send queue → RFC 8058 unsubscribe → public `/manage-comms/` page → IMAP poll for mailto unsubscribes → sent log → never-contact status → Contact Form 7 + WooCommerce integrations → in-plugin GitHub auto-updater. See `CHANGELOG.md` in the plugin folder for the detailed per-feature history (0.1.0 through 0.10.1).
 
 == Upgrade Notice ==
+
+= 1.7.0 =
+Recommended if you use the WooCommerce integration. Customers are now enrolled only when an order is paid, not when it is created — so failed card-testing orders stop adding people to your list. Existing subscribers and already-paid orders are untouched, and no re-enrolment happens for orders processed under the old behaviour. Subscribers already added by unpaid orders are not removed automatically; delete them from the Subscribers screen if you want them gone. The subscribers list is also now paginated, which means the select-all checkbox covers the current page only. No schema change and no action required.
 
 = 1.6.0 =
 Recommended. Adds a Groups REST API plus a security-hardening pass across the plugin. Two new capabilities are granted on upgrade: `hum_read_groups` to Administrator and Editor, and `hum_manage_groups` to Administrator only — so no existing account gains the ability to create or delete groups unless you grant it. No schema change and no action required. If your site has no proper `AUTH_KEY` set in wp-config.php, mailbox credentials will now refuse to save rather than being encrypted with a guessable key; an admin notice explains it, and re-entering the password once a real `AUTH_KEY` is in place resolves it.

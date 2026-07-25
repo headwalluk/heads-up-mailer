@@ -27,12 +27,15 @@ set -euo pipefail
 PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${PLUGIN_ROOT}"
 
-# Variables that are legitimate to interpolate into SQL:
+# Expressions that are legitimate to interpolate into SQL:
 #   *table*        — fully-qualified table names, always $wpdb->prefix . TABLE_*
 #   placeholders*  — '%d, %d, …' strings built from count()/loop, never from data
 #   subscribers | recipients | sends | drafts | groups | events
 #                  — table-name locals that don't carry a _table suffix
-ALLOWED_PATTERN='^(.*_table|table|placeholders|placeholders_join|subscribers|subscriber_groups|recipients|sends|drafts|groups|events)$'
+#   wpdb->foo      — a core table-name property ($wpdb->users, $wpdb->posts).
+#                    Matched as the full `wpdb->prop` form rather than by
+#                    allowing the bare variable `wpdb`, so this stays narrow.
+ALLOWED_PATTERN='^(.*_table|table|placeholders|placeholders_join|subscribers|subscriber_groups|recipients|sends|drafts|groups|events|wpdb->[a-zA-Z_][a-zA-Z0-9_]*)$'
 
 SQL_KEYWORDS='SELECT|INSERT|UPDATE|DELETE|REPLACE|FROM|WHERE|SET|VALUES|ORDER BY|GROUP BY|LIMIT|OFFSET|JOIN|INTO|AND|ON'
 
@@ -44,7 +47,9 @@ while IFS= read -r MATCH_LINE; do
 	REST="${MATCH_LINE#*:}"
 	MATCH_LINENO="${REST%%:*}"
 
-	# Pull each interpolated variable name out of the line.
+	# Pull each interpolated expression out of the line. Captures the
+	# optional `->prop` tail so `$wpdb->users` is distinguishable from a
+	# bare `$wpdb`.
 	while IFS= read -r VARIABLE_NAME; do
 		[ -z "${VARIABLE_NAME}" ] && continue
 
@@ -53,7 +58,9 @@ while IFS= read -r MATCH_LINE; do
 				"${MATCH_FILE}" "${MATCH_LINENO}" "${VARIABLE_NAME}"
 			VIOLATIONS=$((VIOLATIONS + 1))
 		fi
-	done < <(printf '%s' "${REST#*:}" | grep -oE '\{\$[a-zA-Z_][a-zA-Z0-9_]*' | sed 's/^{\$//')
+	done < <(printf '%s' "${REST#*:}" \
+		| grep -oE '\{\$[a-zA-Z_][a-zA-Z0-9_]*(->[a-zA-Z_][a-zA-Z0-9_]*)?' \
+		| sed 's/^{\$//')
 
 done < <(grep -rnE "(${SQL_KEYWORDS})[^\"']*\{\\\$" \
 	--include='*.php' \

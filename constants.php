@@ -276,6 +276,29 @@ const DEF_FROM_NAME               = '';
 const DEF_FROM_EMAIL              = '';
 const DEF_MANAGE_SLUG             = 'manage-comms';
 const DEF_AUTONOMOUS_SEND_ENABLED = false;
+const DEF_SUBSCRIBERS_PER_PAGE    = 25;
+
+/**
+ * WooCommerce order meta keys.
+ *
+ * `META_WC_OPT_IN_SLUGS` is written at checkout by
+ * `capture_opt_ins_on_order()` and read back when the order is paid.
+ * Stashing the ticked slugs on the order is what lets enrolment be
+ * deferred to payment without losing the customer's choice — the
+ * checkbox state exists only during the checkout POST.
+ *
+ * `META_WC_ENROLLED_AT` is the idempotency marker. The paid-order
+ * hooks can fire more than once for a single order (a gateway calling
+ * `payment_complete()`, then a `processing → completed` transition),
+ * so the presence of this key means "already handled, do nothing".
+ *
+ * The `_hum_opt_in_slugs` value is unchanged from 0.9.0 — orders
+ * placed before 1.7.0 still carry it, and must keep resolving.
+ *
+ * @since 1.7.0
+ */
+const META_WC_OPT_IN_SLUGS = '_hum_opt_in_slugs';
+const META_WC_ENROLLED_AT  = '_hum_enrolled_at';
 
 /**
  * Default footer HTML. The worker replaces `{{unsubscribe_url}}`

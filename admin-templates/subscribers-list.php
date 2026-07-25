@@ -153,9 +153,26 @@ if ( empty( $subscribers ) ) {
 
 	printf( '<input type="hidden" name="action" value="hum_bulk_subscribers" />' );
 
+	// Round-trip the current page so a bulk action returns the admin to
+	// the page they were looking at, not back to page 1.
+	printf( '<input type="hidden" name="paged" value="%d" />', (int) $paged );
+
 	ob_start();
 	wp_nonce_field( 'hum_bulk_subscribers' );
 	echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_nonce_field output is safe.
+
+	// Pagination links, shared by the top and bottom tablenav.
+	$pagination_links = paginate_links(
+		array(
+			'base'      => add_query_arg( 'paged', '%#%' ),
+			'format'    => '',
+			'total'     => (int) $pages,
+			'current'   => (int) $paged,
+			'prev_text' => '&laquo;',
+			'next_text' => '&raquo;',
+			'type'      => 'plain',
+		)
+	);
 
 	printf( '<div class="tablenav top">' );
 	printf(
@@ -167,12 +184,27 @@ if ( empty( $subscribers ) ) {
 		esc_attr( $bulk_confirm ),
 		esc_html__( 'Apply', 'heads-up-mailer' )
 	);
+
+	printf(
+		'<div class="tablenav-pages"><span class="displaying-num">%s</span> %s</div>',
+		esc_html(
+			sprintf(
+				/* translators: %s: total number of subscribers. */
+				_n( '%s subscriber', '%s subscribers', (int) $total, 'heads-up-mailer' ),
+				number_format_i18n( (int) $total )
+			)
+		),
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- paginate_links() returns escaped markup.
+		is_string( $pagination_links ) ? $pagination_links : ''
+	);
 	printf( '</div>' );
 
 	printf( '<table class="wp-list-table widefat striped">' );
 	printf(
 		'<thead><tr><td class="manage-column column-cb check-column"><label class="screen-reader-text" for="hum-cb-all">%s</label><input type="checkbox" id="hum-cb-all" /></td><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th></tr></thead>',
-		esc_html__( 'Select all', 'heads-up-mailer' ),
+		// "on this page" matters now the list paginates — the checkbox
+		// only reaches the rows currently rendered.
+		esc_html__( 'Select all on this page', 'heads-up-mailer' ),
 		esc_html__( 'Email', 'heads-up-mailer' ),
 		esc_html__( 'Name', 'heads-up-mailer' ),
 		esc_html__( 'Status', 'heads-up-mailer' ),
@@ -227,6 +259,37 @@ if ( empty( $subscribers ) ) {
 			}
 		}
 
+		// WP-user link indicator. `$linked_users` is a single bulk
+		// lookup done by the caller — never get_user_by() per row.
+		// Absence of the icon means "no account with this email",
+		// which is normal for imported and public sign-ups.
+		$user_badge = '';
+		$linked_id  = $linked_users[ strtolower( (string) $sub->email ) ] ?? 0;
+
+		if ( $linked_id > 0 ) {
+			$user_edit_link = get_edit_user_link( (int) $linked_id );
+
+			$badge_icon = sprintf(
+				'<span class="dashicons dashicons-admin-users" aria-hidden="true"></span><span class="screen-reader-text">%s</span>',
+				esc_html__( 'Has a linked WordPress user account', 'heads-up-mailer' )
+			);
+
+			// get_edit_user_link() returns '' when the current user
+			// can't edit that account — show the badge unlinked then.
+			$user_badge = ( '' === $user_edit_link )
+				? sprintf(
+					'<span class="hum-user-badge" title="%s">%s</span>',
+					esc_attr__( 'Linked to a WordPress user account', 'heads-up-mailer' ),
+					$badge_icon
+				)
+				: sprintf(
+					'<a class="hum-user-badge" href="%s" title="%s">%s</a>',
+					esc_url( $user_edit_link ),
+					esc_attr__( 'Linked to a WordPress user account — view profile', 'heads-up-mailer' ),
+					$badge_icon
+				);
+		}
+
 		/* translators: %s: Subscriber email. */
 		$delete_confirm = sprintf( __( 'Delete the subscriber "%s"?', 'heads-up-mailer' ), $sub->email );
 		/* translators: %s: Subscriber email. */
@@ -259,7 +322,7 @@ if ( empty( $subscribers ) ) {
 		);
 
 		printf(
-			'<tr><th scope="row" class="check-column"><label class="screen-reader-text" for="hum-cb-%1$d">%2$s</label><input id="hum-cb-%1$d" type="checkbox" name="subscriber_ids[]" value="%1$d" /></th><td><a href="%3$s"><strong>%4$s</strong></a></td><td>%5$s</td><td><span class="hum-status hum-status-%6$s">%7$s</span></td><td>%8$s</td><td>%9$s</td><td>%10$s</td></tr>',
+			'<tr><th scope="row" class="check-column"><label class="screen-reader-text" for="hum-cb-%1$d">%2$s</label><input id="hum-cb-%1$d" type="checkbox" name="subscriber_ids[]" value="%1$d" /></th><td><a href="%3$s"><strong>%4$s</strong></a>%11$s</td><td>%5$s</td><td><span class="hum-status hum-status-%6$s">%7$s</span></td><td>%8$s</td><td>%9$s</td><td>%10$s</td></tr>',
 			(int) $sub->id,
 			esc_html(
 				sprintf(
@@ -277,11 +340,24 @@ if ( empty( $subscribers ) ) {
 			$chips,
 			esc_html( $sub->consent_at ),
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $row_actions assembled from esc_url / esc_html / esc_attr above.
-			$row_actions
+			$row_actions,
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $user_badge assembled from esc_url / esc_attr / esc_html above.
+			$user_badge
 		);
 	}
 
 	printf( '</tbody></table>' );
+
+	// Repeat pagination below the table — with 25 rows the top links
+	// are off-screen by the time you reach the bottom.
+	if ( $pages > 1 ) {
+		printf(
+			'<div class="tablenav bottom"><div class="tablenav-pages">%s</div></div>',
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- paginate_links() returns escaped markup.
+			is_string( $pagination_links ) ? $pagination_links : ''
+		);
+	}
+
 	printf( '</form>' );
 }
 

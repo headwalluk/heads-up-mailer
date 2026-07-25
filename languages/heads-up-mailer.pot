@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Heads Up Mailer 1.6.0\n"
+"Project-Id-Version: Heads Up Mailer 1.7.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/heads-up-mailer\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-25T17:48:40+00:00\n"
+"POT-Creation-Date: 2026-07-25T18:38:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: heads-up-mailer\n"
@@ -105,7 +105,7 @@ msgstr ""
 #: admin-templates/drafts-list.php:113
 #: admin-templates/groups-list.php:28
 #: admin-templates/subscriber-edit.php:140
-#: admin-templates/subscribers-list.php:179
+#: admin-templates/subscribers-list.php:211
 #: includes/class-plugin.php:302
 #: includes/class-plugin.php:303
 msgid "Groups"
@@ -116,7 +116,7 @@ msgid "No groups yet."
 msgstr ""
 
 #: admin-templates/dashboard.php:133
-#: integrations/woocommerce/class-woocommerce.php:348
+#: integrations/woocommerce/class-woocommerce.php:413
 msgid "Group"
 msgstr ""
 
@@ -148,7 +148,7 @@ msgstr ""
 #: admin-templates/sent-log-detail.php:135
 #: admin-templates/subscriber-edit.php:81
 #: admin-templates/subscriber-import.php:111
-#: admin-templates/subscribers-list.php:176
+#: admin-templates/subscribers-list.php:208
 msgid "Email"
 msgstr ""
 
@@ -208,7 +208,7 @@ msgstr ""
 #: admin-templates/drafts-list.php:75
 #: includes/class-drafts-controller.php:137
 #: includes/class-drafts-controller.php:182
-#: includes/class-plugin.php:1103
+#: includes/class-plugin.php:1134
 #: includes/class-rest-controller.php:304
 #: includes/class-sends-controller.php:133
 #: includes/class-sends-controller.php:214
@@ -430,7 +430,7 @@ msgstr ""
 #: admin-templates/sent-log-detail.php:136
 #: admin-templates/sent-log-list.php:34
 #: admin-templates/subscriber-edit.php:112
-#: admin-templates/subscribers-list.php:178
+#: admin-templates/subscribers-list.php:210
 msgid "Status"
 msgstr ""
 
@@ -440,7 +440,7 @@ msgstr ""
 
 #: admin-templates/drafts-list.php:115
 #: admin-templates/groups-list.php:89
-#: admin-templates/subscribers-list.php:181
+#: admin-templates/subscribers-list.php:213
 msgid "Actions"
 msgstr ""
 
@@ -456,14 +456,14 @@ msgstr ""
 
 #: admin-templates/drafts-list.php:173
 #: admin-templates/groups-list.php:134
-#: admin-templates/subscribers-list.php:242
+#: admin-templates/subscribers-list.php:305
 msgid "Edit"
 msgstr ""
 
 #: admin-templates/drafts-list.php:176
 #: admin-templates/groups-list.php:137
-#: admin-templates/subscribers-list.php:166
-#: admin-templates/subscribers-list.php:258
+#: admin-templates/subscribers-list.php:183
+#: admin-templates/subscribers-list.php:321
 msgid "Delete"
 msgstr ""
 
@@ -538,7 +538,7 @@ msgstr ""
 #: admin-templates/group-edit.php:93
 #: admin-templates/groups-list.php:85
 #: admin-templates/subscriber-edit.php:87
-#: admin-templates/subscribers-list.php:177
+#: admin-templates/subscribers-list.php:209
 msgid "Name"
 msgstr ""
 
@@ -783,50 +783,50 @@ msgstr ""
 
 #: admin-templates/subscriber-edit.php:44
 #: admin-templates/subscribers-list.php:108
-#: includes/class-subscribers-controller.php:182
-#: includes/class-subscribers-controller.php:268
+#: includes/class-subscribers-controller.php:326
+#: includes/class-subscribers-controller.php:412
 msgid "A subscriber with that email already exists."
 msgstr ""
 
 #: admin-templates/subscriber-edit.php:45
 #: admin-templates/subscribers-list.php:109
-#: includes/class-subscribers-controller.php:486
-#: includes/class-subscribers-controller.php:639
-#: includes/class-subscribers-controller.php:703
+#: includes/class-subscribers-controller.php:630
+#: includes/class-subscribers-controller.php:783
+#: includes/class-subscribers-controller.php:847
 msgid "A valid email address is required."
 msgstr ""
 
 #: admin-templates/subscriber-edit.php:46
 #: admin-templates/subscribers-list.php:110
-#: includes/class-subscribers-controller.php:664
-#: includes/class-subscribers-controller.php:718
+#: includes/class-subscribers-controller.php:808
+#: includes/class-subscribers-controller.php:862
 msgid "Invalid subscriber status."
 msgstr ""
 
 #: admin-templates/subscriber-edit.php:47
 #: admin-templates/subscribers-list.php:111
-#: includes/class-subscribers-controller.php:251
-#: includes/class-subscribers-controller.php:335
-#: includes/class-subscribers-controller.php:378
-#: includes/class-subscribers-controller.php:425
-#: includes/class-subscribers-controller.php:547
-#: includes/class-subscribers-controller.php:591
+#: includes/class-subscribers-controller.php:395
+#: includes/class-subscribers-controller.php:479
+#: includes/class-subscribers-controller.php:522
+#: includes/class-subscribers-controller.php:569
+#: includes/class-subscribers-controller.php:691
+#: includes/class-subscribers-controller.php:735
 msgid "Subscriber not found."
 msgstr ""
 
 #: admin-templates/subscriber-edit.php:48
 #: admin-templates/subscribers-list.php:112
-#: includes/class-subscribers-controller.php:208
+#: includes/class-subscribers-controller.php:352
 msgid "Failed to insert subscriber."
 msgstr ""
 
 #: admin-templates/subscriber-edit.php:49
 #: admin-templates/subscribers-list.php:113
-#: includes/class-subscribers-controller.php:313
-#: includes/class-subscribers-controller.php:400
-#: includes/class-subscribers-controller.php:447
-#: includes/class-subscribers-controller.php:569
-#: includes/class-subscribers-controller.php:606
+#: includes/class-subscribers-controller.php:457
+#: includes/class-subscribers-controller.php:544
+#: includes/class-subscribers-controller.php:591
+#: includes/class-subscribers-controller.php:713
+#: includes/class-subscribers-controller.php:750
 msgid "Failed to update subscriber."
 msgstr ""
 
@@ -876,7 +876,7 @@ msgid "Free-text label for where consent was captured (e.g. \"checkout\", \"impo
 msgstr ""
 
 #: admin-templates/subscriber-edit.php:154
-#: admin-templates/subscribers-list.php:180
+#: admin-templates/subscribers-list.php:212
 msgid "Consent at"
 msgstr ""
 
@@ -1002,7 +1002,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: admin-templates/subscribers-list.php:114
-#: includes/class-subscribers-controller.php:355
+#: includes/class-subscribers-controller.php:499
 msgid "Failed to delete subscriber."
 msgstr ""
 
@@ -1022,41 +1022,61 @@ msgstr ""
 msgid "Apply this bulk action to the selected subscribers? Deleting is permanent and cannot be undone. Marking as \"never contact\" is sticky — future imports will skip these rows."
 msgstr ""
 
-#: admin-templates/subscribers-list.php:163
-#: admin-templates/subscribers-list.php:164
+#: admin-templates/subscribers-list.php:180
+#: admin-templates/subscribers-list.php:181
 msgid "Bulk actions"
 msgstr ""
 
-#: admin-templates/subscribers-list.php:165
+#: admin-templates/subscribers-list.php:182
 msgid "Mark as never contact"
 msgstr ""
 
-#: admin-templates/subscribers-list.php:168
+#: admin-templates/subscribers-list.php:185
 msgid "Apply"
 msgstr ""
 
-#: admin-templates/subscribers-list.php:175
-msgid "Select all"
+#. translators: %s: total number of subscribers.
+#: admin-templates/subscribers-list.php:193
+#, php-format
+msgid "%s subscriber"
+msgid_plural "%s subscribers"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin-templates/subscribers-list.php:207
+msgid "Select all on this page"
+msgstr ""
+
+#: admin-templates/subscribers-list.php:274
+msgid "Has a linked WordPress user account"
+msgstr ""
+
+#: admin-templates/subscribers-list.php:282
+msgid "Linked to a WordPress user account"
+msgstr ""
+
+#: admin-templates/subscribers-list.php:288
+msgid "Linked to a WordPress user account — view profile"
 msgstr ""
 
 #. translators: %s: Subscriber email.
-#: admin-templates/subscribers-list.php:231
+#: admin-templates/subscribers-list.php:294
 #, php-format
 msgid "Delete the subscriber \"%s\"?"
 msgstr ""
 
 #. translators: %s: Subscriber email.
-#: admin-templates/subscribers-list.php:233
+#: admin-templates/subscribers-list.php:296
 #, php-format
 msgid "Flag %s as \"never contact\"? This is sticky — future imports will skip them, and the only way back is to edit the status manually."
 msgstr ""
 
-#: admin-templates/subscribers-list.php:250
+#: admin-templates/subscribers-list.php:313
 msgid "Mark never-contact"
 msgstr ""
 
 #. translators: %s: Subscriber email used as accessible checkbox label.
-#: admin-templates/subscribers-list.php:267
+#: admin-templates/subscribers-list.php:330
 #, php-format
 msgid "Select %s"
 msgstr ""
@@ -1326,7 +1346,7 @@ msgid "Heads Up Mailer mailbox poll"
 msgstr ""
 
 #: includes/class-mailbox-poller.php:183
-#: includes/class-plugin.php:804
+#: includes/class-plugin.php:835
 msgid "The PHP imap extension is not loaded on this host."
 msgstr ""
 
@@ -1339,7 +1359,7 @@ msgid "Another poll is already in progress. Try again in a moment."
 msgstr ""
 
 #: includes/class-mailbox-poller.php:270
-#: includes/class-plugin.php:849
+#: includes/class-plugin.php:880
 msgid "Failed to open IMAP connection."
 msgstr ""
 
@@ -1393,48 +1413,48 @@ msgstr ""
 #: includes/class-plugin.php:405
 #: includes/class-plugin.php:421
 #: includes/class-plugin.php:494
-#: includes/class-plugin.php:898
-#: includes/class-plugin.php:937
+#: includes/class-plugin.php:929
+#: includes/class-plugin.php:968
 msgid "You do not have permission to access this page."
 msgstr ""
 
 #: includes/class-plugin.php:448
-#: includes/class-plugin.php:551
-#: includes/class-plugin.php:601
-#: includes/class-plugin.php:632
-#: includes/class-plugin.php:667
-#: includes/class-plugin.php:730
-#: includes/class-plugin.php:976
-#: includes/class-plugin.php:1027
-#: includes/class-plugin.php:1060
-#: includes/class-plugin.php:1093
-#: includes/class-plugin.php:1117
+#: includes/class-plugin.php:572
+#: includes/class-plugin.php:622
+#: includes/class-plugin.php:653
+#: includes/class-plugin.php:688
+#: includes/class-plugin.php:761
+#: includes/class-plugin.php:1007
+#: includes/class-plugin.php:1058
+#: includes/class-plugin.php:1091
+#: includes/class-plugin.php:1124
+#: includes/class-plugin.php:1148
 msgid "You do not have permission."
 msgstr ""
 
-#: includes/class-plugin.php:747
+#: includes/class-plugin.php:778
 msgid "No file was uploaded."
 msgstr ""
 
-#: includes/class-plugin.php:752
+#: includes/class-plugin.php:783
 msgid "File upload failed."
 msgstr ""
 
-#: includes/class-plugin.php:754
+#: includes/class-plugin.php:785
 msgid "Uploaded file is not a valid upload."
 msgstr ""
 
-#: includes/class-plugin.php:800
-#: includes/class-plugin.php:878
+#: includes/class-plugin.php:831
+#: includes/class-plugin.php:909
 msgid "Insufficient permissions."
 msgstr ""
 
-#: includes/class-plugin.php:823
+#: includes/class-plugin.php:854
 msgid "Host, port, username, and password are all required."
 msgstr ""
 
 #. translators: %s: folder name on the IMAP server.
-#: includes/class-plugin.php:859
+#: includes/class-plugin.php:890
 #, php-format
 msgid "Connection successful — folder \"%s\" is reachable."
 msgstr ""
@@ -1498,7 +1518,7 @@ msgstr ""
 msgid "From email address is not valid. The previous value was kept."
 msgstr ""
 
-#: includes/class-subscribers-controller.php:495
+#: includes/class-subscribers-controller.php:639
 msgid "Subscriber is flagged never-contact."
 msgstr ""
 
@@ -1527,44 +1547,44 @@ msgstr ""
 msgid "Replace the `group:` attribute with the slug of the group you want sign-ups to land in. The quoted text becomes the visible checkbox label. The form must include an email field — that's where the subscriber's address comes from. Add `checked` to render the checkbox pre-ticked (e.g. on a dedicated sign-up form); the visitor can still untick it before submitting."
 msgstr ""
 
-#: integrations/woocommerce/class-woocommerce.php:64
-#: integrations/woocommerce/class-woocommerce.php:73
+#: integrations/woocommerce/class-woocommerce.php:67
+#: integrations/woocommerce/class-woocommerce.php:76
 msgid "WooCommerce"
 msgstr ""
 
-#: integrations/woocommerce/class-woocommerce.php:298
+#: integrations/woocommerce/class-woocommerce.php:363
 msgid "Customers group"
 msgstr ""
 
-#: integrations/woocommerce/class-woocommerce.php:301
+#: integrations/woocommerce/class-woocommerce.php:366
 msgid "Every checkout adds the customer to this group. T&C acceptance at checkout is the consent record. Leave unset to disable."
 msgstr ""
 
-#: integrations/woocommerce/class-woocommerce.php:307
+#: integrations/woocommerce/class-woocommerce.php:372
 msgid "— Disabled —"
 msgstr ""
 
-#: integrations/woocommerce/class-woocommerce.php:327
+#: integrations/woocommerce/class-woocommerce.php:392
 msgid "Checkout opt-in checkboxes"
 msgstr ""
 
-#: integrations/woocommerce/class-woocommerce.php:330
+#: integrations/woocommerce/class-woocommerce.php:395
 msgid "Tick groups you want to offer at checkout as optional sign-ups, and provide the label text customers will see. The intro paragraph is rendered above all checkboxes."
 msgstr ""
 
-#: integrations/woocommerce/class-woocommerce.php:335
+#: integrations/woocommerce/class-woocommerce.php:400
 msgid "Intro paragraph (1–2 sentences)"
 msgstr ""
 
-#: integrations/woocommerce/class-woocommerce.php:348
+#: integrations/woocommerce/class-woocommerce.php:413
 msgid "Show at checkout"
 msgstr ""
 
-#: integrations/woocommerce/class-woocommerce.php:348
+#: integrations/woocommerce/class-woocommerce.php:413
 msgid "Label text"
 msgstr ""
 
-#: integrations/woocommerce/class-woocommerce.php:353
+#: integrations/woocommerce/class-woocommerce.php:418
 msgid "No groups defined yet. Create groups under Heads Up Mailer → Groups, then return here."
 msgstr ""
 

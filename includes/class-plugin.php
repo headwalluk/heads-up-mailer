@@ -525,17 +525,38 @@ class Plugin {
 
 			require HUM_PATH . 'admin-templates/subscriber-import.php';
 		} else {
-			$subscribers  = $subs_controller->get_all();
+			// Paginated list. Previously this rendered every subscriber
+			// via get_all() and then issued one get_groups() query per
+			// row — an N+1 that grew with the table. Now: one page of
+			// rows, one query for their memberships, one for their
+			// user-account linkage.
+			$per_page = DEF_SUBSCRIBERS_PER_PAGE;
+			$total    = $subs_controller->count_all();
+			$pages    = max( 1, (int) ceil( $total / $per_page ) );
+
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read for view state; no state change.
+			$paged = isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
+			// Clamp, so deleting the last row on the final page (or a
+			// hand-edited URL) can't land on an empty view.
+			$paged = min( max( 1, $paged ), $pages );
+
+			$subscribers  = $subs_controller->get_page( $per_page, ( $paged - 1 ) * $per_page );
 			$groups_by_id = array();
 
 			foreach ( $all_groups as $g ) {
 				$groups_by_id[ (int) $g->id ] = $g;
 			}
 
-			$memberships = array();
+			$subscriber_ids = array();
+			$emails         = array();
+
 			foreach ( $subscribers as $sub ) {
-				$memberships[ (int) $sub->id ] = $subs_controller->get_groups( (int) $sub->id );
+				$subscriber_ids[] = (int) $sub->id;
+				$emails[]         = (string) $sub->email;
 			}
+
+			$memberships  = $subs_controller->group_ids_for_subscribers( $subscriber_ids );
+			$linked_users = $subs_controller->user_ids_for_emails( $emails );
 
 			require HUM_PATH . 'admin-templates/subscribers-list.php';
 		}
@@ -679,6 +700,16 @@ class Plugin {
 		$ids = array_values( array_filter( $raw_ids, static fn( int $id ): bool => $id > 0 ) );
 
 		$redirect_args = array( 'page' => 'heads-up-mailer-subscribers' );
+
+		// Return to the page the admin was on. The list clamps an
+		// out-of-range value, so deleting the last row on the final
+		// page lands on the new final page rather than an empty view.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above.
+		$paged = isset( $_POST['paged'] ) ? absint( $_POST['paged'] ) : 0;
+
+		if ( $paged > 1 ) {
+			$redirect_args['paged'] = $paged;
+		}
 
 		if ( '' === $action || empty( $ids ) ) {
 			$redirect_args['error'] = 'hum_bulk_no_selection';

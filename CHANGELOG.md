@@ -7,6 +7,87 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] — 2026-07-25
+
+### Fixed
+
+- **WooCommerce: customers are only enrolled once their order is
+  paid.** Enrolment previously ran on
+  `woocommerce_checkout_order_processed` — the moment the order row was
+  written, before any payment was attempted. Card-testing bots
+  therefore added themselves to the mailing list: the order was
+  created, the card issuer declined it (or fraud tooling blocked it),
+  and the subscriber row survived regardless.
+
+  Enrolment now runs on `woocommerce_payment_complete` and
+  `woocommerce_order_status_changed`, gated on WooCommerce's own
+  `$order->is_paid()`. A declined, failed, cancelled or abandoned order
+  enrols nobody.
+
+  - **The customer's choice is not lost.** The ticked opt-in checkboxes
+    only exist during the checkout POST, so they are still captured at
+    checkout and stashed on the order, then read back when it is paid.
+  - **"Paid" means `processing` or `completed`**, WooCommerce's default
+    paid statuses — not `completed` alone. Payment is captured at
+    `processing`, and an order may legitimately never be marked
+    completed.
+  - **Bank transfer / cheque orders** sit unenrolled while `on-hold`
+    and enrol when an admin marks them paid, which is the correct
+    outcome.
+  - **Idempotent.** Both hooks can fire for the same order (a gateway
+    callback, then `processing → completed`); the order is stamped on
+    success and skipped thereafter.
+  - **A later refund or chargeback does not un-enrol anyone.** Consent
+    was given and payment did happen, so removing them silently would
+    be surprising — remove them by hand if you want them gone.
+  - Existing paid orders are unaffected, and an order already enrolled
+    under the old behaviour is not re-processed. No migration needed.
+
+- **Subscribers list no longer issues one query per row.** The Groups
+  column called `get_groups()` inside the row loop — an N+1 that grew
+  with the table (144 queries for 143 subscribers). Memberships now
+  come from a single grouped query. Rendering a 25-row page costs 5
+  queries in total, down from 144 for the whole list.
+
+### Added
+
+- **Subscribers list is paginated**, 25 rows per page, with a total
+  count and standard WordPress pagination links above and below the
+  table. Prevents the page loading and rendering the entire subscriber
+  table, which does not scale.
+  - The select-all checkbox is relabelled "Select all on this page",
+    because that is what it does now — worth knowing before applying a
+    bulk action.
+  - Bulk actions return you to the page you were on. An out-of-range
+    page number is clamped, so deleting the last row on the final page
+    lands on the new final page rather than an empty view.
+- **A dashicon in the subscribers list marks anyone with a linked
+  WordPress user account**, linking through to that user's profile.
+  Useful for telling real customers apart from list-only contacts.
+  - Linkage is inferred by matching the email address — there is no
+    `user_id` column — so a customer who subscribed with a different
+    address than their account will not appear linked.
+  - Absence of the icon is normal for imported and public sign-ups, who
+    have no account at all. It means "no WordPress user with this
+    email", not "suspicious".
+  - Resolved with one bulk lookup for the whole page, never
+    `get_user_by()` per row.
+
+### Changed
+
+- The WooCommerce order-meta keys are now named constants
+  (`META_WC_OPT_IN_SLUGS`, `META_WC_ENROLLED_AT`). The stored value of
+  `_hum_opt_in_slugs` is unchanged, so orders placed before 1.7.0 still
+  resolve.
+
+### Notes
+
+- **No schema change.** Database version stays at 4; nothing migrates.
+- `bin/check-sql-interpolation.sh` now recognises the
+  `{$wpdb->table}` form as a legitimate table identifier, so a core
+  table name no longer trips the guard while a genuine unprepared value
+  on the same line still does.
+
 ## [1.6.0] — 2026-07-25
 
 ### Added

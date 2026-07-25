@@ -1,12 +1,12 @@
 # Project Tracker — heads-up-mailer
 
-**Status:** Shipping post-1.0.0 increments — Groups REST API + security
-hardening pass built, documented, and ready to tag (1.6.0)
-**Current Version:** 1.6.0 (bumped; not yet committed or tagged)
-**Current Phase:** Expanding the agent-facing REST surface
+**Status:** Shipping post-1.0.0 increments — 1.6.0 released; 1.7.0
+(WooCommerce paid-order fix + subscribers-list scaling) ready to tag
+**Current Version:** 1.7.0 (bumped; not yet committed or tagged)
+**Current Phase:** Production-driven fixes and admin scaling
 **Last Updated:** 25 July 2026
-**Progress:** 15 of 15 milestones complete — Milestone 15 (Groups
-REST API) built, tested, hardened, and documented 2026-07-25
+**Progress:** 16 of 16 milestones complete — Milestone 16 (WooCommerce
+paid-order enrolment + subscribers-list pagination) 2026-07-25
 
 ---
 
@@ -1248,6 +1248,100 @@ further buys granularity nobody has asked for.
   the id round-trip proves annoying in practice.
 - `allow_automated_send` over REST — see above. Not a "later",
   a "no".
+
+---
+
+## Milestone 16: WooCommerce paid-order enrolment + list scaling
+
+**Goal:** Stop fake card-testing orders adding people to the mailing
+list, and make the subscribers screen survive a growing list.
+
+**Status:** ✅ Built + tested 2026-07-25, released as **1.7.0**.
+**Trigger:** Found in production immediately after the 1.6.0 deploy —
+card-testing bots were creating an order plus a WP user account, the
+card was declined (or blocked by the owner's anti-fraud tooling), and
+the subscriber row survived anyway.
+
+### The bug
+
+`on_order_processed()` was hooked to
+`woocommerce_checkout_order_processed`, which fires when the order row
+is *written* — before any payment is attempted. Enrolment therefore had
+nothing to do with whether money moved.
+
+### Fix
+
+- Enrolment moved to `woocommerce_payment_complete` +
+  `woocommerce_order_status_changed`, both funnelling into
+  `maybe_enrol_paid_order()`, gated on `$order->is_paid()`.
+  Two hooks because gateways differ: most call `payment_complete()`,
+  but an admin marking a bank-transfer order paid only fires a status
+  change.
+- **`capture_opt_ins_on_order()` is untouched** — and that is what made
+  this fix cheap. It already stashed the ticked slugs into order meta at
+  checkout, because the checkbox state only exists during the checkout
+  POST. Deferring enrolment therefore loses nothing.
+- Idempotency via `META_WC_ENROLLED_AT`; both hooks can fire for one
+  order.
+- "Paid" = WooCommerce's `is_paid()` (`processing` or `completed`), not
+  completed-only — for hosting, payment is captured at `processing` and
+  an order may never be marked completed.
+- Refund/chargeback deliberately does **not** un-enrol. Consent was
+  given, payment happened; silent removal would be surprising.
+- Order-meta keys promoted to `META_WC_*` constants. `_hum_opt_in_slugs`
+  keeps its stored value so pre-1.7.0 orders still resolve.
+
+**Bug caught during testing, worth remembering:** the WC integration
+lives in `Heads_Up_Mailer\Integrations`, not `Heads_Up_Mailer`, and PHP
+only falls back to the *global* namespace for unqualified constants — not
+to a parent namespace. The new constants and `now_utc()` needed explicit
+`use const` / `use function` imports, matching what the file already did
+for the `OPTION_*` constants. Without them it was a fatal error on the
+first status transition, which the end-to-end test surfaced immediately.
+
+### Subscribers list
+
+- **N+1 removed.** The Groups column called `get_groups()` per row —
+  144 queries for 143 subscribers. Replaced with
+  `group_ids_for_subscribers()`, one grouped query. **Measured: a
+  25-row page render costs 5 queries total, vs 144 for the old
+  whole-list approach.**
+- **Pagination** at `DEF_SUBSCRIBERS_PER_PAGE` (25) via `get_page()` +
+  `count_all()` and `paginate_links()`. Out-of-range `paged` is clamped,
+  so deleting the last row on the final page can't land on an empty
+  view. Bulk actions round-trip `paged` so you return where you were.
+- Select-all relabelled **"Select all on this page"** — with pagination
+  it only reaches rendered rows, and an admin could otherwise assume it
+  covered the whole list.
+- **WP-user dashicon** via `user_ids_for_emails()` — one bulk lookup for
+  the page, never `get_user_by()` per row. Links to the user's profile
+  (falls back to an unlinked badge when the viewer can't edit that
+  user).
+
+### Caveat on using the dashicon to find junk rows
+
+Absence of the icon means "no WordPress user with this email" — which
+is **also** true of every CSV-imported and public sign-up. On the dev
+DB, 141 of 143 subscribers are unlinked. So unlinked alone does not
+isolate bot rows. What makes the owner's approach work in practice is
+that the list is ordered newest-first, so recent bot rows sit at the top
+of page 1 where the icon plus the consent date identify them. If this
+ever needs to be systematic, surface `consent_source` (already stored,
+values like `woocommerce-checkout`) as a column — it is not currently
+displayed in the list, only on the edit screen.
+
+### Verification
+
+- 13-check end-to-end WooCommerce test: pending / failed / cancelled
+  enrol nobody; `processing` enrols into both the customers group and
+  the ticked opt-in group; stamp unchanged across
+  `processing → completed` and a `payment_complete` replay; `on-hold`
+  bank transfer enrols only when marked paid.
+- List test: 25 rows/page, 6 pages for 143 subscribers, total count
+  rendered, out-of-range clamped, page 1 ≠ page 2, exactly 2 dashicons
+  across all pages matching the 2 linked accounts.
+- `phpcs` clean plugin-wide; SQL guard clean and still catching a
+  deliberate probe.
 
 ---
 

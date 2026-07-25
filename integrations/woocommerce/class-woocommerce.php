@@ -30,6 +30,9 @@ use Heads_Up_Mailer\Subscribers_Controller;
 use const Heads_Up_Mailer\OPTION_WC_CUSTOMERS_GROUP_SLUG;
 use const Heads_Up_Mailer\OPTION_WC_CHECKOUT_INTRO;
 use const Heads_Up_Mailer\OPTION_WC_CHECKOUT_GROUPS_JSON;
+use const Heads_Up_Mailer\META_WC_OPT_IN_SLUGS;
+use const Heads_Up_Mailer\META_WC_ENROLLED_AT;
+use function Heads_Up_Mailer\now_utc;
 
 /**
  * WooCommerce integration.
@@ -90,7 +93,14 @@ class WooCommerce extends Integration {
 	public function register_hooks(): void {
 		add_action( 'woocommerce_after_checkout_billing_form', array( $this, 'render_checkout_opt_ins' ) );
 		add_action( 'woocommerce_checkout_create_order', array( $this, 'capture_opt_ins_on_order' ), 10, 2 );
-		add_action( 'woocommerce_checkout_order_processed', array( $this, 'on_order_processed' ), 10, 3 );
+
+		// Enrolment fires on PAYMENT, not on order creation. Two hooks
+		// because gateways differ: most call payment_complete(), but a
+		// manual "mark as processing/completed" in wp-admin only fires
+		// a status change. Both funnel into the same guarded handler,
+		// so firing twice for one order is harmless.
+		add_action( 'woocommerce_payment_complete', array( $this, 'maybe_enrol_paid_order' ), 10, 1 );
+		add_action( 'woocommerce_order_status_changed', array( $this, 'on_order_status_changed' ), 10, 4 );
 	}
 
 	/**
@@ -169,33 +179,85 @@ class WooCommerce extends Integration {
 		}
 
 		if ( ! empty( $ticked ) ) {
-			$order->update_meta_data( '_hum_opt_in_slugs', implode( ',', $ticked ) );
+			$order->update_meta_data( META_WC_OPT_IN_SLUGS, implode( ',', $ticked ) );
 		}
 	}
 
 	/**
-	 * `woocommerce_checkout_order_processed` — the order is
-	 * committed; enrol the customer in every applicable group.
+	 * `woocommerce_order_status_changed` — thin adapter onto
+	 * `maybe_enrol_paid_order()`.
 	 *
-	 * Two enrolment paths:
+	 * Needed alongside `woocommerce_payment_complete` because an admin
+	 * marking a bank-transfer or cheque order as processing/completed
+	 * never triggers a gateway payment callback.
 	 *
-	 *   1. Customers group — admin-configured slug; every
-	 *      successfully-processed order enrols the customer.
-	 *      Disabled when the slug is empty.
-	 *   2. Per-group opt-ins — slugs captured in
-	 *      `capture_opt_ins_on_order()` get applied here.
+	 * @since 1.7.0
+	 * @param int             $order_id Order ID.
+	 * @param string          $from     Previous status.
+	 * @param string          $to       New status.
+	 * @param \WC_Order|false $order    The order, when WC supplies it.
+	 */
+	public function on_order_status_changed( int $order_id, string $from, string $to, $order = false ): void {
+		$this->maybe_enrol_paid_order( $order_id, $order );
+	}
+
+	/**
+	 * Enrol the customer in every applicable group — but only once the
+	 * order is actually PAID.
+	 *
+	 * Previously this ran on `woocommerce_checkout_order_processed`,
+	 * i.e. the moment the order row was written, before any payment was
+	 * attempted. Card-testing bots therefore got themselves onto the
+	 * mailing list: the order was created, the issuer declined it (or
+	 * fraud tooling blocked it), and the subscriber row survived
+	 * regardless. Deferring to payment means a declined or abandoned
+	 * order enrols nobody.
+	 *
+	 * "Paid" is WooCommerce's own `is_paid()` — `processing` or
+	 * `completed` by default — not `completed` alone. For hosting,
+	 * payment is captured at `processing` and an order may legitimately
+	 * never be marked completed.
+	 *
+	 * The consent itself is captured earlier, at checkout, by
+	 * `capture_opt_ins_on_order()`: the ticked checkboxes exist only in
+	 * the checkout POST, so they are stashed on the order and read back
+	 * here. Deferring enrolment does not lose the customer's choice.
+	 *
+	 * Two enrolment paths, unchanged apart from when they run:
+	 *
+	 *   1. Customers group — admin-configured slug; any paid order
+	 *      enrols the customer. Disabled when the slug is empty.
+	 *   2. Per-group opt-ins — slugs captured at checkout.
+	 *
+	 * Idempotent: `META_WC_ENROLLED_AT` is stamped on success, and a
+	 * stamped order is skipped. Both hooks can fire for the same order
+	 * (gateway callback, then `processing → completed`), and a refund or
+	 * cancellation deliberately does NOT un-enrol — consent was given
+	 * and payment did happen, so removing them silently would be
+	 * surprising. Remove them by hand if you want them gone.
 	 *
 	 * @since 0.9.0
-	 * @param int                  $order_id    Order ID.
-	 * @param array<string, mixed> $posted_data Posted checkout data.
-	 * @param \WC_Order|false      $order       The order, when WC supplies it (newer versions).
+	 * @param int             $order_id Order ID.
+	 * @param \WC_Order|false $order    The order, when the caller already has it.
 	 */
-	public function on_order_processed( int $order_id, array $posted_data, $order = false ): void {
+	public function maybe_enrol_paid_order( int $order_id, $order = false ): void {
 		if ( ! $order instanceof \WC_Order ) {
 			$order = wc_get_order( $order_id );
 		}
 
 		if ( ! $order instanceof \WC_Order ) {
+			return;
+		}
+
+		if ( ! $order->is_paid() ) {
+			// no action: order exists but has not been paid for. This is
+			// the whole point — a created-but-declined order must not
+			// enrol anyone.
+			return;
+		}
+
+		if ( '' !== (string) $order->get_meta( META_WC_ENROLLED_AT, true ) ) {
+			// no action: already enrolled from this order.
 			return;
 		}
 
@@ -222,7 +284,7 @@ class WooCommerce extends Integration {
 		}
 
 		// (2) Per-group opt-ins.
-		$ticked_raw = (string) $order->get_meta( '_hum_opt_in_slugs', true );
+		$ticked_raw = (string) $order->get_meta( META_WC_OPT_IN_SLUGS, true );
 		$ticked     = '' === $ticked_raw ? array() : array_filter( array_map( 'trim', explode( ',', $ticked_raw ) ) );
 
 		foreach ( $ticked as $slug ) {
@@ -234,6 +296,9 @@ class WooCommerce extends Integration {
 
 			$subs->ensure_in_group( $email, $name, (int) $group->id, 'woocommerce-checkout-opt-in' );
 		}
+
+		$order->update_meta_data( META_WC_ENROLLED_AT, now_utc() );
+		$order->save();
 	}
 
 	/**

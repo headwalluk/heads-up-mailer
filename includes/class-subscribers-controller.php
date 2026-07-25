@@ -88,6 +88,150 @@ class Subscribers_Controller {
 	}
 
 	/**
+	 * Total subscriber count, for pagination.
+	 *
+	 * @since 1.7.0
+	 */
+	public function count_all(): int {
+		global $wpdb;
+		$table = $this->table();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom-table read, no user input in query.
+		$total = $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" );
+
+		return (int) $total;
+	}
+
+	/**
+	 * One page of subscribers, same ordering as `get_all()`.
+	 *
+	 * The admin list used to render every row via `get_all()`, which
+	 * does not scale — and worse, the caller then issued one
+	 * `get_groups()` query per row. Use this with
+	 * `group_ids_for_subscribers()` to keep both the row count and the
+	 * query count bounded.
+	 *
+	 * @since 1.7.0
+	 * @param int $per_page Rows to return (clamped to at least 1).
+	 * @param int $offset   Rows to skip (clamped to at least 0).
+	 * @return array<int, object>
+	 */
+	public function get_page( int $per_page, int $offset ): array {
+		global $wpdb;
+		$table    = $this->table();
+		$per_page = max( 1, $per_page );
+		$offset   = max( 0, $offset );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom-table read; LIMIT/OFFSET are prepared integers.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$table} ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d",
+				$per_page,
+				$offset
+			)
+		);
+
+		return is_array( $rows ) ? $rows : array();
+	}
+
+	/**
+	 * Group memberships for many subscribers, in one query.
+	 *
+	 * Replaces an N+1 in the admin list, which called `get_groups()`
+	 * once per row — 100+ queries on a real subscriber table. Returns
+	 * a map of subscriber ID to group IDs; subscribers with no
+	 * memberships are absent, so callers should default to an empty
+	 * array.
+	 *
+	 * @since 1.7.0
+	 * @param array<int, int> $subscriber_ids Subscriber IDs to look up.
+	 * @return array<int, array<int, int>>
+	 */
+	public function group_ids_for_subscribers( array $subscriber_ids ): array {
+		$result = array();
+		$ints   = array_values( array_filter( array_map( 'intval', $subscriber_ids ) ) );
+
+		if ( ! empty( $ints ) ) {
+			global $wpdb;
+			$table        = $this->groups_table();
+			$placeholders = implode( ', ', array_fill( 0, count( $ints ), '%d' ) );
+
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Table from prefix; every placeholder is a %d fanned out from a count of integer IDs.
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT subscriber_id, group_id FROM {$table} WHERE subscriber_id IN ({$placeholders})",
+					$ints
+				)
+			);
+			// phpcs:enable
+
+			if ( is_array( $rows ) ) {
+				foreach ( $rows as $row ) {
+					$result[ (int) $row->subscriber_id ][] = (int) $row->group_id;
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Map subscriber emails to WordPress user IDs, in one query.
+	 *
+	 * There is no `user_id` column on `hum_subscribers` — a subscriber
+	 * is not required to have an account — so linkage is inferred by
+	 * matching the email address. That means a customer who subscribed
+	 * with a different address than their account will not appear
+	 * linked. A stored foreign key would need a schema change and a
+	 * backfill; email matching is accurate enough for the admin
+	 * indicator this serves.
+	 *
+	 * One query rather than `get_user_by()` per row, which would scale
+	 * with the subscriber table. Emails absent from `wp_users` are
+	 * simply not in the result.
+	 *
+	 * @since 1.7.0
+	 * @param array<int, string> $emails Subscriber email addresses.
+	 * @return array<string, int> Lower-cased email => user ID.
+	 */
+	public function user_ids_for_emails( array $emails ): array {
+		$result = array();
+		$clean  = array();
+
+		foreach ( $emails as $email ) {
+			$email = strtolower( trim( (string) $email ) );
+
+			if ( '' !== $email ) {
+				$clean[] = $email;
+			}
+		}
+
+		$clean = array_values( array_unique( $clean ) );
+
+		if ( ! empty( $clean ) ) {
+			global $wpdb;
+			$placeholders = implode( ', ', array_fill( 0, count( $clean ), '%s' ) );
+
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Core users table; every placeholder is a %s fanned out from a count of sanitised emails.
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT ID, user_email FROM {$wpdb->users} WHERE user_email IN ({$placeholders})",
+					$clean
+				)
+			);
+			// phpcs:enable
+
+			if ( is_array( $rows ) ) {
+				foreach ( $rows as $row ) {
+					$result[ strtolower( (string) $row->user_email ) ] = (int) $row->ID;
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Get the group IDs a subscriber belongs to.
 	 *
 	 * @since 0.1.0

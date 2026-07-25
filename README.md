@@ -1,6 +1,6 @@
 # Heads Up Mailer
 
-![Status](https://img.shields.io/badge/status-1.6.0-brightgreen)
+![Status](https://img.shields.io/badge/status-1.7.0-brightgreen)
 ![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b?logo=wordpress&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-8.0%2B-777bb4?logo=php&logoColor=white)
 ![License](https://img.shields.io/badge/license-GPLv2%2B-blue)
@@ -68,14 +68,17 @@ marketing-automation suite.
   counters, per-send recipient drill-down with status filter.
 - **Subscribers + groups admin** — full CRUD, MailerLite-export
   CSV import (idempotent, refuses to overwrite never-contact
-  rows), row + bulk actions.
+  rows), row + bulk actions. The subscribers list is paginated and
+  flags which subscribers have a linked WordPress user account.
 - **Integrations framework** — pluggable `Integration` base
   class + `hum_integrations` filter. Built-ins:
   - **Contact Form 7** — new `[hum_signup group:slug "Label"]`
     form tag, droppable into any CF7 form.
   - **WooCommerce** — auto-enrol customers into a configurable
-    group on checkout (classic checkout); per-group opt-in
-    checkboxes with admin-defined labels.
+    group **once their order is paid** (not when the order is
+    created, so declined and abandoned orders enrol nobody);
+    per-group opt-in checkboxes with admin-defined labels
+    (classic checkout).
 - **In-plugin GitHub auto-updater** — releases land via the
   standard WordPress plugin update flow.
 - **Encryption** — IMAP password encrypted at rest with
