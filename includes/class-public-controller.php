@@ -45,9 +45,8 @@ class Public_Controller {
 	 * Register the slug → query-var rewrite rule.
 	 *
 	 * Runs on `init` so every request — including ones that flush
-	 * rules — sees the rule. The slug is read from settings each
-	 * time; M5's `flush_rewrites_on_slug_change` hook re-flushes
-	 * when the admin changes it.
+	 * rules — sees the rule. `Settings::flush_rewrites_on_slug_change()`
+	 * discards the stored rules when the slug changes.
 	 *
 	 * @since 0.5.0
 	 */
@@ -69,11 +68,13 @@ class Public_Controller {
 	 * Whitelist the query var so WP_Query keeps it through dispatch.
 	 *
 	 * @since 0.5.0
-	 * @param array<int, string> $vars Existing public query vars.
-	 * @return array<int, string>
+	 * @param mixed $vars Existing public query vars; passed through unchanged if not an array.
+	 * @return mixed
 	 */
-	public function register_query_vars( array $vars ): array {
-		$vars[] = QUERY_VAR_MANAGE;
+	public function register_query_vars( mixed $vars ): mixed {
+		if ( is_array( $vars ) ) {
+			$vars[] = QUERY_VAR_MANAGE;
+		}
 
 		return $vars;
 	}

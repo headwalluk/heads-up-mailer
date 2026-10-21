@@ -455,20 +455,20 @@ class Settings {
 	}
 
 	/**
-	 * Flush rewrite rules after the manage-comms slug changes.
+	 * Discard the stored rewrite rules after the manage-comms slug changes.
 	 *
-	 * No-op for now — M6 will register the `/manage-comms/` rewrite
-	 * rule itself. Wiring the flush here means slug changes pick
-	 * up the new pattern immediately once M6 lands, without an
-	 * extra "save permalinks" step.
+	 * `flush_rewrite_rules()` here would rebuild from the rule `init`
+	 * already registered for the old slug. Deleting the option makes
+	 * WordPress rebuild on the next request, after `init` has
+	 * registered the new one.
 	 *
 	 * @since 0.4.0
 	 * @param mixed $old_value Previous slug.
 	 * @param mixed $new_value New slug.
 	 */
-	public function flush_rewrites_on_slug_change( $old_value, $new_value ): void {
+	public function flush_rewrites_on_slug_change( mixed $old_value, mixed $new_value ): void {
 		if ( (string) $old_value !== (string) $new_value ) {
-			flush_rewrite_rules( false );
+			delete_option( 'rewrite_rules' );
 		}
 	}
 }
