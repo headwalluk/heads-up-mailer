@@ -2,7 +2,7 @@
 /**
  * Admin: Add / edit a draft.
  *
- * Variables expected from the caller (`Plugin::render_drafts`):
+ * Variables expected from the caller (`Admin_Drafts::render_drafts`):
  *
  * - `$draft`            ?object              Existing draft row, or null when adding.
  * - `$all_groups`       array<int, object>   All groups, for the multi-select.

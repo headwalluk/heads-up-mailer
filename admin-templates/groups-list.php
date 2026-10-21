@@ -2,7 +2,7 @@
 /**
  * Admin: Groups list.
  *
- * Variables expected from the caller (`Plugin::render_groups`):
+ * Variables expected from the caller (`Admin_Groups::render_groups`):
  *
  * - `$groups` array<int, object> Rows from `Groups_Controller::get_all()`.
  *

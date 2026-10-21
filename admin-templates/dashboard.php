@@ -7,7 +7,7 @@
  * per-group breakdown, and recent send failures. No open / click
  * tracking — every figure is derived from data the plugin owns.
  *
- * Variables expected from the caller (`Plugin::render_dashboard`):
+ * Variables expected from the caller (`Admin::render_dashboard`):
  *
  * - `$overview` array  View-model from `Dashboard_Controller::get_overview()`.
  *

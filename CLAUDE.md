@@ -119,7 +119,12 @@ Namespaced constant groups (no extra prefix — namespace handles it):
 
 ## WordPress patterns
 
-- **Hook registration** is centralised in `Plugin::run()`.
+- **Hook registration**: `Plugin::run()` instantiates each component
+  and calls its `run()`, which registers that component's hooks.
+  Admin pages live in `Admin` (menu, notices, assets, Dashboard,
+  Settings) and `Admin_Groups` / `Admin_Subscribers` /
+  `Admin_Drafts`, loaded only when `is_admin()` — which covers
+  `admin-post.php` and `admin-ajax.php`.
 - **Activation + first-run double-register**:
   `register_activation_hook` installs defaults;
   `Plugin::check_first_run()` does the same on `admin_init` for MU

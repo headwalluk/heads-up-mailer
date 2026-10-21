@@ -6,7 +6,7 @@
  * report when it's an array. Both views share this template so the
  * "back to upload" link is always close at hand.
  *
- * Variables expected from the caller (`Plugin::render_subscribers`):
+ * Variables expected from the caller (`Admin_Subscribers::render_subscribers`):
  *
  * - `$report` ?array Per-row report from `CSV_Importer::import_from_file()`,
  *                   or null when first opening the page.

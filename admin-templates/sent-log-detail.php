@@ -2,7 +2,7 @@
 /**
  * Admin: Sent log — per-send drill-down with status filter.
  *
- * Variables expected from the caller (`Plugin::render_sent_log`):
+ * Variables expected from the caller (`Admin_Drafts::render_sent_log`):
  *
  * - `$send_id` int  ID of the parent send.
  * - `$send`    object|null  Sends row (or null if missing — caller

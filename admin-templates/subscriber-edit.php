@@ -2,7 +2,7 @@
 /**
  * Admin: Add / edit a subscriber.
  *
- * Variables expected from the caller (`Plugin::render_subscribers`):
+ * Variables expected from the caller (`Admin_Subscribers::render_subscribers`):
  *
  * - `$subscriber`      ?object  Existing subscriber row, or null when adding.
  * - `$all_groups`      array<int, object> All groups for the picker.

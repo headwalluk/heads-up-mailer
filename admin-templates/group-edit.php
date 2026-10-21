@@ -2,7 +2,7 @@
 /**
  * Admin: Add / edit a group.
  *
- * Variables expected from the caller (`Plugin::render_groups`):
+ * Variables expected from the caller (`Admin_Groups::render_groups`):
  *
  * - `$group`  ?object  Existing group row, or null when adding.
  *

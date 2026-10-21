@@ -8,7 +8,7 @@
  * own `<html>`/`<body>` wrapper would nest the document and break
  * `<style>` selectors targeting `body`.
  *
- * Variables expected from the caller (`Plugin::handle_preview_draft`):
+ * Variables expected from the caller (`Admin_Drafts::handle_preview_draft`):
  *
  * - `$draft` object Draft row.
  *

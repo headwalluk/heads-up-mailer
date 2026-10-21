@@ -2,7 +2,7 @@
 /**
  * Admin: Sent log — list of every send with live counters.
  *
- * Variables expected from the caller (`Plugin::render_sent_log`):
+ * Variables expected from the caller (`Admin_Drafts::render_sent_log`):
  *
  * - `$sends` array<int, object> Rows from
  *   `Sent_Log_Controller::get_sends_with_counts()`.

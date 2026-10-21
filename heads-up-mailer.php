@@ -46,6 +46,10 @@ require_once HUM_PATH . 'includes/class-public-controller.php';
 require_once HUM_PATH . 'includes/class-integration.php';
 require_once HUM_PATH . 'includes/class-integrations.php';
 require_once HUM_PATH . 'includes/class-github-updater.php';
+require_once HUM_PATH . 'includes/class-admin-groups.php';
+require_once HUM_PATH . 'includes/class-admin-subscribers.php';
+require_once HUM_PATH . 'includes/class-admin-drafts.php';
+require_once HUM_PATH . 'includes/class-admin.php';
 require_once HUM_PATH . 'includes/class-plugin.php';
 
 // Built-in integrations. Each file always loads; each integration

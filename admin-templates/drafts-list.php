@@ -2,7 +2,7 @@
 /**
  * Admin: Drafts list.
  *
- * Variables expected from the caller (`Plugin::render_drafts`):
+ * Variables expected from the caller (`Admin_Drafts::render_drafts`):
  *
  * - `$drafts`            array<int, object>      Rows from `Drafts_Controller::get_all()`.
  * - `$drafts_controller` Drafts_Controller       For decoding each draft's group slugs.

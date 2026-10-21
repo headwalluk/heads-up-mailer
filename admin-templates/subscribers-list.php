@@ -2,7 +2,7 @@
 /**
  * Admin: Subscribers list.
  *
- * Variables expected from the caller (`Plugin::render_subscribers`):
+ * Variables expected from the caller (`Admin_Subscribers::render_subscribers`):
  *
  * - `$subscribers`  array<int, object> Subscriber rows.
  * - `$groups_by_id` array<int, object> Groups keyed by ID.
