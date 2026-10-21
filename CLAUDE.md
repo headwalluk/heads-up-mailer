@@ -94,6 +94,23 @@ Namespaced constant groups (no extra prefix — namespace handles it):
   bottom.
 - **Empty / no-op branches** must carry a comment: `// no action: …`
   with the reason.
+- **An `if` with an `elseif` ends in a plain `else`**, even when it
+  only holds a `// no action:` comment, so every case is handled on
+  purpose. `phpcs.xml` allows these comment-only branches.
+- **Callbacks on hooks we don't own take `mixed`** and check what
+  they receive (`instanceof`, `is_array()`, `is_numeric()`). A filter
+  callback passes a value it can't use through unchanged. Another
+  plugin can hand over the wrong type, and a typed parameter turns
+  that into a `TypeError` on a page we don't control.
+- **Guard object lookups with `instanceof`**, not truthiness:
+  `wc_get_order()`, `get_userdata()` and friends can return anything
+  once another plugin is involved.
+- **Hook callbacks are named methods**, not closures. Per-call state
+  goes in a property, and anything added around a call (such as the
+  worker's `wp_mail_from` override) is removed in a `finally`.
+- **CSS uses logical properties** (`margin-inline-start`,
+  `border-inline-start`, `text-align: end`) so right-to-left locales
+  style the correct side. Top and bottom stay physical.
 - **No magic strings/numbers** — everything in `constants.php`.
   Exception: translatable strings via `__()` etc.
 - **Boolean options**: read via
@@ -136,6 +153,31 @@ Namespaced constant groups (no extra prefix — namespace handles it):
   on activation and on `admin_init` if the stamped version differs.
 - **Lazy-init caching** uses a `global $hum_<name>;` per cache,
   e.g. `function hum_get_default_settings(): array { global $hum_default_settings; ... return $hum_default_settings; }`.
+
+## Public contracts
+
+Code and people outside the plugin depend on all of these, whether or
+not they are documented. Treat each as a contract:
+
+| Contract | Examples | Breaks when |
+| -------- | -------- | ----------- |
+| REST API | `heads-up-mailer/v1` — `/drafts`, `/drafts/{id}`, `/drafts/{id}/send`, `/groups`, `/groups/{id}`; request fields and response shapes | a route, field or status code changes. The AI agent is coded against `docs/ai-agent-rest-guide.md` |
+| Unsubscribe URLs in sent mail | `/{manage slug}/?token={id}.{hmac}`, `QUERY_VAR_MANAGE`, the one-click `POST` | the token format, the query var or the HMAC input changes. Every newsletter already sent carries these links |
+| Unsubscribe-by-mail subject | `unsubscribe-{token}`, matched by `Mailbox_Poller::SUBJECT_PATTERN` | the subject format changes. Sent `List-Unsubscribe` mailto links stop working |
+| Filters | `hum_integrations`, `hum_updater_enabled` | renamed or removed, or an argument is removed or reordered |
+| Capabilities | `hum_create_drafts`, `hum_send_newsletters`, `hum_read_groups`, `hum_manage_groups` | renamed. Roles granted the old cap (including the AI agent's) lose access |
+| Stored key strings | `hum_*` options, `_hum_*` order meta, `wp_hum_*` tables | a constant's **value** changes. Data under the old string is orphaned, and `uninstall.php` finds options by the `hum_` prefix |
+| Script and style handles | `heads-up-mailer-admin` | renamed |
+
+- **Add, don't change.** New filter arguments go at the end. New
+  REST fields are additive; never repurpose an existing one.
+- **Deprecate, don't rename.** Fire an old filter name through
+  `apply_filters_deprecated()` and pass its result into the new one.
+- **Stored data changes need a migration** via `DB_VERSION` and
+  `Plugin::check_first_run()`. If one isn't possible, stop and ask.
+- Before changing anything in the table: name the contract, assume
+  there are consumers you can't see, take the additive path, and
+  record it in `CHANGELOG.md`. If unsure, stop and ask.
 
 ## Decisions baked into v1
 
