@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Opt-in data removal on uninstall.** A new **Settings → Advanced**
+  tab has a *Delete data on uninstall* switch, which is off by
+  default. With it on, deleting the plugin from the Plugins screen
+  drops the plugin's seven tables and removes its options, transients,
+  cron events and role capabilities. With it off (the default) nothing
+  is deleted, as before. That includes the never-contact list, so a
+  reinstall and re-import can't email people who asked never to be
+  contacted. WooCommerce order meta (`_hum_*`) is always kept as the
+  order's record of consent.
+
 ### Changed
 
 - **Raised the minimum PHP version to 8.2.** The plugin declared

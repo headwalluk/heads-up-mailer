@@ -49,6 +49,10 @@ printf(
 	'<a href="#integrations" class="nav-tab" data-tab="integrations">%s</a>',
 	esc_html__( 'Integrations', 'heads-up-mailer' )
 );
+printf(
+	'<a href="#advanced" class="nav-tab" data-tab="advanced">%s</a>',
+	esc_html_x( 'Advanced', 'settings tab label', 'heads-up-mailer' )
+);
 printf( '</nav>' );
 
 printf( '<div class="tab-content">' );
@@ -67,6 +71,10 @@ printf( '</div>' );
 
 printf( '<div id="integrations-panel" class="tab-panel" style="display:none;">' );
 require __DIR__ . '/tab-integrations.php';
+printf( '</div>' );
+
+printf( '<div id="advanced-panel" class="tab-panel" style="display:none;">' );
+require __DIR__ . '/tab-advanced.php';
 printf( '</div>' );
 
 printf( '</div>' );

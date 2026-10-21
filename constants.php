@@ -107,6 +107,16 @@ const OPTION_WC_CHECKOUT_INTRO       = 'hum_wc_checkout_intro';
 const OPTION_WC_CHECKOUT_GROUPS_JSON = 'hum_wc_checkout_groups_json';
 
 /**
+ * Uninstall behaviour. `uninstall.php` deletes plugin data only
+ * when this is on, and finds options and transients by
+ * `OPTION_PREFIX` — every stored key must carry it.
+ *
+ * @since 1.8.0
+ */
+const OPTION_DELETE_DATA_ON_UNINSTALL = 'hum_delete_data_on_uninstall';
+const OPTION_PREFIX                   = 'hum_';
+
+/**
  * Subscriber statuses.
  *
  * @since 0.1.0
@@ -266,21 +276,22 @@ const MAILBOX_STALE_THRESHOLD_SECONDS = 2 * HOUR_IN_SECONDS;
  *
  * @since 0.1.0
  */
-const DEF_BATCH_SIZE              = 10;
-const DEF_TICK_MINUTES            = 5;
-const DEF_MAILBOX_POLL_ENABLED    = true;
-const DEF_MAILBOX_PORT            = 993;
-const DEF_MAILBOX_USER            = 'unsub@headwall-hosting.com';
-const DEF_MAILBOX_FOLDER          = 'INBOX';
-const DEF_MAILBOX_TLS             = true;
-const DEF_MAILBOX_VALIDATE_CERT   = true;
-const DEF_MAILBOX_INTERVAL        = 5;
-const DEF_DRAFT_SUBJECT_MAX       = 200;
-const DEF_FROM_NAME               = '';
-const DEF_FROM_EMAIL              = '';
-const DEF_MANAGE_SLUG             = 'manage-comms';
-const DEF_AUTONOMOUS_SEND_ENABLED = false;
-const DEF_SUBSCRIBERS_PER_PAGE    = 25;
+const DEF_BATCH_SIZE               = 10;
+const DEF_TICK_MINUTES             = 5;
+const DEF_MAILBOX_POLL_ENABLED     = true;
+const DEF_MAILBOX_PORT             = 993;
+const DEF_MAILBOX_USER             = 'unsub@headwall-hosting.com';
+const DEF_MAILBOX_FOLDER           = 'INBOX';
+const DEF_MAILBOX_TLS              = true;
+const DEF_MAILBOX_VALIDATE_CERT    = true;
+const DEF_MAILBOX_INTERVAL         = 5;
+const DEF_DRAFT_SUBJECT_MAX        = 200;
+const DEF_FROM_NAME                = '';
+const DEF_FROM_EMAIL               = '';
+const DEF_MANAGE_SLUG              = 'manage-comms';
+const DEF_AUTONOMOUS_SEND_ENABLED  = false;
+const DEF_SUBSCRIBERS_PER_PAGE     = 25;
+const DEF_DELETE_DATA_ON_UNINSTALL = false;
 
 /**
  * WooCommerce order meta keys.
