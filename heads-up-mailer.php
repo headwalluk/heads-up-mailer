@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/headwalluk/heads-up-mailer
  * Description: In-house newsletter sender for headwall-hosting.com. Async send queue, RFC-8058 one-click unsubscribe, IMAP poll for mailto unsubscribes.
  * Version: 1.7.0
- * Requires at least: 6.0
+ * Requires at least: 6.2
  * Requires PHP: 8.2
  * Author: Paul Faulkner
  * Author URI: https://headwall-hosting.com

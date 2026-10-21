@@ -69,6 +69,10 @@ if ( $hum_delete_data ) {
 		delete_transient( substr( $hum_transient_name, strlen( '_transient_' ) ) );
 	}
 
+	// Per-user Screen Options for the subscribers list; core names the hidden-columns key after the screen ID.
+	delete_metadata( 'user', 0, META_SUBSCRIBERS_PER_PAGE, '', true );
+	delete_metadata( 'user', 0, 'manageheads-up-mailer_page_' . SUBSCRIBERS_PAGE_SLUG . 'columnshidden', '', true );
+
 	foreach ( wp_roles()->role_objects as $hum_role ) {
 		foreach ( array( CAP_CREATE_DRAFTS, CAP_SEND_NEWSLETTERS, CAP_READ_GROUPS, CAP_MANAGE_GROUPS ) as $hum_cap ) {
 			$hum_role->remove_cap( $hum_cap );

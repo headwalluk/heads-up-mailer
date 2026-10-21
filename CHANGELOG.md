@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The Subscribers screen is now a standard WordPress list table.**
+  - **Search** by email or name.
+  - **Status views** (All, Subscribed, Unsubscribed, Never contact, …)
+    with counts; statuses with no subscribers are hidden.
+  - **Group filter**, including "In no group". Clicking a group pill
+    in the Groups column filters the list to that group.
+  - **Sortable columns**: Email, Name, Status, Consented and Added.
+  - **Screen Options**: choose how many subscribers to show per page
+    (up to 999) and which columns to show.
+  - **Source column**, showing where each subscriber came from
+    (`woocommerce-checkout`, `cf7-form:53`, `mailerlite-import`, …).
+    The new "Added" column is hidden by default.
+  - **Dates in the site's timezone and date format**, not raw UTC.
+  - **Filters survive actions.** Paging, sorting, bulk actions and the
+    per-row Mark never-contact and Delete links all return to the same
+    filtered, sorted page.
+
 - **Opt-in data removal on uninstall.** A new **Settings → Advanced**
   tab has a *Delete data on uninstall* switch, which is off by
   default. With it on, deleting the plugin from the Plugins screen
@@ -21,6 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Raised the minimum WordPress version to 6.2.** The subscriber list
+  sorts with `$wpdb->prepare()`'s `%i` identifier placeholder, which
+  WordPress added in 6.2.
 - **Raised the minimum PHP version to 8.2.** The plugin declared
   `Requires PHP: 8.0`, but ten controller methods return
   `true|\WP_Error`, and the standalone `true` type only exists from

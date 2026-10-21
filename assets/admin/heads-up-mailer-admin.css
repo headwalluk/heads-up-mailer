@@ -128,3 +128,30 @@
 	list-style: disc;
 	margin-inline-start: 20px;
 }
+
+/* Subscribers list table. */
+a.hum-group-pill {
+	text-decoration: none;
+}
+
+a.hum-group-pill:hover,
+a.hum-group-pill:focus {
+	color: #fff;
+	background: #2271b1;
+}
+
+.wp-list-table.subscribers .column-status,
+.wp-list-table.subscribers .column-source {
+	width: 10em;
+}
+
+.wp-list-table.subscribers .column-consent_at,
+.wp-list-table.subscribers .column-created_at {
+	width: 11em;
+}
+
+.wp-list-table.subscribers .hum-user-badge {
+	margin-inline-start: 4px;
+	text-decoration: none;
+	vertical-align: middle;
+}

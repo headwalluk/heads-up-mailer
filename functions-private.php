@@ -79,6 +79,24 @@ function now_utc(): string {
 }
 
 /**
+ * Format a stored `Y-m-d H:i:s UTC` value for display in the site's timezone and locale.
+ *
+ * @since 1.8.0
+ * @param string $stored_utc Stored datetime string; '' renders as ''.
+ * @return string Formatted date and time, or the stored value unchanged if it can't be parsed.
+ */
+function format_stored_datetime( string $stored_utc ): string {
+	$formatted = $stored_utc;
+	$timestamp = ( '' === $stored_utc ) ? false : strtotime( $stored_utc );
+
+	if ( false !== $timestamp ) {
+		$formatted = (string) wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $timestamp );
+	}
+
+	return $formatted;
+}
+
+/**
  * Audit a REST trigger-send attempt to the PHP error log.
  *
  * Autonomous sends to the whole list are irreversible and

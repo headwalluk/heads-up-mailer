@@ -88,50 +88,101 @@ class Subscribers_Controller {
 	}
 
 	/**
-	 * Total subscriber count, for pagination.
+	 * WHERE clause shared by `query()`'s count and page reads.
 	 *
-	 * @since 1.7.0
+	 * Fully static, so every filter is a bound parameter: each condition
+	 * is switched off by its own "no filter" value (`''` or `0`) rather
+	 * than by assembling SQL. Parameters, in order: search flag, email
+	 * pattern, name pattern, status flag, status, group ID ×3.
+	 *
+	 * @since 1.8.0
 	 */
-	public function count_all(): int {
+	private const QUERY_WHERE = "( %s = '' OR email LIKE %s OR name LIKE %s )
+		AND ( %s = '' OR status = %s )
+		AND ( %d = 0
+			OR ( %d > 0 AND id IN ( SELECT subscriber_id FROM %i WHERE group_id = %d ) )
+			OR ( %d < 0 AND id NOT IN ( SELECT subscriber_id FROM %i ) ) )";
+
+	/**
+	 * One filtered, sorted page of subscribers plus the filtered total.
+	 *
+	 * @since 1.8.0
+	 * @param array{search?:string, status?:string, group?:int, orderby?:string, order?:string, per_page?:int, offset?:int} $args Query arguments; unknown status and orderby values are ignored.
+	 * @return array{rows:array<int, object>, total:int}
+	 */
+	public function query( array $args ): array {
 		global $wpdb;
 		$table = $this->table();
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom-table read, no user input in query.
-		$total = $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" );
+		$search   = trim( (string) ( $args['search'] ?? '' ) );
+		$status   = (string) ( $args['status'] ?? '' );
+		$group    = (int) ( $args['group'] ?? 0 );
+		$orderby  = SUBSCRIBER_SORT_COLUMNS[ (string) ( $args['orderby'] ?? '' ) ] ?? SUBSCRIBER_SORT_COLUMNS[ SUBSCRIBER_DEFAULT_ORDERBY ];
+		$per_page = max( 1, (int) ( $args['per_page'] ?? DEF_SUBSCRIBERS_PER_PAGE ) );
+		$offset   = max( 0, (int) ( $args['offset'] ?? 0 ) );
 
-		return (int) $total;
+		if ( ! in_array( $status, self::statuses(), true ) ) {
+			$status = '';
+		}
+
+		$like         = '%' . $wpdb->esc_like( $search ) . '%';
+		$groups_table = $this->groups_table();
+		$where_params = array( $search, $like, $like, $status, $status, $group, $group, $groups_table, $group, $group, $groups_table );
+
+		// Literal direction from a ternary; `id` breaks ties so paging is stable
+		// across rows sharing a value (e.g. one created_at for a whole import).
+		$direction = ( 'asc' === strtolower( (string) ( $args['order'] ?? '' ) ) ) ? 'ASC, id ASC' : 'DESC, id DESC';
+
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static SQL from QUERY_WHERE and a two-value ternary; every value is a placeholder, which the sniffs cannot count through the constant.
+		$total = (int) $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE " . self::QUERY_WHERE, $where_params )
+		);
+
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$table} WHERE " . self::QUERY_WHERE . ' ORDER BY %i ' . $direction . ' LIMIT %d OFFSET %d',
+				array_merge( $where_params, array( $orderby, $per_page, $offset ) )
+			)
+		);
+		// phpcs:enable
+
+		return array(
+			'rows'  => is_array( $rows ) ? $rows : array(),
+			'total' => $total,
+		);
 	}
 
 	/**
-	 * One page of subscribers, same ordering as `get_all()`.
+	 * Subscriber count per status, across the whole table.
 	 *
-	 * The admin list used to render every row via `get_all()`, which
-	 * does not scale — and worse, the caller then issued one
-	 * `get_groups()` query per row. Use this with
-	 * `group_ids_for_subscribers()` to keep both the row count and the
-	 * query count bounded.
-	 *
-	 * @since 1.7.0
-	 * @param int $per_page Rows to return (clamped to at least 1).
-	 * @param int $offset   Rows to skip (clamped to at least 0).
-	 * @return array<int, object>
+	 * @since 1.8.0
+	 * @return array<string, int> Status => count; statuses with no rows are absent.
 	 */
-	public function get_page( int $per_page, int $offset ): array {
+	public function count_by_status(): array {
 		global $wpdb;
-		$table    = $this->table();
-		$per_page = max( 1, $per_page );
-		$offset   = max( 0, $offset );
+		$table  = $this->table();
+		$counts = array();
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom-table read; LIMIT/OFFSET are prepared integers.
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT * FROM {$table} ORDER BY created_at DESC, id DESC LIMIT %d OFFSET %d",
-				$per_page,
-				$offset
-			)
-		);
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom-table read, no user input in query.
+		$rows = $wpdb->get_results( "SELECT status, COUNT(*) AS total FROM {$table} GROUP BY status" );
 
-		return is_array( $rows ) ? $rows : array();
+		if ( is_array( $rows ) ) {
+			foreach ( $rows as $row ) {
+				$counts[ (string) $row->status ] = (int) $row->total;
+			}
+		}
+
+		return $counts;
+	}
+
+	/**
+	 * Every valid subscriber status.
+	 *
+	 * @since 1.8.0
+	 * @return array<int, string>
+	 */
+	public static function statuses(): array {
+		return array( STATUS_SUBSCRIBED, STATUS_UNSUBSCRIBED, STATUS_BOUNCED, STATUS_COMPLAINED, STATUS_NEVER_CONTACT );
 	}
 
 	/**

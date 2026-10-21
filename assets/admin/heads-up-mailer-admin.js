@@ -5,6 +5,8 @@
  *
  * - `data-hum-confirm` on any element prompts the user before the
  *   default action proceeds (used for destructive links).
+ * - `data-hum-bulk-confirm` on a list-table form prompts before a bulk
+ *   action is applied.
  * - `.nav-tab` elements wired with `data-tab="..."` toggle visibility
  *   of the matching `#<tab>-panel` element. State persists in the URL
  *   hash so reloads and deep links land on the right tab.
@@ -32,24 +34,21 @@ document.addEventListener('click', (event) => {
 	}
 });
 
-// Subscribers-list bulk select: header checkbox toggles every
-// subscriber_ids[] checkbox in the same form.
-document.addEventListener('change', (event) => {
-	const master = event.target.closest('#hum-cb-all');
+// Subscribers list: confirm a bulk action when either Apply button submits
+// with an action chosen. Search and Filter submits pass straight through.
+document.addEventListener('submit', (event) => {
+	const form = event.target.closest('form[data-hum-bulk-confirm]');
+	const submitter = event.submitter;
 
-	if (!master) {
+	if (!form || !submitter || !['doaction', 'doaction2'].includes(submitter.id)) {
 		return;
 	}
 
-	const form = master.closest('form');
+	const select = form.querySelector(submitter.id === 'doaction' ? 'select[name="action"]' : 'select[name="action2"]');
 
-	if (!form) {
-		return;
+	if (select && select.value !== '-1' && !window.confirm(form.dataset.humBulkConfirm)) {
+		event.preventDefault();
 	}
-
-	form.querySelectorAll('input[type="checkbox"][name="subscriber_ids[]"]').forEach((cb) => {
-		cb.checked = master.checked;
-	});
 });
 
 // WooCommerce integration: per-group checkout-opt-in repeater.

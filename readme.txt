@@ -1,7 +1,7 @@
 === Heads Up Mailer ===
 Contributors: paulfaulkner
 Tags: newsletter, email, subscribers, mailer, unsubscribe
-Requires at least: 6.0
+Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 8.2
 Stable tag: 1.7.0

@@ -4,9 +4,7 @@
  *
  * Variables expected from the caller (`Admin_Subscribers::render_subscribers`):
  *
- * - `$subscribers`  array<int, object> Subscriber rows.
- * - `$groups_by_id` array<int, object> Groups keyed by ID.
- * - `$memberships`  array<int, array<int>> Group IDs per subscriber.
+ * - `$list_table` Subscribers_List_Table Prepared list table.
  *
  * @package Heads_Up_Mailer
  * @since 0.1.0
@@ -18,7 +16,7 @@ defined( 'ABSPATH' ) || die();
 
 $add_url = add_query_arg(
 	array(
-		'page'   => 'heads-up-mailer-subscribers',
+		'page'   => SUBSCRIBERS_PAGE_SLUG,
 		'action' => 'add',
 	),
 	admin_url( 'admin.php' )
@@ -26,7 +24,7 @@ $add_url = add_query_arg(
 
 $import_url = add_query_arg(
 	array(
-		'page'   => 'heads-up-mailer-subscribers',
+		'page'   => SUBSCRIBERS_PAGE_SLUG,
 		'action' => 'import',
 	),
 	admin_url( 'admin.php' )
@@ -34,13 +32,31 @@ $import_url = add_query_arg(
 
 printf( '<div class="wrap">' );
 printf(
-	'<h1 class="wp-heading-inline">%s</h1> <a href="%s" class="page-title-action">%s</a> <a href="%s" class="page-title-action">%s</a><hr class="wp-header-end">',
+	'<h1 class="wp-heading-inline">%s</h1> <a href="%s" class="page-title-action">%s</a> <a href="%s" class="page-title-action">%s</a>',
 	esc_html__( 'Subscribers', 'heads-up-mailer' ),
 	esc_url( $add_url ),
 	esc_html__( 'Add new', 'heads-up-mailer' ),
 	esc_url( $import_url ),
 	esc_html__( 'Import CSV', 'heads-up-mailer' )
 );
+
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read only.
+$search_term = isset( $_GET['s'] ) && is_string( $_GET['s'] ) ? trim( sanitize_text_field( wp_unslash( $_GET['s'] ) ) ) : '';
+
+if ( '' !== $search_term ) {
+	printf(
+		'<span class="subtitle">%s</span>',
+		esc_html(
+			sprintf(
+				/* translators: %s: search query. */
+				__( 'Search results for: %s', 'heads-up-mailer' ),
+				$search_term
+			)
+		)
+	);
+}
+
+printf( '<hr class="wp-header-end">' );
 
 // Flash notices.
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read only.
@@ -112,7 +128,7 @@ if ( '' !== $error_code ) {
 		'hum_subscriber_insert_failed'  => __( 'Failed to insert subscriber.', 'heads-up-mailer' ),
 		'hum_subscriber_update_failed'  => __( 'Failed to update subscriber.', 'heads-up-mailer' ),
 		'hum_subscriber_delete_failed'  => __( 'Failed to delete subscriber.', 'heads-up-mailer' ),
-		'hum_bulk_no_selection'         => __( 'Select an action and at least one subscriber before clicking Apply.', 'heads-up-mailer' ),
+		'hum_bulk_no_selection'         => __( 'Select at least one subscriber before applying a bulk action.', 'heads-up-mailer' ),
 		'hum_bulk_unknown_action'       => __( 'That bulk action is not recognised.', 'heads-up-mailer' ),
 	);
 
@@ -126,239 +142,26 @@ if ( '' !== $error_code ) {
 	);
 }
 
-if ( empty( $subscribers ) ) {
-	printf(
-		'<p>%s</p>',
-		esc_html__( 'No subscribers yet. Add one or import from CSV.', 'heads-up-mailer' )
-	);
-} else {
-	$status_labels = array(
-		STATUS_SUBSCRIBED    => __( 'Subscribed', 'heads-up-mailer' ),
-		STATUS_UNSUBSCRIBED  => __( 'Unsubscribed', 'heads-up-mailer' ),
-		STATUS_BOUNCED       => __( 'Bounced', 'heads-up-mailer' ),
-		STATUS_COMPLAINED    => __( 'Complained', 'heads-up-mailer' ),
-		STATUS_NEVER_CONTACT => __( 'Never contact', 'heads-up-mailer' ),
-	);
+$list_table->views();
 
-	$bulk_confirm = __( 'Apply this bulk action to the selected subscribers? Deleting is permanent and cannot be undone. Marking as "never contact" is sticky — future imports will skip these rows.', 'heads-up-mailer' );
+$bulk_confirm = __( 'Apply this bulk action to the selected subscribers? Deleting is permanent and cannot be undone. Marking as "never contact" is sticky — future imports will skip these rows.', 'heads-up-mailer' );
 
-	// Confirm lives on the Apply BUTTON, not the form. Otherwise
-	// every click inside the table (Edit, email link) bubbles up
-	// to the form and triggers the bulk-action confirm via
-	// `closest('[data-hum-confirm]')`.
-	printf(
-		'<form method="post" action="%s">',
-		esc_url( admin_url( 'admin-post.php' ) )
-	);
+// GET to admin.php, like core's list screens: search, filters, sorting and
+// bulk actions all travel in the URL. Bulk actions are applied in
+// Admin_Subscribers::load_list_screen() before any output.
+printf( '<form method="get" class="hum-subscribers-form" data-hum-bulk-confirm="%s">', esc_attr( $bulk_confirm ) );
+printf( '<input type="hidden" name="page" value="%s" />', esc_attr( SUBSCRIBERS_PAGE_SLUG ) );
 
-	printf( '<input type="hidden" name="action" value="hum_bulk_subscribers" />' );
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Query-param read only.
+$current_status = isset( $_GET['status'] ) && is_string( $_GET['status'] ) ? sanitize_key( $_GET['status'] ) : '';
 
-	// Round-trip the current page so a bulk action returns the admin to
-	// the page they were looking at, not back to page 1.
-	printf( '<input type="hidden" name="paged" value="%d" />', (int) $paged );
-
-	ob_start();
-	wp_nonce_field( 'hum_bulk_subscribers' );
-	echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_nonce_field output is safe.
-
-	// Pagination links, shared by the top and bottom tablenav.
-	$pagination_links = paginate_links(
-		array(
-			'base'      => add_query_arg( 'paged', '%#%' ),
-			'format'    => '',
-			'total'     => (int) $pages,
-			'current'   => (int) $paged,
-			'prev_text' => '&laquo;',
-			'next_text' => '&raquo;',
-			'type'      => 'plain',
-		)
-	);
-
-	printf( '<div class="tablenav top">' );
-	printf(
-		'<label for="hum-bulk-action" class="screen-reader-text">%s</label><select name="bulk_action" id="hum-bulk-action"><option value="">%s</option><option value="never_contact">%s</option><option value="delete">%s</option></select> <button type="submit" class="button action" data-hum-confirm="%s">%s</button>',
-		esc_html__( 'Bulk actions', 'heads-up-mailer' ),
-		esc_html__( 'Bulk actions', 'heads-up-mailer' ),
-		esc_html__( 'Mark as never contact', 'heads-up-mailer' ),
-		esc_html__( 'Delete', 'heads-up-mailer' ),
-		esc_attr( $bulk_confirm ),
-		esc_html__( 'Apply', 'heads-up-mailer' )
-	);
-
-	printf(
-		'<div class="tablenav-pages"><span class="displaying-num">%s</span> %s</div>',
-		esc_html(
-			sprintf(
-				/* translators: %s: total number of subscribers. */
-				_n( '%s subscriber', '%s subscribers', (int) $total, 'heads-up-mailer' ),
-				number_format_i18n( (int) $total )
-			)
-		),
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- paginate_links() returns escaped markup.
-		is_string( $pagination_links ) ? $pagination_links : ''
-	);
-	printf( '</div>' );
-
-	printf( '<table class="wp-list-table widefat striped">' );
-	printf(
-		'<thead><tr><td class="manage-column column-cb check-column"><label class="screen-reader-text" for="hum-cb-all">%s</label><input type="checkbox" id="hum-cb-all" /></td><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th><th scope="col">%s</th></tr></thead>',
-		// "on this page" matters now the list paginates — the checkbox
-		// only reaches the rows currently rendered.
-		esc_html__( 'Select all on this page', 'heads-up-mailer' ),
-		esc_html__( 'Email', 'heads-up-mailer' ),
-		esc_html__( 'Name', 'heads-up-mailer' ),
-		esc_html__( 'Status', 'heads-up-mailer' ),
-		esc_html__( 'Groups', 'heads-up-mailer' ),
-		esc_html__( 'Consent at', 'heads-up-mailer' ),
-		esc_html__( 'Actions', 'heads-up-mailer' )
-	);
-	printf( '<tbody>' );
-
-	foreach ( $subscribers as $sub ) {
-		$edit_url = add_query_arg(
-			array(
-				'page'          => 'heads-up-mailer-subscribers',
-				'action'        => 'edit',
-				'subscriber_id' => (int) $sub->id,
-			),
-			admin_url( 'admin.php' )
-		);
-
-		$delete_url = wp_nonce_url(
-			add_query_arg(
-				array(
-					'action'        => 'hum_delete_subscriber',
-					'subscriber_id' => (int) $sub->id,
-				),
-				admin_url( 'admin-post.php' )
-			),
-			'hum_delete_subscriber_' . (int) $sub->id
-		);
-
-		$mark_url = wp_nonce_url(
-			add_query_arg(
-				array(
-					'action'        => 'hum_mark_never_contact',
-					'subscriber_id' => (int) $sub->id,
-				),
-				admin_url( 'admin-post.php' )
-			),
-			'hum_mark_never_contact_' . (int) $sub->id
-		);
-
-		$status_label = isset( $status_labels[ $sub->status ] ) ? $status_labels[ $sub->status ] : (string) $sub->status;
-
-		// Compose the group chips.
-		$chips = '';
-		foreach ( $memberships[ (int) $sub->id ] ?? array() as $group_id ) {
-			if ( isset( $groups_by_id[ (int) $group_id ] ) ) {
-				$chips .= sprintf(
-					'<span class="hum-group-pill">%s</span>',
-					esc_html( $groups_by_id[ (int) $group_id ]->name )
-				);
-			}
-		}
-
-		// WP-user link indicator. `$linked_users` is a single bulk
-		// lookup done by the caller — never get_user_by() per row.
-		// Absence of the icon means "no account with this email",
-		// which is normal for imported and public sign-ups.
-		$user_badge = '';
-		$linked_id  = $linked_users[ strtolower( (string) $sub->email ) ] ?? 0;
-
-		if ( $linked_id > 0 ) {
-			$user_edit_link = get_edit_user_link( (int) $linked_id );
-
-			$badge_icon = sprintf(
-				'<span class="dashicons dashicons-admin-users" aria-hidden="true"></span><span class="screen-reader-text">%s</span>',
-				esc_html__( 'Has a linked WordPress user account', 'heads-up-mailer' )
-			);
-
-			// get_edit_user_link() returns '' when the current user
-			// can't edit that account — show the badge unlinked then.
-			$user_badge = ( '' === $user_edit_link )
-				? sprintf(
-					'<span class="hum-user-badge" title="%s">%s</span>',
-					esc_attr__( 'Linked to a WordPress user account', 'heads-up-mailer' ),
-					$badge_icon
-				)
-				: sprintf(
-					'<a class="hum-user-badge" href="%s" title="%s">%s</a>',
-					esc_url( $user_edit_link ),
-					esc_attr__( 'Linked to a WordPress user account — view profile', 'heads-up-mailer' ),
-					$badge_icon
-				);
-		}
-
-		/* translators: %s: Subscriber email. */
-		$delete_confirm = sprintf( __( 'Delete the subscriber "%s"?', 'heads-up-mailer' ), $sub->email );
-		/* translators: %s: Subscriber email. */
-		$mark_confirm = sprintf( __( 'Flag %s as "never contact"? This is sticky — future imports will skip them, and the only way back is to edit the status manually.', 'heads-up-mailer' ), $sub->email );
-
-		// Never-contact rows hide the row action so it doesn't
-		// look like an undo lever.
-		$is_never_contact = ( STATUS_NEVER_CONTACT === (string) $sub->status );
-
-		$row_actions = sprintf(
-			'<a href="%s">%s</a>',
-			esc_url( $edit_url ),
-			esc_html__( 'Edit', 'heads-up-mailer' )
-		);
-
-		if ( ! $is_never_contact ) {
-			$row_actions .= sprintf(
-				' | <a href="%s" data-hum-confirm="%s">%s</a>',
-				esc_url( $mark_url ),
-				esc_attr( $mark_confirm ),
-				esc_html__( 'Mark never-contact', 'heads-up-mailer' )
-			);
-		}
-
-		$row_actions .= sprintf(
-			' | <a href="%s" data-hum-confirm="%s">%s</a>',
-			esc_url( $delete_url ),
-			esc_attr( $delete_confirm ),
-			esc_html__( 'Delete', 'heads-up-mailer' )
-		);
-
-		printf(
-			'<tr><th scope="row" class="check-column"><label class="screen-reader-text" for="hum-cb-%1$d">%2$s</label><input id="hum-cb-%1$d" type="checkbox" name="subscriber_ids[]" value="%1$d" /></th><td><a href="%3$s"><strong>%4$s</strong></a>%11$s</td><td>%5$s</td><td><span class="hum-status hum-status-%6$s">%7$s</span></td><td>%8$s</td><td>%9$s</td><td>%10$s</td></tr>',
-			(int) $sub->id,
-			esc_html(
-				sprintf(
-					/* translators: %s: Subscriber email used as accessible checkbox label. */
-					__( 'Select %s', 'heads-up-mailer' ),
-					(string) $sub->email
-				)
-			),
-			esc_url( $edit_url ),
-			esc_html( $sub->email ),
-			esc_html( $sub->name ),
-			esc_attr( (string) $sub->status ),
-			esc_html( $status_label ),
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $chips built from esc_html'd values above.
-			$chips,
-			esc_html( $sub->consent_at ),
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $row_actions assembled from esc_url / esc_html / esc_attr above.
-			$row_actions,
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $user_badge assembled from esc_url / esc_attr / esc_html above.
-			$user_badge
-		);
-	}
-
-	printf( '</tbody></table>' );
-
-	// Repeat pagination below the table — with 25 rows the top links
-	// are off-screen by the time you reach the bottom.
-	if ( $pages > 1 ) {
-		printf(
-			'<div class="tablenav bottom"><div class="tablenav-pages">%s</div></div>',
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- paginate_links() returns escaped markup.
-			is_string( $pagination_links ) ? $pagination_links : ''
-		);
-	}
-
-	printf( '</form>' );
+if ( in_array( $current_status, Subscribers_Controller::statuses(), true ) ) {
+	printf( '<input type="hidden" name="status" value="%s" />', esc_attr( $current_status ) );
 }
+
+$list_table->search_box( __( 'Search subscribers', 'heads-up-mailer' ), 'hum-subscriber' );
+$list_table->display();
+
+printf( '</form>' );
 
 printf( '</div>' );

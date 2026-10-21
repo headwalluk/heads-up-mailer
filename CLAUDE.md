@@ -146,6 +146,13 @@ Namespaced constant groups (no extra prefix — namespace handles it):
   `register_activation_hook` installs defaults;
   `Plugin::check_first_run()` does the same on `admin_init` for MU
   plugin installs.
+- **Admin list screens** use `WP_List_Table` (`Subscribers_List_Table`
+  is the pattern). One `GET` form to `admin.php`. On `load-{hook}`, add
+  Screen Options, apply bulk actions (nonce `bulk-{plural}`) and call
+  `prepare_items()`, all **before output**, so core can redirect an
+  out-of-range `paged`. Register `set_screen_option_*` in `run()`:
+  core saves Screen Options before `load-{hook}` fires. Sort through a
+  whitelist constant and `$wpdb->prepare()`'s `%i`.
 - **AJAX**: `check_ajax_referer` + `current_user_can` + sanitize +
   `wp_send_json_success` / `wp_send_json_error`.
 - **DB**: `dbDelta` for schema, `DB_VERSION` constant in
@@ -166,7 +173,7 @@ not they are documented. Treat each as a contract:
 | Unsubscribe-by-mail subject | `unsubscribe-{token}`, matched by `Mailbox_Poller::SUBJECT_PATTERN` | the subject format changes. Sent `List-Unsubscribe` mailto links stop working |
 | Filters | `hum_integrations`, `hum_updater_enabled` | renamed or removed, or an argument is removed or reordered |
 | Capabilities | `hum_create_drafts`, `hum_send_newsletters`, `hum_read_groups`, `hum_manage_groups` | renamed. Roles granted the old cap (including the AI agent's) lose access |
-| Stored key strings | `hum_*` options, `_hum_*` order meta, `wp_hum_*` tables | a constant's **value** changes. Data under the old string is orphaned, and `uninstall.php` finds options by the `hum_` prefix |
+| Stored key strings | `hum_*` options, `_hum_*` order and user meta, `wp_hum_*` tables | a constant's **value** changes. Data under the old string is orphaned, and `uninstall.php` finds options by the `hum_` prefix |
 | Script and style handles | `heads-up-mailer-admin` | renamed |
 
 - **Add, don't change.** New filter arguments go at the end. New

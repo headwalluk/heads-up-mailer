@@ -179,14 +179,18 @@ class Admin {
 			array( $this, 'render_dashboard' )
 		);
 
-		add_submenu_page(
+		$subscribers_hook = add_submenu_page(
 			'heads-up-mailer',
 			__( 'Subscribers', 'heads-up-mailer' ),
 			__( 'Subscribers', 'heads-up-mailer' ),
 			'manage_options',
-			'heads-up-mailer-subscribers',
+			SUBSCRIBERS_PAGE_SLUG,
 			array( $this->subscribers_page, 'render_subscribers' )
 		);
+
+		if ( is_string( $subscribers_hook ) ) {
+			add_action( 'load-' . $subscribers_hook, array( $this->subscribers_page, 'load_list_screen' ) );
+		}
 
 		add_submenu_page(
 			'heads-up-mailer',

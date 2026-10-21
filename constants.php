@@ -294,6 +294,30 @@ const DEF_SUBSCRIBERS_PER_PAGE     = 25;
 const DEF_DELETE_DATA_ON_UNINSTALL = false;
 
 /**
+ * Subscribers list table.
+ *
+ *   - `META_SUBSCRIBERS_PER_PAGE` — per-user Screen Options page size.
+ *   - `SUBSCRIBER_SORT_COLUMNS` — `orderby` request value => column.
+ *     Anything not listed here never reaches `ORDER BY`.
+ *   - `GROUP_FILTER_NONE` — group filter value for "in no group".
+ *   - `SUBSCRIBERS_PAGE_SLUG` — admin page slug for list URLs.
+ *
+ * @since 1.8.0
+ */
+const META_SUBSCRIBERS_PER_PAGE    = '_hum_subscribers_per_page';
+const DEF_SUBSCRIBERS_PER_PAGE_MAX = 999;
+const SUBSCRIBER_SORT_COLUMNS      = array(
+	'email'      => 'email',
+	'name'       => 'name',
+	'status'     => 'status',
+	'consent_at' => 'consent_at',
+	'created_at' => 'created_at',
+);
+const SUBSCRIBER_DEFAULT_ORDERBY   = 'created_at';
+const GROUP_FILTER_NONE            = -1;
+const SUBSCRIBERS_PAGE_SLUG        = 'heads-up-mailer-subscribers';
+
+/**
  * WooCommerce order meta keys.
  *
  * `META_WC_OPT_IN_SLUGS` is written at checkout by
