@@ -37,7 +37,7 @@ defined( 'ABSPATH' ) || die();
 
 $site_name = (string) get_bloginfo( 'name' );
 
-printf( '<!doctype html><html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="robots" content="noindex" />' );
+printf( '<!doctype html><html %s><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="robots" content="noindex" />', get_language_attributes() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_language_attributes() escapes its values.
 printf( '<title>%s</title>', esc_html__( 'Email preferences', 'heads-up-mailer' ) );
 
 printf(
@@ -51,18 +51,18 @@ body { font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, san
 .hum-muted { color: #646970; font-size: 13px; }
 .hum-group { display: block; padding: 10px 0; border-top: 1px solid #f0f0f1; }
 .hum-group:first-of-type { border-top: 0; }
-.hum-group input[type=checkbox] { margin-right: 10px; transform: scale(1.2); vertical-align: middle; }
+.hum-group input[type=checkbox] { margin-inline-end: 10px; transform: scale(1.2); vertical-align: middle; }
 .hum-group strong { font-weight: 600; }
-.hum-group .hum-muted { display: block; margin-top: 2px; margin-left: 28px; }
+.hum-group .hum-muted { display: block; margin-top: 2px; margin-inline-start: 28px; }
 .hum-actions { margin-top: 24px; }
 button { font-size: 15px; padding: 8px 18px; border-radius: 6px; cursor: pointer; }
 .hum-btn-primary { border: 1px solid #2271b1; background: #2271b1; color: #fff; }
 .hum-btn-primary:hover { background: #135e96; border-color: #135e96; }
 .hum-btn-danger { border: 1px solid #b32d2e; background: #fff; color: #b32d2e; }
 .hum-btn-danger:hover { background: #b32d2e; color: #fff; }
-.hum-notice { background: #fbeaea; border-left: 4px solid #d63638; padding: 10px 14px; margin: 0 0 16px; }
-.hum-success { background: #ecf7ed; border-left: 4px solid #00a32a; padding: 10px 14px; margin: 0 0 16px; }
-.hum-info { background: #f0f6fc; border-left: 4px solid #2271b1; padding: 10px 14px; margin: 0 0 16px; }
+.hum-notice { background: #fbeaea; border-inline-start: 4px solid #d63638; padding: 10px 14px; margin: 0 0 16px; }
+.hum-success { background: #ecf7ed; border-inline-start: 4px solid #00a32a; padding: 10px 14px; margin: 0 0 16px; }
+.hum-info { background: #f0f6fc; border-inline-start: 4px solid #2271b1; padding: 10px 14px; margin: 0 0 16px; }
 .hum-danger-card { border-color: #f5c6cb; }
 .hum-danger-card h2 { color: #b32d2e; }
 </style>'

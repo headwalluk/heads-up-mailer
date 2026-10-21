@@ -120,7 +120,7 @@ foreach ( $all_groups as $group ) {
 	$checked = in_array( (int) $group->id, $attached_groups, true );
 
 	$groups_html .= sprintf(
-		'<label style="display:block;margin:2px 0;"><input type="checkbox" name="groups[]" value="%d"%s /> %s <code>%s</code></label>',
+		'<label class="hum-checkbox-block"><input type="checkbox" name="groups[]" value="%d"%s /> %s <code>%s</code></label>',
 		(int) $group->id,
 		$checked ? ' checked' : '',
 		esc_html( $group->name ),

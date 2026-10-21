@@ -253,7 +253,7 @@ if ( empty( $subscribers ) ) {
 		foreach ( $memberships[ (int) $sub->id ] ?? array() as $group_id ) {
 			if ( isset( $groups_by_id[ (int) $group_id ] ) ) {
 				$chips .= sprintf(
-					'<span class="hum-group-chip" style="display:inline-block;margin:0 4px 2px 0;padding:1px 8px;border-radius:9px;background:#eef;font-size:11px;">%s</span>',
+					'<span class="hum-group-pill">%s</span>',
 					esc_html( $groups_by_id[ (int) $group_id ]->name )
 				);
 			}

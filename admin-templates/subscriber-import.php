@@ -43,7 +43,7 @@ if ( null === $report ) {
 	printf( '<p>%s</p>', esc_html__( 'Recognised columns:', 'heads-up-mailer' ) );
 
 	printf(
-		'<ul style="list-style:disc;margin-left:20px;"><li><code>Subscriber</code> or <code>email</code> %s</li><li><code>Name</code> + <code>Last name</code>, or a single <code>name</code> column</li><li><code>Subscribed</code> or <code>consent_at</code> %s</li><li><code>Groups</code> or <code>groups</code> %s</li></ul>',
+		'<ul class="hum-bullet-list"><li><code>Subscriber</code> or <code>email</code> %s</li><li><code>Name</code> + <code>Last name</code>, or a single <code>name</code> column</li><li><code>Subscribed</code> or <code>consent_at</code> %s</li><li><code>Groups</code> or <code>groups</code> %s</li></ul>',
 		esc_html__( '(required)', 'heads-up-mailer' ),
 		esc_html__( '— timestamps without a timezone are treated as UTC', 'heads-up-mailer' ),
 		esc_html__( '— semicolon- or comma-separated; names are matched to group slugs', 'heads-up-mailer' )
@@ -88,7 +88,7 @@ if ( null === $report ) {
 	$class = ( $counts['errors'] > 0 ) ? 'notice-warning' : 'notice-success';
 
 	printf(
-		'<div class="notice %s"><p><strong>%s</strong></p><ul style="list-style:disc;margin-left:20px;"><li>%s: %d</li><li>%s: %d</li><li>%s: %d</li><li>%s: %d</li></ul></div>',
+		'<div class="notice %s"><p><strong>%s</strong></p><ul class="hum-bullet-list"><li>%s: %d</li><li>%s: %d</li><li>%s: %d</li><li>%s: %d</li></ul></div>',
 		esc_attr( $class ),
 		esc_html__( 'Import complete.', 'heads-up-mailer' ),
 		esc_html__( 'Inserted', 'heads-up-mailer' ),

@@ -113,7 +113,7 @@ if ( empty( $all_groups ) ) {
 		$checked = in_array( (string) $group->slug, $suggested_slugs, true ) ? ' checked' : '';
 
 		printf(
-			'<label style="display:inline-block;margin:0 12px 4px 0;"><input type="checkbox" name="suggested_groups[]" value="%s"%s%s /> %s <code style="font-size:11px;">%s</code></label>',
+			'<label class="hum-checkbox-inline"><input type="checkbox" name="suggested_groups[]" value="%s"%s%s /> %s <code class="hum-code-small">%s</code></label>',
 			esc_attr( (string) $group->slug ),
 			esc_attr( $checked ),
 			esc_attr( $disabled ),
@@ -199,7 +199,7 @@ if ( $is_edit ) {
 			sprintf( __( 'Send to %d recipients', 'heads-up-mailer' ), $send_count );
 
 		printf( ' <p class="description">%s</p>', esc_html__( 'Queues the send. The cron worker drains in the background.', 'heads-up-mailer' ) );
-		printf( '<form method="post" action="%s" style="margin-bottom:4em;">', esc_url( admin_url( 'admin-post.php' ) ) );
+		printf( '<form method="post" action="%s" class="hum-send-form">', esc_url( admin_url( 'admin-post.php' ) ) );
 		printf( '<input type="hidden" name="action" value="hum_send_draft" />' );
 		printf( '<input type="hidden" name="draft_id" value="%d" />', (int) $draft_id );
 
@@ -221,7 +221,7 @@ if ( $is_edit ) {
 	// we deliberately leave it off so a malicious body can't reach
 	// into the admin page.
 	printf(
-		'<iframe src="%s" sandbox="" style="width:100%%;height:600px;border:1px solid #c3c4c7;background:#fff;" title="%s"></iframe>',
+		'<iframe src="%s" sandbox="" class="hum-preview-frame" title="%s"></iframe>',
 		esc_url( $preview_url ),
 		esc_attr__( 'Draft preview', 'heads-up-mailer' )
 	);

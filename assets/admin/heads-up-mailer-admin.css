@@ -7,7 +7,8 @@
 
 .hum-group-pill {
 	display: inline-block;
-	margin: 1px 4px 1px 0;
+	margin-block: 1px;
+	margin-inline: 0 4px;
 	padding: 1px 8px;
 	font-size: 11px;
 	line-height: 1.7;
@@ -86,7 +87,7 @@
    `.widefat th { text-align: left }`, which otherwise leaves the
    numeric column headings misaligned with their cells. */
 .widefat .hum-num-col {
-	text-align: right;
+	text-align: end;
 	white-space: nowrap;
 }
 
@@ -94,4 +95,36 @@
    can't squeeze them onto multiple rows (Groups list table). */
 .hum-nowrap {
 	white-space: nowrap;
+}
+
+/* Draft editor. */
+.hum-checkbox-inline {
+	display: inline-block;
+	margin-block: 0 4px;
+	margin-inline: 0 12px;
+}
+
+.hum-checkbox-block {
+	display: block;
+	margin-block: 2px;
+}
+
+.hum-code-small {
+	font-size: 11px;
+}
+
+.hum-send-form {
+	margin-block-end: 4em;
+}
+
+.hum-preview-frame {
+	width: 100%;
+	height: 600px;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+}
+
+.hum-bullet-list {
+	list-style: disc;
+	margin-inline-start: 20px;
 }
