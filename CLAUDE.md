@@ -17,6 +17,15 @@ in-plugin GitHub auto-updater (since 0.10.0).
 
 ## Where to look
 
+`docs/` is the maintained, tracked documentation. **This file is
+the standard** for conventions. Anything durable — how a feature
+works, why a mechanism exists, operator or developer guidance —
+goes in `docs/`, not in `dev-notes/` and not in code comments.
+
+`dev-notes/` is **local and untracked** (git-ignored, excluded from
+the release zip, backed up with the dev server). It holds working
+notes only:
+
 | File                                 | Contents                                |
 | ------------------------------------ | --------------------------------------- |
 | `dev-notes/00-project-tracker.md`    | Milestones, tasks, current progress     |
@@ -24,9 +33,10 @@ in-plugin GitHub auto-updater (since 0.10.0).
 | `dev-notes/02-design-notes.md`       | Pre-build Q&A, decisions, scope deltas  |
 | `dev-notes/03-style-guide-review.md` | Conventions + tensions resolved         |
 
-The original handoff lives at
-`/home/pfaulkner/Projects/hosting/headwall-newsletter/HANDOFF.md`.
-Treat it as historical context — `dev-notes/` is authoritative.
+Never link to `dev-notes/` from tracked files — the link is dead on
+GitHub. The original handoff at
+`/home/pfaulkner/Projects/hosting/headwall-newsletter/HANDOFF.md` is
+historical context only.
 
 ## File layout
 
@@ -43,8 +53,8 @@ heads-up-mailer/
 │   ├── admin/                # admin CSS/JS
 │   └── public/               # public CSS/JS
 ├── languages/                # .pot, .mo, .po
-├── docs/                     # end-user docs (admins, editors, hosts)
-└── dev-notes/                # design + tracker (build-time only)
+├── docs/                     # tracked docs (operators, AI agent, developers)
+└── dev-notes/                # local working notes — untracked
 ```
 
 ## Prefixes and naming

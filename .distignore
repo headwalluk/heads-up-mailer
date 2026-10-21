@@ -21,24 +21,13 @@ node_modules
 vendor
 *.zip
 
-# Project-internal docs that don't ship to end users
+# Project docs live on GitHub, not in the installed plugin
 CLAUDE.md
 docs
 
-# dev-notes/ ships (design notes + tracker), but never the local-only
-# `-private.md` notes. Those are git-ignored, so a CI build from a clean
-# checkout wouldn't see them anyway — but this rsync copies the working
-# tree, so a LOCAL build would otherwise pull them into a public zip.
-dev-notes/*-private.md
-
-# ...and not its screenshots
-dev-notes/*.png
-dev-notes/*.jpg
-dev-notes/*.jpeg
-dev-notes/*.gif
-dev-notes/*.webp
-dev-notes/*.bmp
-dev-notes/*.tiff
+# Local development notes. Untracked, but rsync copies the working
+# tree, so a local build would otherwise pull them into the zip.
+dev-notes
 
 # Linting config + dev-only check scripts — these run locally / in CI,
 # never on an installed site.
