@@ -24,6 +24,37 @@ jobs:
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Plugin version: ${VERSION}"
 
+      - name: Verify version numbers agree
+        # The updater compares the header version against the tag, so a
+        # header/constant/readme mismatch ships a permanent phantom update.
+        env:
+          TAG_VERSION: ${{ steps.get_version.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          HEADER_VERSION=$(sed -n 's/^ \* Version:[[:space:]]*\(.*\)$/\1/p' heads-up-mailer.php | head -1 | tr -d '[:space:]')
+          CONSTANT_VERSION=$(sed -n "s/^define( 'HUM_VERSION', '\(.*\)' );[[:space:]]*$/\1/p" heads-up-mailer.php | head -1 | tr -d '[:space:]')
+          README_VERSION=$(sed -n 's/^Stable tag:[[:space:]]*\(.*\)$/\1/p' readme.txt | head -1 | tr -d '[:space:]')
+
+          echo "Git tag ................ ${TAG_VERSION}"
+          echo "Plugin header .......... ${HEADER_VERSION}"
+          echo "HUM_VERSION ............ ${CONSTANT_VERSION}"
+          echo "readme.txt stable tag .. ${README_VERSION}"
+
+          VERSION_MISMATCH=0
+          for CANDIDATE_VERSION in "${HEADER_VERSION}" "${CONSTANT_VERSION}" "${README_VERSION}"; do
+            if [ "${CANDIDATE_VERSION}" != "${TAG_VERSION}" ]; then
+              VERSION_MISMATCH=1
+            fi
+          done
+
+          if [ "${VERSION_MISMATCH}" -ne 0 ]; then
+            echo "::error::Version mismatch. The plugin header, HUM_VERSION and the readme.txt stable tag must all read ${TAG_VERSION}."
+            exit 1
+          fi
+
+          echo "All version numbers agree on ${TAG_VERSION}."
+
       - name: Prepare plugin directory
         run: |
           mkdir -p build

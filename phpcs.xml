@@ -31,6 +31,12 @@
 
 		<!-- WordPress hook signatures often require parameters we don't use. -->
 		<exclude name="Generic.CodeAnalysis.UnusedFunctionParameter"/>
+
+		<!-- No-op if/elseif/else branches hold a `// no action:` comment (see CLAUDE.md),
+		     which this sniff counts as empty. Empty catch, loop and switch bodies stay errors. -->
+		<exclude name="Generic.CodeAnalysis.EmptyStatement.DetectedIf"/>
+		<exclude name="Generic.CodeAnalysis.EmptyStatement.DetectedElseif"/>
+		<exclude name="Generic.CodeAnalysis.EmptyStatement.DetectedElse"/>
 	</rule>
 
 	<!-- Re-enable PrefixAllGlobals with explicit prefixes for functions/classes. -->

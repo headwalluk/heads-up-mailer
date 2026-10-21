@@ -192,15 +192,19 @@ const TRANSIENT_RATE_LIMIT_FAILED = 'hum_rate_fail_';
 /**
  * GitHub auto-updater.
  *
- * Configuration the updater needs at runtime — repo slug to
- * check, transient key for the cached release payload, and TTL
- * before we re-poll. Pattern lifted from quick-2fa.
+ * Repo slug to check, cache keys and TTLs for successful and
+ * failed lookups, and the HTTP timeout per request. A failed
+ * lookup is cached for the shorter TTL so an unreachable API
+ * isn't re-requested on every admin page load.
  *
  * @since 0.10.0
  */
-const UPDATER_GITHUB_REPO = 'headwalluk/heads-up-mailer';
-const UPDATER_CACHE_KEY   = 'hum_updater_release';
-const UPDATER_CACHE_TTL   = 12 * HOUR_IN_SECONDS;
+const UPDATER_GITHUB_REPO       = 'headwalluk/heads-up-mailer';
+const UPDATER_CACHE_KEY         = 'hum_updater_release';
+const UPDATER_CACHE_TTL         = 12 * HOUR_IN_SECONDS;
+const UPDATER_FAILURE_CACHE_KEY = 'hum_updater_failed';
+const UPDATER_FAILURE_CACHE_TTL = HOUR_IN_SECONDS;
+const UPDATER_REQUEST_TIMEOUT   = 10;
 
 /**
  * Cron hook names and custom interval slug.

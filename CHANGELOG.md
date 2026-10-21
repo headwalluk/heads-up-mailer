@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Raised the minimum PHP version to 8.2.** The plugin declared
+  `Requires PHP: 8.0`, but ten controller methods return
+  `true|\WP_Error`, and the standalone `true` type only exists from
+  PHP 8.2. On 8.0 or 8.1 those files fail to compile, and because they
+  are always loaded, every request hits a fatal error. No working site
+  can be on PHP 8.0 or 8.1, so this only makes the header accurate, and
+  WordPress now refuses to install the plugin on an incompatible host.
+- **The release workflow refuses to build on a version mismatch.** The
+  tag, the plugin header, `HUM_VERSION` and the `readme.txt` stable tag
+  must all agree.
+
+### Fixed
+
+- **The updater no longer re-requests an unreachable GitHub on every
+  admin page.** A failed lookup is now cached for an hour, so an outage
+  or rate limit no longer blocks admin pages for up to 10 seconds each
+  time.
+- **The updater compares against the version WordPress records from the
+  plugin header**, not `HUM_VERSION`. If the two ever drift apart, the
+  updater logs an error instead of showing an update notice that never
+  goes away.
+- **The updater only accepts `heads-up-mailer.zip` or
+  `heads-up-mailer-{version}.zip` as a release asset.** Previously any
+  zip whose name started with the plugin slug, such as
+  `heads-up-mailer-docs.zip`, could be installed as the plugin.
+
 ## [1.7.0] — 2026-07-25
 
 ### Fixed
