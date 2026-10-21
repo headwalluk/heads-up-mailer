@@ -84,17 +84,19 @@ class Mailbox_Poller {
 	 * `OPTION_MAILBOX_INTERVAL`.
 	 *
 	 * @since 0.6.0
-	 * @param array<string, array<string, mixed>> $schedules Existing schedules.
-	 * @return array<string, array<string, mixed>>
+	 * @param mixed $schedules Existing schedules; passed through unchanged if not an array.
+	 * @return mixed
 	 */
-	public function register_interval( array $schedules ): array {
-		$minutes = (int) get_option( OPTION_MAILBOX_INTERVAL, DEF_MAILBOX_INTERVAL );
-		$minutes = max( 1, min( 60, $minutes ) );
+	public function register_interval( mixed $schedules ): mixed {
+		if ( is_array( $schedules ) ) {
+			$minutes = (int) get_option( OPTION_MAILBOX_INTERVAL, DEF_MAILBOX_INTERVAL );
+			$minutes = max( 1, min( 60, $minutes ) );
 
-		$schedules[ CRON_INTERVAL_MAILBOX_TICK ] = array(
-			'interval' => $minutes * MINUTE_IN_SECONDS,
-			'display'  => __( 'Heads Up Mailer mailbox poll', 'heads-up-mailer' ),
-		);
+			$schedules[ CRON_INTERVAL_MAILBOX_TICK ] = array(
+				'interval' => $minutes * MINUTE_IN_SECONDS,
+				'display'  => __( 'Heads Up Mailer mailbox poll', 'heads-up-mailer' ),
+			);
+		}
 
 		return $schedules;
 	}
@@ -117,7 +119,7 @@ class Mailbox_Poller {
 	 * @param mixed $old_value Previous minutes value.
 	 * @param mixed $new_value New minutes value.
 	 */
-	public function reschedule( $old_value, $new_value ): void {
+	public function reschedule( mixed $old_value, mixed $new_value ): void {
 		if ( (int) $old_value !== (int) $new_value ) {
 			wp_clear_scheduled_hook( CRON_POLL_MAILBOX );
 			wp_schedule_event( time() + MINUTE_IN_SECONDS, CRON_INTERVAL_MAILBOX_TICK, CRON_POLL_MAILBOX );

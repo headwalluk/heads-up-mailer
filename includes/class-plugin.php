@@ -170,6 +170,8 @@ class Plugin {
 			hum_ensure_caps();
 
 			update_option( OPTION_VERSION, HUM_VERSION );
+		} else {
+			// no action: already installed at this version.
 		}
 
 		$stored_db_version = (int) get_option( OPTION_DB_VERSION, 0 );

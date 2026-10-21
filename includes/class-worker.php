@@ -52,6 +52,30 @@ class Worker {
 	private const LOCK_TTL_SECONDS = 90;
 
 	/**
+	 * Sender address for the message currently in `wp_mail()`.
+	 *
+	 * @since 1.8.0
+	 * @var string
+	 */
+	private string $current_from_email = '';
+
+	/**
+	 * Sender name for the message currently in `wp_mail()`.
+	 *
+	 * @since 1.8.0
+	 * @var string
+	 */
+	private string $current_from_name = '';
+
+	/**
+	 * Plain-text alternative for the message currently in `wp_mail()`.
+	 *
+	 * @since 1.8.0
+	 * @var string
+	 */
+	private string $current_alt_body = '';
+
+	/**
 	 * Register hooks.
 	 *
 	 * @since 0.4.0
@@ -70,17 +94,19 @@ class Worker {
 	 * Inject our custom cron interval driven by `OPTION_TICK_MINUTES`.
 	 *
 	 * @since 0.4.0
-	 * @param array<string, array<string, mixed>> $schedules Existing schedules.
-	 * @return array<string, array<string, mixed>>
+	 * @param mixed $schedules Existing schedules; passed through unchanged if not an array.
+	 * @return mixed
 	 */
-	public function register_interval( array $schedules ): array {
-		$minutes = (int) get_option( OPTION_TICK_MINUTES, DEF_TICK_MINUTES );
-		$minutes = max( 1, min( 60, $minutes ) );
+	public function register_interval( mixed $schedules ): mixed {
+		if ( is_array( $schedules ) ) {
+			$minutes = (int) get_option( OPTION_TICK_MINUTES, DEF_TICK_MINUTES );
+			$minutes = max( 1, min( 60, $minutes ) );
 
-		$schedules[ CRON_INTERVAL_TICK ] = array(
-			'interval' => $minutes * MINUTE_IN_SECONDS,
-			'display'  => __( 'Heads Up Mailer tick', 'heads-up-mailer' ),
-		);
+			$schedules[ CRON_INTERVAL_TICK ] = array(
+				'interval' => $minutes * MINUTE_IN_SECONDS,
+				'display'  => __( 'Heads Up Mailer tick', 'heads-up-mailer' ),
+			);
+		}
 
 		return $schedules;
 	}
@@ -103,7 +129,7 @@ class Worker {
 	 * @param mixed $old_value Previous minutes value.
 	 * @param mixed $new_value New minutes value.
 	 */
-	public function reschedule( $old_value, $new_value ): void {
+	public function reschedule( mixed $old_value, mixed $new_value ): void {
 		if ( (int) $old_value !== (int) $new_value ) {
 			wp_clear_scheduled_hook( CRON_DRAIN_QUEUE );
 			wp_schedule_event( time() + MINUTE_IN_SECONDS, CRON_INTERVAL_TICK, CRON_DRAIN_QUEUE );
@@ -304,33 +330,58 @@ class Worker {
 		);
 
 		$html_body = $this->inject_footer( (string) $draft->html_body, $unsub_url );
-		$alt_body  = $this->build_plain_text( $html_body );
 
-		$from_email = $sender['from_email'];
-		$from_name  = $sender['from_name'];
+		$this->current_from_email = (string) $sender['from_email'];
+		$this->current_from_name  = (string) $sender['from_name'];
+		$this->current_alt_body   = $this->build_plain_text( $html_body );
 
-		$from_filter = static function () use ( $from_email ) {
-			return $from_email;
-		};
-		$name_filter = static function () use ( $from_name ) {
-			return $from_name;
-		};
-		$alt_action  = static function ( $phpmailer ) use ( $alt_body ) {
-			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer exposes `AltBody`; not our property name.
-			$phpmailer->AltBody = $alt_body;
-		};
+		add_filter( 'wp_mail_from', array( $this, 'filter_mail_from' ), 100 );
+		add_filter( 'wp_mail_from_name', array( $this, 'filter_mail_from_name' ), 100 );
+		add_action( 'phpmailer_init', array( $this, 'set_alt_body' ) );
 
-		add_filter( 'wp_mail_from', $from_filter, 100 );
-		add_filter( 'wp_mail_from_name', $name_filter, 100 );
-		add_action( 'phpmailer_init', $alt_action );
-
-		$ok = wp_mail( (string) $subscriber->email, (string) $draft->subject, $html_body, $headers );
-
-		remove_filter( 'wp_mail_from', $from_filter, 100 );
-		remove_filter( 'wp_mail_from_name', $name_filter, 100 );
-		remove_action( 'phpmailer_init', $alt_action );
+		// finally: a throwing mail hook must not leave our sender on the site's other mail.
+		try {
+			$ok = wp_mail( (string) $subscriber->email, (string) $draft->subject, $html_body, $headers );
+		} finally {
+			remove_filter( 'wp_mail_from', array( $this, 'filter_mail_from' ), 100 );
+			remove_filter( 'wp_mail_from_name', array( $this, 'filter_mail_from_name' ), 100 );
+			remove_action( 'phpmailer_init', array( $this, 'set_alt_body' ) );
+		}
 
 		return (bool) $ok;
+	}
+
+	/**
+	 * `wp_mail_from` callback: the current send's sender address.
+	 *
+	 * @since 1.8.0
+	 * @return string
+	 */
+	public function filter_mail_from(): string {
+		return $this->current_from_email;
+	}
+
+	/**
+	 * `wp_mail_from_name` callback: the current send's sender name.
+	 *
+	 * @since 1.8.0
+	 * @return string
+	 */
+	public function filter_mail_from_name(): string {
+		return $this->current_from_name;
+	}
+
+	/**
+	 * `phpmailer_init` callback: attach the current send's plain-text alternative.
+	 *
+	 * @since 1.8.0
+	 * @param mixed $phpmailer PHPMailer instance.
+	 */
+	public function set_alt_body( mixed $phpmailer ): void {
+		if ( $phpmailer instanceof \PHPMailer\PHPMailer\PHPMailer ) {
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer exposes `AltBody`; not our property name.
+			$phpmailer->AltBody = $this->current_alt_body;
+		}
 	}
 
 	/**

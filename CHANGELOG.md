@@ -22,6 +22,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Changing the manage-comms slug no longer leaves the new URL
+  returning 404.** The settings save flushed the rewrite rules while
+  only the old slug's rule was registered, so the new slug, and every
+  unsubscribe link built from it, didn't work until the permalinks
+  were saved again. The stored rules are now discarded instead, and
+  WordPress rebuilds them on the next request with the new slug.
+- **Another plugin's mail hook can no longer leave the newsletter
+  sender on the site's other email.** The worker's `From`/`From name`
+  overrides are now removed in a `finally` block, so they are cleaned
+  up even if a hook inside `wp_mail()` throws.
+- **Hook callbacks no longer fatal when another plugin passes a
+  wrong-typed value.** Callbacks on core, WooCommerce and Contact Form
+  7 hooks now check what they receive and leave anything they can't
+  use unchanged, instead of throwing a `TypeError`.
 - **The updater no longer re-requests an unreachable GitHub on every
   admin page.** A failed lookup is now cached for an hour, so an outage
   or rate limit no longer blocks admin pages for up to 10 seconds each

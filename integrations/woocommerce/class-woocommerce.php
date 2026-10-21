@@ -151,15 +151,17 @@ class WooCommerce extends Integration {
 	 * `_hum_opt_in_slugs`.
 	 *
 	 * @since 0.9.0
-	 * @param \WC_Order            $order WC order object (mutated).
-	 * @param array<string, mixed> $data  Posted checkout data.
+	 * @param mixed $order WC order object (mutated); expected \WC_Order.
+	 * @param mixed $data  Posted checkout data; expected an array.
 	 */
-	public function capture_opt_ins_on_order( \WC_Order $order, array $data ): void {
+	public function capture_opt_ins_on_order( mixed $order, mixed $data ): void {
 		$entries = $this->checkout_opt_in_entries();
 
-		if ( empty( $entries ) ) {
+		if ( empty( $entries ) || ! $order instanceof \WC_Order ) {
 			return;
 		}
+
+		$data = is_array( $data ) ? $data : array();
 
 		$ticked = array();
 
@@ -192,12 +194,12 @@ class WooCommerce extends Integration {
 	 * never triggers a gateway payment callback.
 	 *
 	 * @since 1.7.0
-	 * @param int             $order_id Order ID.
-	 * @param string          $from     Previous status.
-	 * @param string          $to       New status.
-	 * @param \WC_Order|false $order    The order, when WC supplies it.
+	 * @param mixed $order_id Order ID.
+	 * @param mixed $from     Previous status.
+	 * @param mixed $to       New status.
+	 * @param mixed $order    The order, when WC supplies it.
 	 */
-	public function on_order_status_changed( int $order_id, string $from, string $to, $order = false ): void {
+	public function on_order_status_changed( mixed $order_id, mixed $from, mixed $to, mixed $order = false ): void {
 		$this->maybe_enrol_paid_order( $order_id, $order );
 	}
 
@@ -237,12 +239,12 @@ class WooCommerce extends Integration {
 	 * surprising. Remove them by hand if you want them gone.
 	 *
 	 * @since 0.9.0
-	 * @param int             $order_id Order ID.
-	 * @param \WC_Order|false $order    The order, when the caller already has it.
+	 * @param mixed $order_id Order ID.
+	 * @param mixed $order    The order, when the caller already has it.
 	 */
-	public function maybe_enrol_paid_order( int $order_id, $order = false ): void {
-		if ( ! $order instanceof \WC_Order ) {
-			$order = wc_get_order( $order_id );
+	public function maybe_enrol_paid_order( mixed $order_id, mixed $order = false ): void {
+		if ( ! $order instanceof \WC_Order && is_numeric( $order_id ) && (int) $order_id > 0 ) {
+			$order = wc_get_order( (int) $order_id );
 		}
 
 		if ( ! $order instanceof \WC_Order ) {
@@ -448,12 +450,21 @@ class WooCommerce extends Integration {
 			esc_attr( $checkout_json )
 		);
 	}
-}
 
-add_filter(
-	'hum_integrations',
-	static function ( Registry $registry ): Registry {
-		$registry->register( new WooCommerce() );
+	/**
+	 * `hum_integrations` callback: add this integration to the registry.
+	 *
+	 * @since 1.8.0
+	 * @param mixed $registry Integrations registry; passed through unchanged if not one.
+	 * @return mixed
+	 */
+	public static function register_integration( mixed $registry ): mixed {
+		if ( $registry instanceof Registry ) {
+			$registry->register( new self() );
+		}
+
 		return $registry;
 	}
-);
+}
+
+add_filter( 'hum_integrations', array( WooCommerce::class, 'register_integration' ) );

@@ -150,12 +150,12 @@ class Contact_Form_7 extends Integration {
 	 * recipient.
 	 *
 	 * @since 0.9.0
-	 * @param \WPCF7_ContactForm $contact_form Submitted form.
+	 * @param mixed $contact_form Submitted form; expected \WPCF7_ContactForm.
 	 */
-	public function on_submit( \WPCF7_ContactForm $contact_form ): void {
+	public function on_submit( mixed $contact_form ): void {
 		$submission = \WPCF7_Submission::get_instance();
 
-		if ( ! $submission instanceof \WPCF7_Submission ) {
+		if ( ! $contact_form instanceof \WPCF7_ContactForm || ! $submission instanceof \WPCF7_Submission ) {
 			return;
 		}
 
@@ -329,12 +329,21 @@ class Contact_Form_7 extends Integration {
 
 		return (string) $groups[0]->slug;
 	}
-}
 
-add_filter(
-	'hum_integrations',
-	static function ( Registry $registry ): Registry {
-		$registry->register( new Contact_Form_7() );
+	/**
+	 * `hum_integrations` callback: add this integration to the registry.
+	 *
+	 * @since 1.8.0
+	 * @param mixed $registry Integrations registry; passed through unchanged if not one.
+	 * @return mixed
+	 */
+	public static function register_integration( mixed $registry ): mixed {
+		if ( $registry instanceof Registry ) {
+			$registry->register( new self() );
+		}
+
 		return $registry;
 	}
-);
+}
+
+add_filter( 'hum_integrations', array( Contact_Form_7::class, 'register_integration' ) );

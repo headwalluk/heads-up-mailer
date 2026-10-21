@@ -153,6 +153,8 @@ class CSV_Importer {
 			$name  = trim( $first . ' ' . $last );
 		} elseif ( null !== $col_indexes['name'] ) {
 			$name = $this->column_value( $raw, $col_indexes['name'] );
+		} else {
+			// no action: the CSV has no name columns.
 		}
 
 		$groups_raw = $this->column_value( $raw, $col_indexes['groups'] );
@@ -322,6 +324,8 @@ class CSV_Importer {
 			$result = '';
 		} elseif ( ! preg_match( '/[A-Z]{2,5}$/', $raw ) ) {
 			$result = $raw . ' UTC';
+		} else {
+			// no action: the value already carries a timezone.
 		}
 
 		return $result;

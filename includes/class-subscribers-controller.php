@@ -432,9 +432,9 @@ class Subscribers_Controller {
 				$row['unsubscribed_at'] = now_utc();
 			} elseif ( ! $is_stopped && $was_stopped ) {
 				$row['unsubscribed_at'] = '';
+			} else {
+				// no action: no stopped/not-stopped transition, so keep the timestamp.
 			}
-			// else: no transition between stopped / not-stopped,
-			// don't touch the timestamp.
 		}
 
 		// Column-level write only if we actually have fields to
