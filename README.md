@@ -1,6 +1,6 @@
 # Heads Up Mailer
 
-![Status](https://img.shields.io/badge/status-1.7.0-brightgreen)
+![Status](https://img.shields.io/badge/status-1.8.0-brightgreen)
 ![WordPress](https://img.shields.io/badge/WordPress-6.2%2B-21759b?logo=wordpress&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-8.2%2B-777bb4?logo=php&logoColor=white)
 ![License](https://img.shields.io/badge/license-GPLv2%2B-blue)
@@ -68,8 +68,13 @@ marketing-automation suite.
   counters, per-send recipient drill-down with status filter.
 - **Subscribers + groups admin** — full CRUD, MailerLite-export
   CSV import (idempotent, refuses to overwrite never-contact
-  rows), row + bulk actions. The subscribers list is paginated and
-  flags which subscribers have a linked WordPress user account.
+  rows), row + bulk actions. The subscribers list is a standard
+  WordPress list table: search, status views, group filter,
+  sortable columns and Screen Options for page size and columns.
+  Subscribers with a linked WordPress user account are flagged.
+- **Opt-in uninstall cleanup** — *Settings → Advanced → Delete data
+  on uninstall* (off by default) removes the plugin's tables,
+  options and capabilities when it is deleted.
 - **Integrations framework** — pluggable `Integration` base
   class + `hum_integrations` filter. Built-ins:
   - **Contact Form 7** — new `[hum_signup group:slug "Label"]`

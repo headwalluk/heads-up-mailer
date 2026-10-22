@@ -2,9 +2,9 @@
 Contributors: paulfaulkner
 Tags: newsletter, email, subscribers, mailer, unsubscribe
 Requires at least: 6.2
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.7.0
+Stable tag: 1.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,6 +62,10 @@ Partly. The per-group opt-in checkboxes hook `woocommerce_after_checkout_billing
 
 Add `add_filter( 'hum_updater_enabled', '__return_false' );` to your site's `functions.php` or an mu-plugin. Useful for staging environments or pinning to a known-good version during a release window.
 
+= What happens to my data if I delete the plugin? =
+
+By default, nothing is deleted: subscribers, groups, drafts, the send log and settings all stay in the database, so a reinstall picks up where you left off. To remove everything when the plugin is deleted, turn on *Settings → Advanced → Delete data on uninstall* first. WooCommerce order meta is always kept as the order's record of consent.
+
 = Where can I read more? =
 
 * `README.md` in the plugin folder — feature overview and pointers.
@@ -69,6 +73,9 @@ Add `add_filter( 'hum_updater_enabled', '__return_false' );` to your site's `fun
 * [REST API reference for AI agents](https://github.com/headwalluk/heads-up-mailer/blob/master/docs/ai-agent-rest-guide.md) — lives in the GitHub repo, not in the installed zip.
 
 == Changelog ==
+
+= 1.8.0 =
+The Subscribers screen is now a standard WordPress list table: search by email or name, status views with counts, a group filter (including "In no group"), sortable columns, and Screen Options for page size and visible columns. A new Source column shows where each subscriber came from, dates display in the site's timezone, and paging, sorting and bulk or row actions all return to the same filtered view. Also adds an opt-in *Delete data on uninstall* setting (off by default), raises the minimums to WordPress 6.2 and PHP 8.2, and fixes a 404 on the manage page after changing its slug. No schema change. See `CHANGELOG.md` for the full entry.
 
 = 1.7.0 =
 Fixes a real-world problem with the WooCommerce integration: customers were enrolled the moment an order was created, before any payment was attempted, so card-testing bots added themselves to the mailing list even though the card was declined. Enrolment now happens only once an order is actually paid (WooCommerce's `processing` or `completed`), so declined, failed, cancelled and abandoned orders enrol nobody. The customer's ticked opt-in choices are still captured at checkout and applied when payment lands, and bank-transfer orders enrol when an admin marks them paid. Also: the subscribers list is now paginated at 25 rows per page, no longer issues one database query per row (a 25-row page costs 5 queries, down from 144 for the whole list), and shows a dashicon linking through to the WordPress user account for subscribers who have one. No schema change. See `CHANGELOG.md` for the full entry.
@@ -101,6 +108,9 @@ New custom capability `hum_create_drafts`, granted to Administrator and Editor o
 First stable release. Replaces MailerLite at headwall-hosting.com. Stack covers: drafts via REST → admin review → async send queue → RFC 8058 unsubscribe → public `/manage-comms/` page → IMAP poll for mailto unsubscribes → sent log → never-contact status → Contact Form 7 + WooCommerce integrations → in-plugin GitHub auto-updater. See `CHANGELOG.md` in the plugin folder for the detailed per-feature history (0.1.0 through 0.10.1).
 
 == Upgrade Notice ==
+
+= 1.8.0 =
+Recommended. A much easier-to-navigate Subscribers screen with search, filters, sorting and a choice of page size. Requires WordPress 6.2 and PHP 8.2. No schema change and no action required; uninstall data removal is off unless you turn it on.
 
 = 1.7.0 =
 Recommended if you use the WooCommerce integration. Customers are now enrolled only when an order is paid, not when it is created — so failed card-testing orders stop adding people to your list. Existing subscribers and already-paid orders are untouched, and no re-enrolment happens for orders processed under the old behaviour. Subscribers already added by unpaid orders are not removed automatically; delete them from the Subscribers screen if you want them gone. The subscribers list is also now paginated, which means the select-all checkbox covers the current page only. No schema change and no action required.
