@@ -12,6 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Subscriber sources no longer wrap.** Values such as
   `woocommerce-checkout` stay on one line, like the group pills, and
   the Source column is wider to fit them.
+- **Counted messages use proper plural forms.** Recipient counts on
+  the Send button, the dashboard's day window, the Sent log's status
+  filters and the length-limit errors now read correctly for one item
+  and translate correctly into languages with several plural forms.
+- **Translations refreshed for all eight locales** (machine-translated),
+  including the new Subscribers screen and the plural forms that were
+  previously left in English. A native-speaker review is still pending.
+- **The subscriber edit screen uses the same status labels as the
+  list**, so a translation of a status is the same on both screens.
 
 ## [1.8.0] — 2026-10-22
 
