@@ -89,13 +89,7 @@ printf(
 );
 
 // Status select.
-$status_options = array(
-	STATUS_SUBSCRIBED    => __( 'Subscribed', 'heads-up-mailer' ),
-	STATUS_UNSUBSCRIBED  => __( 'Unsubscribed', 'heads-up-mailer' ),
-	STATUS_BOUNCED       => __( 'Bounced', 'heads-up-mailer' ),
-	STATUS_COMPLAINED    => __( 'Complained', 'heads-up-mailer' ),
-	STATUS_NEVER_CONTACT => __( 'Never contact', 'heads-up-mailer' ),
-);
+$status_options = Subscribers_Controller::status_labels();
 
 $status_html = '';
 foreach ( $status_options as $value => $label ) {

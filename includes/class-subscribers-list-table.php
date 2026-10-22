@@ -73,22 +73,6 @@ class Subscribers_List_Table extends \WP_List_Table {
 	}
 
 	/**
-	 * Translated label for each subscriber status.
-	 *
-	 * @since 1.8.0
-	 * @return array<string, string>
-	 */
-	public static function status_labels(): array {
-		return array(
-			STATUS_SUBSCRIBED    => _x( 'Subscribed', 'subscriber status', 'heads-up-mailer' ),
-			STATUS_UNSUBSCRIBED  => _x( 'Unsubscribed', 'subscriber status', 'heads-up-mailer' ),
-			STATUS_BOUNCED       => _x( 'Bounced', 'subscriber status', 'heads-up-mailer' ),
-			STATUS_COMPLAINED    => _x( 'Complained', 'subscriber status; marked as spam', 'heads-up-mailer' ),
-			STATUS_NEVER_CONTACT => _x( 'Never contact', 'subscriber status', 'heads-up-mailer' ),
-		);
-	}
-
-	/**
 	 * Column headings.
 	 *
 	 * @since 1.8.0
@@ -219,7 +203,7 @@ class Subscribers_List_Table extends \WP_List_Table {
 			),
 		);
 
-		foreach ( self::status_labels() as $status => $label ) {
+		foreach ( Subscribers_Controller::status_labels() as $status => $label ) {
 			if ( ( $counts[ $status ] ?? 0 ) > 0 ) {
 				$views[ $status ] = $this->view_link(
 					Admin_Subscribers::list_url( array_merge( $base_state, array( 'status' => $status ) ) ),
@@ -403,7 +387,7 @@ class Subscribers_List_Table extends \WP_List_Table {
 		return sprintf(
 			'<span class="hum-status hum-status-%s">%s</span>',
 			esc_attr( $status ),
-			esc_html( self::status_labels()[ $status ] ?? $status )
+			esc_html( Subscribers_Controller::status_labels()[ $status ] ?? $status )
 		);
 	}
 

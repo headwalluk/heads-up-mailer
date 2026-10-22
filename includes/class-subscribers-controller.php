@@ -186,6 +186,22 @@ class Subscribers_Controller {
 	}
 
 	/**
+	 * Translated label for each subscriber status.
+	 *
+	 * @since 1.8.0
+	 * @return array<string, string>
+	 */
+	public static function status_labels(): array {
+		return array(
+			STATUS_SUBSCRIBED    => _x( 'Subscribed', 'subscriber status', 'heads-up-mailer' ),
+			STATUS_UNSUBSCRIBED  => _x( 'Unsubscribed', 'subscriber status', 'heads-up-mailer' ),
+			STATUS_BOUNCED       => _x( 'Bounced', 'subscriber status', 'heads-up-mailer' ),
+			STATUS_COMPLAINED    => _x( 'Complained', 'subscriber status; marked as spam', 'heads-up-mailer' ),
+			STATUS_NEVER_CONTACT => _x( 'Never contact', 'subscriber status', 'heads-up-mailer' ),
+		);
+	}
+
+	/**
 	 * Group memberships for many subscribers, in one query.
 	 *
 	 * Replaces an N+1 in the admin list, which called `get_groups()`
