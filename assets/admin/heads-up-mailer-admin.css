@@ -140,9 +140,16 @@ a.hum-group-pill:focus {
 	background: #2271b1;
 }
 
-.wp-list-table.subscribers .column-status,
-.wp-list-table.subscribers .column-source {
+.wp-list-table.subscribers .column-status {
 	width: 10em;
+}
+
+.wp-list-table.subscribers .column-source {
+	width: 13em;
+}
+
+.wp-list-table.subscribers .column-source code {
+	white-space: nowrap;
 }
 
 .wp-list-table.subscribers .column-consent_at,

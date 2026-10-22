@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Subscriber sources no longer wrap.** Values such as
+  `woocommerce-checkout` stay on one line, like the group pills, and
+  the Source column is wider to fit them.
+
 ## [1.8.0] — 2026-10-22
 
 ### Added
