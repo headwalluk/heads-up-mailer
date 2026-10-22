@@ -188,15 +188,15 @@ if ( $is_edit ) {
 	} else {
 		$confirm = $is_resend
 			? /* translators: %d: recipient count. */
-			sprintf( __( 'This draft was already sent. Send AGAIN to %d recipients?', 'heads-up-mailer' ), $send_count )
+			sprintf( _n( 'This draft was already sent. Send AGAIN to %d recipient?', 'This draft was already sent. Send AGAIN to %d recipients?', $send_count, 'heads-up-mailer' ), $send_count )
 			: /* translators: %d: recipient count. */
-			sprintf( __( 'Send to %d recipients?', 'heads-up-mailer' ), $send_count );
+			sprintf( _n( 'Send to %d recipient?', 'Send to %d recipients?', $send_count, 'heads-up-mailer' ), $send_count );
 
 		$button_label = $is_resend
 			? /* translators: %d: recipient count. */
-			sprintf( __( 'Re-send to %d recipients', 'heads-up-mailer' ), $send_count )
+			sprintf( _n( 'Re-send to %d recipient', 'Re-send to %d recipients', $send_count, 'heads-up-mailer' ), $send_count )
 			: /* translators: %d: recipient count. */
-			sprintf( __( 'Send to %d recipients', 'heads-up-mailer' ), $send_count );
+			sprintf( _n( 'Send to %d recipient', 'Send to %d recipients', $send_count, 'heads-up-mailer' ), $send_count );
 
 		printf( ' <p class="description">%s</p>', esc_html__( 'Queues the send. The cron worker drains in the background.', 'heads-up-mailer' ) );
 		printf( '<form method="post" action="%s" class="hum-send-form">', esc_url( admin_url( 'admin-post.php' ) ) );

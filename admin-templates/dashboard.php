@@ -33,8 +33,15 @@ if ( ! empty( $health['alert'] ) ) {
 	printf(
 		'<div class="notice notice-error"><p>%s</p></div>',
 		sprintf(
-			/* translators: 1: failure rate percent, 2: number of days, 3: failed count, 4: completed count. */
-			esc_html__( '%1$s%% of emails failed in the last %2$d days (%3$s of %4$s attempted). Check Settings &rarr; Sending for your From: address and mail provider.', 'heads-up-mailer' ),
+			esc_html(
+				/* translators: 1: failure rate percent, 2: number of days, 3: failed count, 4: completed count. */
+				_n(
+					'%1$s%% of emails failed in the last %2$d day (%3$s of %4$s attempted). Check Settings &rarr; Sending for your From: address and mail provider.',
+					'%1$s%% of emails failed in the last %2$d days (%3$s of %4$s attempted). Check Settings &rarr; Sending for your From: address and mail provider.',
+					$window,
+					'heads-up-mailer'
+				)
+			),
 			esc_html( (string) $health['failure_pct'] ),
 			absint( $window ),
 			esc_html( number_format_i18n( (int) $health['failed'] ) ),
@@ -47,7 +54,7 @@ printf(
 	'<p class="description">%s</p>',
 	sprintf(
 		/* translators: %d: number of days in the rolling window. */
-		esc_html__( 'Overview of the last %d days.', 'heads-up-mailer' ),
+		esc_html( _n( 'Overview of the last %d day.', 'Overview of the last %d days.', $window, 'heads-up-mailer' ) ),
 		absint( $window )
 	)
 );
@@ -111,7 +118,7 @@ printf(
 	'<ul class="hum-stat-list"><li>%s</li></ul>',
 	sprintf(
 		/* translators: 1: number of unsubscribes, 2: number of days. */
-		esc_html__( 'Account unsubscribes (last %2$d days): %1$s', 'heads-up-mailer' ),
+		esc_html( _n( 'Account unsubscribes (last %2$d day): %1$s', 'Account unsubscribes (last %2$d days): %1$s', $window, 'heads-up-mailer' ) ),
 		esc_html( number_format_i18n( (int) $people['unsubscribes_window'] ) ),
 		absint( $window )
 	)

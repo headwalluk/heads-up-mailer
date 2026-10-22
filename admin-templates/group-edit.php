@@ -45,17 +45,17 @@ if ( '' !== $error_code ) {
 		'hum_group_invalid_name'         => __( 'Group name is required.', 'heads-up-mailer' ),
 		'hum_group_slug_too_long'        => sprintf(
 			/* translators: %d is the maximum number of characters allowed in a group slug */
-			__( 'Group slug is too long (maximum %d characters).', 'heads-up-mailer' ),
+			_n( 'Group slug is too long (maximum %d character).', 'Group slug is too long (maximum %d characters).', MAX_GROUP_SLUG_LENGTH, 'heads-up-mailer' ),
 			MAX_GROUP_SLUG_LENGTH
 		),
 		'hum_group_name_too_long'        => sprintf(
 			/* translators: %d is the maximum number of characters allowed in a group name */
-			__( 'Group name is too long (maximum %d characters).', 'heads-up-mailer' ),
+			_n( 'Group name is too long (maximum %d character).', 'Group name is too long (maximum %d characters).', MAX_GROUP_NAME_LENGTH, 'heads-up-mailer' ),
 			MAX_GROUP_NAME_LENGTH
 		),
 		'hum_group_description_too_long' => sprintf(
 			/* translators: %d is the maximum number of characters allowed in a group description */
-			__( 'Group description is too long (maximum %d characters).', 'heads-up-mailer' ),
+			_n( 'Group description is too long (maximum %d character).', 'Group description is too long (maximum %d characters).', MAX_GROUP_DESCRIPTION_LENGTH, 'heads-up-mailer' ),
 			MAX_GROUP_DESCRIPTION_LENGTH
 		),
 		'hum_group_not_found'            => __( 'Group not found.', 'heads-up-mailer' ),

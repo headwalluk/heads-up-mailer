@@ -233,7 +233,7 @@ class Drafts_Controller {
 			return new \WP_Error(
 				'hum_draft_subject_too_long',
 				/* translators: %d: maximum subject length. */
-				sprintf( __( 'Subject must be %d characters or fewer.', 'heads-up-mailer' ), DEF_DRAFT_SUBJECT_MAX )
+				sprintf( _n( 'Subject must be %d character or fewer.', 'Subject must be %d characters or fewer.', DEF_DRAFT_SUBJECT_MAX, 'heads-up-mailer' ), DEF_DRAFT_SUBJECT_MAX )
 			);
 		}
 

@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || die();
 
 $delete_data_on_uninstall = filter_var( get_option( OPTION_DELETE_DATA_ON_UNINSTALL, DEF_DELETE_DATA_ON_UNINSTALL ), FILTER_VALIDATE_BOOLEAN );
 
-printf( '<h2>%s</h2>', esc_html__( 'Uninstall', 'heads-up-mailer' ) );
+printf( '<h2>%s</h2>', esc_html_x( 'Uninstall', 'settings section heading; removing the plugin', 'heads-up-mailer' ) );
 printf(
 	'<p>%s</p>',
 	esc_html__( 'Deactivating the plugin never deletes data. By default, deleting it from the Plugins screen keeps your data too, so a reinstall picks up where you left off.', 'heads-up-mailer' )

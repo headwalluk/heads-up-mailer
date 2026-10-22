@@ -429,7 +429,7 @@ class Subscribers_List_Table extends \WP_List_Table {
 		}
 
 		if ( '' === $pills ) {
-			$pills = sprintf( '<span class="hum-group-none" aria-hidden="true">—</span><span class="screen-reader-text">%s</span>', esc_html__( 'No groups', 'heads-up-mailer' ) );
+			$pills = sprintf( '<span class="hum-group-none" aria-hidden="true">—</span><span class="screen-reader-text">%s</span>', esc_html_x( 'No groups', 'subscriber belongs to no mailing group', 'heads-up-mailer' ) );
 		}
 
 		return $pills;

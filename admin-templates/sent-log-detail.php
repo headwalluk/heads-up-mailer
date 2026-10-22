@@ -66,27 +66,27 @@ printf(
 $filter_options = array(
 	''                     => sprintf(
 		/* translators: %d: total recipients across all statuses. */
-		__( 'All (%d)', 'heads-up-mailer' ),
+		_nx( 'All (%d)', 'All (%d)', $total, 'send recipients', 'heads-up-mailer' ),
 		$total
 	),
 	SEND_STATUS_SENT       => sprintf(
 		/* translators: %d: number of recipients in this status. */
-		__( 'Sent (%d)', 'heads-up-mailer' ),
+		_nx( 'Sent (%d)', 'Sent (%d)', $sent_count, 'email delivery status', 'heads-up-mailer' ),
 		$sent_count
 	),
 	SEND_STATUS_FAILED     => sprintf(
 		/* translators: %d: number of recipients in this status. */
-		__( 'Failed (%d)', 'heads-up-mailer' ),
+		_nx( 'Failed (%d)', 'Failed (%d)', $failed_count, 'email delivery status', 'heads-up-mailer' ),
 		$failed_count
 	),
 	SEND_STATUS_PENDING    => sprintf(
 		/* translators: %d: number of recipients in this status. */
-		__( 'Pending (%d)', 'heads-up-mailer' ),
+		_nx( 'Pending (%d)', 'Pending (%d)', $pending_count, 'email delivery status', 'heads-up-mailer' ),
 		$pending_count
 	),
 	SEND_STATUS_PROCESSING => sprintf(
 		/* translators: %d: number of recipients in this status. */
-		__( 'Processing (%d)', 'heads-up-mailer' ),
+		_nx( 'Processing (%d)', 'Processing (%d)', $running_count, 'email delivery status', 'heads-up-mailer' ),
 		$running_count
 	),
 );
